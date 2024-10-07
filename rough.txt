@@ -1,351 +1,150 @@
-<!doctype html>
-<html lang="en">
+// Demonstrating var and let behavior in asynchronous operations inside loops
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dynamic Invoice</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+console.log("Demonstrating 'var' behavior:");
 
-<body>
-  <div id="displaydata"></div>
-  <script type="text/javascript" src="/main.js"></script>
-</body>
+const array = [1, 2, 3, 4, 5];
 
-</html>
-
------------------------------------------------------------------------------------------------------------------------------------------------
-
-let sampleJson = [
-  {
-    "SellerDetails": {
-      "SellerName": "Ravi Gupta",
-      "SellerAddress": "Surdhara Complex, Naranpura",
-      "City": "Ahmedabad",
-      "State": "Gujarat",
-      "Zip": 382481,
-      "Phone": 8989898989,
-      "Email": "seller@gmail.com"
-    },
-    "BuyerDetails": {
-      "CompanyName": "Radixweb",
-      "Name": "Nitish Patel",
-      "Address": "B/H Nirma University, Ekyarth, Near Vandemataram Fabula, Malabar County Rd",
-      "City": "Ahmedabad",
-      "State": "Gujarat",
-      "Zip": 382481,
-      "Phone": 98989898,
-      "Email": "buyer@gmail.com"
-    },
-    "ItemDetails": [
-      {
-        "ItemName": "Item1",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$100",
-        "Tax": "10%",
-        "Amount": "$110"
-      },
-      {
-        "ItemName": "Item2",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$200",
-        "Tax": "20%",
-        "Amount": "$240"
-      },
-      {
-        "ItemName": "Item3",
-        "Description": "Description",
-        "Quntity": 3,
-        "Price": "$300",
-        "Tax": "10%",
-        "Amount": "$990"
-      },
-      {
-        "ItemName": "Item4",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$400",
-        "Tax": "10%",
-        "Amount": "$440"
-      },
-      {
-        "ItemName": "Item5",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$500",
-        "Tax": "10%",
-        "Amount": "$550"
-      },
-      {
-        "ItemName": "Item6",
-        "Description": "Description",
-        "Quntity": 2,
-        "Price": "$600",
-        "Tax": "10%",
-        "Amount": "$1320"
-      },
-      {
-        "ItemName": "Item7",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$700",
-        "Tax": "10%",
-        "Amount": "$770"
-      },
-      {
-        "ItemName": "Item8",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$800",
-        "Tax": "10%",
-        "Amount": "$880"
-      },
-      {
-        "ItemName": "Item9",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$900",
-        "Tax": "15%",
-        "Amount": "$1035"
-      },
-      {
-        "ItemName": "Item10",
-        "Description": "Description",
-        "Quntity": 1,
-        "Price": "$450",
-        "Tax": "10%",
-        "Amount": "$495"
-      }
-    ]
-  }
-];
-
-// Get reference to the display area in HTML
-let region1 = document.getElementById("displaydata");
-
-// Define the structure of the invoice table
-let region1Data = `<table border="2">
-  <tr id="selleraddress">
-    <th colspan="3">&nbsp;</th>
-    <th colspan="3">Seller address: ${sampleJson[0].SellerDetails.SellerAddress}</th>
-  </tr>
-  <tr>
-    <th colspan="3">
-      <h1>INVOICE</h1>
-    </th>
-    <th colspan="3">&nbsp;</th>
-  </tr>
-  <tr>
-    <th colspan="3">&nbsp;</th>
-    <th colspan="3">
-      City, State, Zip: ${sampleJson[0].SellerDetails.City}, ${sampleJson[0].SellerDetails.State}, ${sampleJson[0].SellerDetails.Zip}
-    </th>
-  </tr>
-  <tr>
-    <th colspan="3">&nbsp;</th>
-    <th colspan="3">Phone: ${sampleJson[0].SellerDetails.Phone}</th>
-  </tr>
-  <tr>
-    <th colspan="3">&nbsp;</th>
-    <th colspan="3">Email: ${sampleJson[0].SellerDetails.Email}</th>
-  </tr>
-  <tr id="billto">
-    <td colspan="3">BILL TO</td>
-    <td colspan="3">Seller Name: ${sampleJson[0].SellerDetails.SellerName}</td>
-  </tr>
-  <tr>
-    <td colspan="3">Company Name: ${sampleJson[0].BuyerDetails.CompanyName}</td>
-    <td colspan="3">INVOICE#</td>
-  </tr>
-  <tr>
-    <td colspan="3">Buyer Name: ${sampleJson[0].BuyerDetails.Name}</td>
-    <td colspan="3">123456</td>
-  </tr>
-  <tr>
-    <td colspan="3">Address: ${sampleJson[0].BuyerDetails.Address}</td>
-    <td colspan="3">DATE</td>
-  </tr>
-  <tr>
-    <td colspan="3">City, State, Zip: ${sampleJson[0].BuyerDetails.City}, ${sampleJson[0].BuyerDetails.State}, ${sampleJson[0].BuyerDetails.Zip}</td>
-    <td colspan="3">14/03/23</td>
-  </tr>
-  <tr>
-    <td colspan="3">Phone: ${sampleJson[0].BuyerDetails.Phone}</td>
-    <td colspan="3">INVOICE DUE DATE</td>
-  </tr>
-  <tr>
-    <td colspan="3">Email: ${sampleJson[0].BuyerDetails.Email}</td>
-    <td colspan="3">14/03/23</td>
-  </tr>
-  <tr>
-    <td colspan="3">&nbsp;</td>
-    <td colspan="3">&nbsp;</td>
-  </tr>
-  <tr>
-    <td>ITEMS</td>
-    <td>DESCRIPTION</td>
-    <td>QUANTITY</td>
-    <td>PRICE</td>
-    <td>TAX</td>
-    <td>AMOUNT</td>
-  </tr>
-  ${loopData()}
-  ${getTotal()}
-</table>`;
-
-// Function to calculate the total amount
-function getTotal() {
-  let total = 0;
-  for (const amount of sampleJson[0].ItemDetails) {
-    let stringprice = amount.Amount.split("$");
-    total += parseInt(stringprice[1]);
-  }
-  return `
-    <tr>
-      <td colspan="3">NOTES:</td>
-      <td colspan="3">TOTAL</td>
-    </tr>
-    <tr>
-      <td colspan="3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Est, accusantium?</td>
-      <td colspan="3"><h1>$${total}</h1></td>
-    </tr>`;
+// Using 'var' inside the loop
+for (var i = 0; i < array.length; i++) {
+  setTimeout(function() {
+    console.log('var i:', i);  // Will log 5 for all iterations
+  }, 1000);
 }
 
-// Function to loop through item details and create table rows
-function loopData() {
+// Adding a delay to separate the outputs for clarity
+setTimeout(() => {
+  console.log("\nDemonstrating 'let' behavior:");
+
+  // Using 'let' inside the loop
+  for (let j = 0; j < array.length; j++) {
+    setTimeout(function() {
+      console.log('let j:', j);  // Will log 0, 1, 2, 3, 4 correctly
+    }, 1000);
+  }
+
+}, 3000); // 3 seconds delay to ensure the var output finishes first
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <style>
+    /* Add some basic styling */
+    .profile {
+      width: 300px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    img {
+      border-radius: 50%;
+      width: 150px;
+      height: 150px;
+    }
+    h2 {
+      margin: 10px 0;
+    }
+    p {
+      margin: 5px 0;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="profile">
+  <!-- Profile Picture -->
+  <img id="profile-picture" src="default-profile.png" alt="Profile Picture">
+
+  <!-- User Information -->
+  <h2 id="user-name">Loading...</h2>
+  <p id="user-email">Loading...</p>
+  <p id="user-address">Loading...</p>
+
+  <!-- Error Message -->
+  <p id="error-message" class="error"></p>
+</div>
+
+<!-- Link to the JavaScript file -->
+<script src="profile-page.js"></script>
+
+</body>
+</html>
+
+----------------------------------------------------------------------------------------------------------------
+
+// Fetch user data from the API and update the profile page
+async function fetchUserData() {
+  try {
+    // Mock API URL - Replace this with the actual API endpoint
+    const apiURL = 'https://api.example.com/user/1';
+
+    // Fetch user data from the API
+    const response = await fetch(apiURL);
+
+    // Check if the request was successful
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Parse the JSON data
+    const userData = await response.json();
+
+    // Update the profile page with the retrieved data
+    updateProfilePage(userData);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    document.getElementById('error-message').textContent = "Failed to load user data.";
+  }
+}
+
+// Function to update the profile page with user data
+function updateProfilePage(user) {
+  // Update profile picture
+  const profilePic = document.getElementById('profile-picture');
+  profilePic.src = user.profilePicture || 'default-profile.png'; // fallback if no picture
+
+  // Update name, email, and address
+  document.getElementById('user-name').textContent = user.name || 'N/A';
+  document.getElementById('user-email').textContent = user.email || 'N/A';
+  document.getElementById('user-address').textContent = user.address || 'N/A';
+}
+
+// Call the fetchUserData function when the page loads
+window.onload = fetchUserData;
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+// Function to reverse a string
+function reverse(str) {
   let result = "";
-  let ctr = 0;
-  for (let data of sampleJson[0].ItemDetails) {
-    result += `
-      <tr id="${data.ItemName}-raw${ctr}">
-        <td>${data.ItemName}</td>
-        <td>${data.Description}</td>
-        <td>${data.Quntity}</td>
-        <td>${data.Price}</td>
-        <td>${data.Tax}</td>
-        <td>${data.Amount}</td>
-      </tr>`;
-    ctr++;
+  // Fix the loop index to start at str.length - 1
+  for (let i = str.length - 1; i >= 0; i--) {
+    result += str.charAt(i);
   }
-  return result;
+  return result; // Return the reversed string
 }
 
-// Insert the dynamically generated HTML into the display area
-region1.innerHTML = region1Data;
-
---------------------------------------------------------------------------------------------------------------------------------------------------------
-
-<!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Assignment 1</title>
-</head>
-
-<body>
-  <form action="">
-    <label for="date">Please enter date in MM-DD-YYYY format</label>
-    <input type="textbox" id="date">
-    <br><br>
-  </form>
-  <button onclick="isDateValid()">Check</button>
-  <div id="validresult"></div>
-  <div id="error"></div>
-  <script type="text/javascript" src="/main.js"></script>
-</body>
-
-</html>
-
-
-------------------------------------------------------------------------------------------------------------------------------------------------------
-
-function isDateValid() {
-    let date = document.getElementById("date").value.split("-");
-    let month = date[0];
-    let day = date[1];
-    let year = date[2];
-    let fullDate = `${month}-${day}-${year}`;
-    let error = document.getElementById("error");
-    let validResult = document.getElementById("validresult");
-
-    // Clear previous results
-    error.innerHTML = "";
-    validResult.innerHTML = "";
-
-    // Check if the input format is correct (MM-DD-YYYY)
-    if (!day || !month || !year || month.length !== 2 || day.length !== 2 || year.length !== 4 || isNaN(month) || isNaN(day) || isNaN(year)) {
-        error.innerHTML = "Please enter date in MM-DD-YYYY format";
-        return;
+// Function that returns a promise to reverse the string or reject if not a string
+function reverseString(str) {
+  return new Promise((resolve, reject) => {
+    if (typeof str === "string") {
+      resolve(reverse(str));  // Resolve with reversed string
+    } else {
+      reject("Wrong Input!!");  // Reject with an error message
     }
-
-    month = parseInt(month);
-    day = parseInt(day);
-    year = parseInt(year);
-
-    // Validate the month range (1-12)
-    if (month < 1 || month > 12) {
-        error.innerHTML = "Invalid month. Month should be within the range 1 to 12";
-        return;
-    }
-
-    // Validate day range for months
-    if (day < 1 || day > 31) {
-        error.innerHTML = "Invalid day. Day should be within the range 1 to 31";
-        return;
-    }
-
-    // Check month-specific day limits
-    switch (month) {
-        case 2: // February
-            if (isLeapYear(year)) {
-                if (day > 29) {
-                    error.innerHTML = "Invalid day. Day should be within the range 1 to 29 for February in a leap year";
-                    return;
-                }
-            } else {
-                if (day > 28) {
-                    error.innerHTML = "Invalid day. Day should be within the range 1 to 28 for February";
-                    return;
-                }
-            }
-            break;
-        case 4: // April
-        case 6: // June
-        case 9: // September
-        case 11: // November
-            if (day > 30) {
-                error.innerHTML = "Invalid day. Day should be within the range 1 to 30 for this month";
-                return;
-            }
-            break;
-    }
-
-    // If valid, show the result
-    validResult.innerHTML = `You have entered a valid date. Its "${fullDate}". Thank you.`;
+  });
 }
 
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-}
-
-
----------------------------------------------------------------------------------------------------------------------
-
-function filterUnique(inputArray) {
-  let result = [];
-  for (const str of inputArray) {
-    let set = new Set();
-    for (const char of str) {
-      set.add(char);
-    }
-    if (set.size === str.length) {
-      result.push(str);
-    }
-  }
-  return result; // Don't forget to return the result array
-}
+// Test case
+let str = "demo";
+reverseString(str)
+  .then(reversedStr => console.log(`Reversed string: ${reversedStr}`))  // Logs reversed string
+  .catch(error => console.log(error));  // Logs error message
