@@ -1,150 +1,80 @@
-// Demonstrating var and let behavior in asynchronous operations inside loops
+<!doctype html>
+<html lang="en">
 
-console.log("Demonstrating 'var' behavior:");
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Assignment 1</title>
+</head>
 
-const array = [1, 2, 3, 4, 5];
+<body>
+  <section id="clockarea">
+    <div class="d-flex justify-content-around">
+      <div id="current-time">
+        <label for="timer">Current Time:</label>
+        <h3 id="timer"></h3>
+      </div>
+      <div>
+        <button class="btn btn-primary" id="start">Start Exam!!</button>
+      </div>
+    </div>
+    <div id="content">
+      <h1 id="status">Exam has not started</h1>
+    </div>
+  </section>
 
-// Using 'var' inside the loop
-for (var i = 0; i < array.length; i++) {
-  setTimeout(function() {
-    console.log('var i:', i);  // Will log 5 for all iterations
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="/main.js"></script>
+</body>
+
+</html>
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+$(document).ready(function () {
+  // Display the real-time clock every second
+  setInterval(() => {
+    let date = new Date();
+    let hour = date.getHours();
+    let minute = date.getMinutes();
+    let second = date.getSeconds();
+    let time = `${hour} hrs ${minute} m ${second} s`;
+    document.getElementById("timer").innerText = time;
+  }, 1000);
+
+  // Change status to 'Exam is ongoing' and start the reverse countdown
+  $("#start").click(() => {
+    let totalSeconds = 10800; // 3 hours = 10800 seconds
+    document.getElementById("status").innerText = "Exam is ongoing"; // Change status
+    startExamTimer(totalSeconds); // Start the countdown
+  });
+});
+
+function startExamTimer(totalSeconds) {
+  let button = $("#start");
+  let timerInterval = setInterval(() => {
+    let hours = Math.floor(totalSeconds / 3600);
+    let minutes = Math.floor((totalSeconds % 3600) / 60);
+    let seconds = totalSeconds % 60;
+
+    let timeDisplay = `${hours} hrs ${minutes} m ${seconds} s`;
+    button.text(timeDisplay); // Show reverse countdown at the button place
+
+    if (totalSeconds > 0) {
+      totalSeconds--; // Decrement by 1 second
+    } else {
+      clearInterval(timerInterval); // Stop the timer when it reaches 0
+      button.text("Exam Finished"); // Replace button text with 'Exam Finished'
+      document.getElementById("status").innerText = "Exam is finished"; // Change status to 'finished'
+      alert("Time's up! The exam has ended.");
+    }
   }, 1000);
 }
 
-// Adding a delay to separate the outputs for clarity
-setTimeout(() => {
-  console.log("\nDemonstrating 'let' behavior:");
+------------------------------------------------------------------------------------------------------------------------------------------
 
-  // Using 'let' inside the loop
-  for (let j = 0; j < array.length; j++) {
-    setTimeout(function() {
-      console.log('let j:', j);  // Will log 0, 1, 2, 3, 4 correctly
-    }, 1000);
-  }
-
-}, 3000); // 3 seconds delay to ensure the var output finishes first
-
-
---------------------------------------------------------------------------------------------------------------------------------
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Profile</title>
-  <style>
-    /* Add some basic styling */
-    .profile {
-      width: 300px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    img {
-      border-radius: 50%;
-      width: 150px;
-      height: 150px;
-    }
-    h2 {
-      margin: 10px 0;
-    }
-    p {
-      margin: 5px 0;
-    }
-    .error {
-      color: red;
-    }
-  </style>
-</head>
-<body>
-
-<div class="profile">
-  <!-- Profile Picture -->
-  <img id="profile-picture" src="default-profile.png" alt="Profile Picture">
-
-  <!-- User Information -->
-  <h2 id="user-name">Loading...</h2>
-  <p id="user-email">Loading...</p>
-  <p id="user-address">Loading...</p>
-
-  <!-- Error Message -->
-  <p id="error-message" class="error"></p>
-</div>
-
-<!-- Link to the JavaScript file -->
-<script src="profile-page.js"></script>
-
-</body>
-</html>
-
-----------------------------------------------------------------------------------------------------------------
-
-// Fetch user data from the API and update the profile page
-async function fetchUserData() {
-  try {
-    // Mock API URL - Replace this with the actual API endpoint
-    const apiURL = 'https://api.example.com/user/1';
-
-    // Fetch user data from the API
-    const response = await fetch(apiURL);
-
-    // Check if the request was successful
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // Parse the JSON data
-    const userData = await response.json();
-
-    // Update the profile page with the retrieved data
-    updateProfilePage(userData);
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-    document.getElementById('error-message').textContent = "Failed to load user data.";
-  }
-}
-
-// Function to update the profile page with user data
-function updateProfilePage(user) {
-  // Update profile picture
-  const profilePic = document.getElementById('profile-picture');
-  profilePic.src = user.profilePicture || 'default-profile.png'; // fallback if no picture
-
-  // Update name, email, and address
-  document.getElementById('user-name').textContent = user.name || 'N/A';
-  document.getElementById('user-email').textContent = user.email || 'N/A';
-  document.getElementById('user-address').textContent = user.address || 'N/A';
-}
-
-// Call the fetchUserData function when the page loads
-window.onload = fetchUserData;
-
-
------------------------------------------------------------------------------------------------------------------------------
-
-// Function to reverse a string
-function reverse(str) {
-  let result = "";
-  // Fix the loop index to start at str.length - 1
-  for (let i = str.length - 1; i >= 0; i--) {
-    result += str.charAt(i);
-  }
-  return result; // Return the reversed string
-}
-
-// Function that returns a promise to reverse the string or reject if not a string
-function reverseString(str) {
-  return new Promise((resolve, reject) => {
-    if (typeof str === "string") {
-      resolve(reverse(str));  // Resolve with reversed string
-    } else {
-      reject("Wrong Input!!");  // Reject with an error message
-    }
-  });
-}
-
-// Test case
-let str = "demo";
-reverseString(str)
-  .then(reversedStr => console.log(`Reversed string: ${reversedStr}`))  // Logs reversed string
-  .catch(error => console.log(error));  // Logs error message
+let leaveDaysStyle = data.LeaveDays > 5 ? "color: red;" : "color: black;";
