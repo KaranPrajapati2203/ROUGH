@@ -1,211 +1,284 @@
-<!doctype html>
-<html lang="en">
+let jsonData = {
+  destinations: [
+    { id: 1, name: "City B" },
+    { id: 2, name: "City D" },
+    { id: 3, name: "City F" },
+    { id: 4, name: "City M" },
+    { id: 5, name: "City P" },
+  ],
+  sources: [
+    { id: 1, name: "City A" },
+    { id: 2, name: "City C" },
+    { id: 3, name: "City E" },
+    { id: 4, name: "City T" },
+    { id: 5, name: "City U" },
+    { id: 6, name: "City K" },
+  ],
+  flights: [
+    { flightID: 1, name: "Flight 1", price: 300, sourceID: 1, destinationID: 2, departureDate: "2023-12-15" },
+    { flightID: 2, name: "Flight 2", price: 250, sourceID: 3, destinationID: 4, departureDate: "2023-12-18" },
+    { flightID: 3, name: "Flight 3", price: 400, sourceID: 5, destinationID: 2, departureDate: "2023-12-20" },
+    { flightID: 4, name: "Flight 4", price: 350, sourceID: 2, destinationID: 1, departureDate: "2023-12-22" },
+    { flightID: 5, name: "Flight 5", price: 280, sourceID: 4, destinationID: 3, departureDate: "2023-12-25" },
+    { flightID: 6, name: "Flight 6", price: 420, sourceID: 6, destinationID: 5, departureDate: "2023-12-28" },
+    { flightID: 7, name: "Flight 7", price: 320, sourceID: 1, destinationID: 3, departureDate: "2023-12-30" },
+    { flightID: 8, name: "Flight 8", price: 260, sourceID: 3, destinationID: 5, departureDate: "2024-01-02" },
+    { flightID: 9, name: "Flight 9", price: 380, sourceID: 5, destinationID: 1, departureDate: "2024-01-05" },
+    { flightID: 10, name: "Flight 10", price: 310, sourceID: 2, destinationID: 4, departureDate: "2024-01-08" },
+  ]
+};
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <link rel="stylesheet" href="style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Assignment 1</title>
-</head>
+let destinationDetails = jsonData.destinations;
+let flightDetails = jsonData.flights;
+let sourceDetails = jsonData.sources;
+let todaysDate = convertToRequiredFormat("2024-01-02");
 
-<body>
-  <section id="clockarea">
-    <div class="d-flex justify-content-around">
-      <div id="current-time">
-        <label for="timer">Current Time:</label>
-        <h3 id="timer"></h3>
-      </div>
-      <div>
-        <button class="btn btn-primary" id="start">Start Exam!!</button>
-      </div>
-    </div>
-    <div id="content">
-      <h1 id="status">Exam has not started</h1>
-    </div>
-  </section>
+$(document).ready(() => {
+  // Populate the source and destination dropdowns
+  for (let source of sourceDetails) {
+    let option = `<option value="${source.id}">${source.name}</option>`
+    $("#Source").append(option);
+  }
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="/main.js"></script>
-</body>
+  for (let destination of destinationDetails) {
+    let option = `<option value="${destination.id}">${destination.name}</option>`
+    $("#Destination").append(option);
+  }
 
-</html>
-
--------------------------------------------------------------------------------------------------------------------------------------------
-
-$(document).ready(function () {
-  // Display the real-time clock every second
-  setInterval(() => {
-    let date = new Date();
-    let hour = date.getHours();
-    let minute = date.getMinutes();
-    let second = date.getSeconds();
-    let time = `${hour} hrs ${minute} m ${second} s`;
-    document.getElementById("timer").innerText = time;
-  }, 1000);
-
-  // Change status to 'Exam is ongoing' and start the reverse countdown
-  $("#start").click(() => {
-    let totalSeconds = 10800; // 3 hours = 10800 seconds
-    document.getElementById("status").innerText = "Exam is ongoing"; // Change status
-    startExamTimer(totalSeconds); // Start the countdown
-  });
-});
-
-function startExamTimer(totalSeconds) {
-  let button = $("#start");
-  let timerInterval = setInterval(() => {
-    let hours = Math.floor(totalSeconds / 3600);
-    let minutes = Math.floor((totalSeconds % 3600) / 60);
-    let seconds = totalSeconds % 60;
-
-    let timeDisplay = `${hours} hrs ${minutes} m ${seconds} s`;
-    button.text(timeDisplay); // Show reverse countdown at the button place
-
-    if (totalSeconds > 0) {
-      totalSeconds--; // Decrement by 1 second
-    } else {
-      clearInterval(timerInterval); // Stop the timer when it reaches 0
-      button.text("Exam Finished"); // Replace button text with 'Exam Finished'
-      document.getElementById("status").innerText = "Exam is finished"; // Change status to 'finished'
-      alert("Time's up! The exam has ended.");
-    }
-  }, 1000);
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------
-
-let leaveDaysStyle = data.LeaveDays > 5 ? "color: red;" : "color: black;";
-
-------------------------------------------------------------------------------------------------------------------------------------------
-
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Drink List</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-  <div class="container">
-    <h1 class="my-4">Drinks List</h1>
-
-    <!-- Dropdown for ingredients -->
-    <div class="mb-3">
-      <label for="ingredientDropdown" class="form-label">Filter by Ingredient</label>
-      <select id="ingredientDropdown" class="form-select">
-        <option value="">Select an Ingredient</option>
-        <!-- Ingredients will be populated here dynamically -->
-      </select>
-    </div>
-
-    <!-- Drink cards container -->
-    <div id="drinkList" class="row">
-      <!-- Drink cards will be populated here -->
-    </div>
-  </div>
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/main.js"></script>
-</body>
-</html>
-
-
----------------------------------------------------------------------------------------------------------------
-
-$(document).ready(function() {
-  // Array of static ingredients for the dropdown
-  const ingredientsList = ["Vodka", "Rum", "Gin", "Tequila", "Lemon", "Mint"];
-
-  // Example array of drinks data coming from an API (with individual ingredient fields)
-  const drinksData = [
-    {
-      name: "Mojito",
-      ingredient1: "Rum",
-      ingredient2: "Mint",
-      ingredient3: "Lemon",
-      ingredient4: null,
-      description: "A refreshing mint and lime cocktail.",
-    },
-    {
-      name: "Margarita",
-      ingredient1: "Tequila",
-      ingredient2: "Lemon",
-      ingredient3: null,
-      ingredient4: null,
-      description: "A classic tequila cocktail with lime and salt.",
-    },
-    {
-      name: "Bloody Mary",
-      ingredient1: "Vodka",
-      ingredient2: "Tomato Juice",
-      ingredient3: null,
-      ingredient4: null,
-      description: "A spicy tomato and vodka cocktail.",
-    },
-    // ... Add more drinks with their ingredients
-  ];
-
-  // Populate the dropdown with the ingredients
-  const ingredientDropdown = $("#ingredientDropdown");
-  ingredientsList.forEach(ingredient => {
-    ingredientDropdown.append(`<option value="${ingredient}">${ingredient}</option>`);
-  });
-
-  // Function to extract ingredients from a drink object
-  function getIngredients(drink) {
-    let ingredients = [];
-    for (let i = 1; i <= 15; i++) {
-      let ingredient = drink[`ingredient${i}`];
-      if (ingredient) {
-        ingredients.push(ingredient); // Add non-null ingredients to the array
+  // Populate the flight table
+  for (let flight of flightDetails) {
+    let result = "";
+    let sourceText = "";
+    let destinationText = "";
+    
+    for (let source of sourceDetails) {
+      if (flight.sourceID == source.id) {
+        sourceText = source.name;
       }
     }
-    return ingredients;
+    
+    for (let destination of destinationDetails) {
+      if (flight.destinationID == destination.id) {
+        destinationText = destination.name;
+      }
+    }
+
+    let tabledata = `
+              <tr id="item${flight.flightID}" class="${flight.name.replaceAll(" ", "")}">
+                <th scope="row">${flight.name}</th>
+                <td>${sourceText}</td>
+                <td>${destinationText}</td>
+                <td>${flight.price}</td>
+                <td><button class="btn btn-primary w-50" id="btnBook${flight.flightID}">Book</button></td>
+              </tr>
+    `;
+    result += tabledata;
+    $("#flightDetails").append(result);
   }
 
-  // Function to render drink cards
-  function renderDrinks(drinks) {
-    const drinkList = $("#drinkList");
-    drinkList.empty(); // Clear existing drink cards
+  // Search button functionality
+  $("#btnSearch").click((e) => {
+    e.preventDefault();  // Prevent form submission
+    let selectedSource = $("#Source").val();
+    let selectedDestination = $("#Destination").val();
+    let searchbox = $("#txtSearch").val().trim().toLowerCase();
+    let selectedDate = $("#departureDate").val();
 
-    drinks.forEach(drink => {
-      let ingredients = getIngredients(drink); // Get ingredients from the drink object
-      const drinkCard = `
-        <div class="col-md-4">
-          <div class="card mb-4">
-            <div class="card-body">
-              <h5 class="card-title">${drink.name}</h5>
-              <p class="card-text">${drink.description}</p>
-              <p class="card-text"><strong>Ingredients:</strong> ${ingredients.join(", ")}</p>
-            </div>
-          </div>
-        </div>`;
-      drinkList.append(drinkCard);
-    });
-  }
+    // Hide all rows first
+    $("tbody tr").addClass("d-none");
 
-  // Initially render all drinks
-  renderDrinks(drinksData);
+    for (let flight of flightDetails) {
+      let sourceMatch = (selectedSource === "" || flight.sourceID == selectedSource);
+      let destinationMatch = (selectedDestination === "" || flight.destinationID == selectedDestination);
+      let searchboxMatch = (searchbox === "" || flight.name.toLowerCase().includes(searchbox));
+      let dateMatch = (selectedDate === "" || flight.departureDate === convertToRequiredFormat(selectedDate));
 
-  // Event listener for dropdown change
-  ingredientDropdown.change(function() {
-    const selectedIngredient = $(this).val();
-
-    if (selectedIngredient) {
-      // Filter drinks that contain the selected ingredient in any ingredient field
-      const filteredDrinks = drinksData.filter(drink => {
-        let ingredients = getIngredients(drink);
-        return ingredients.includes(selectedIngredient);
-      });
-      renderDrinks(filteredDrinks);
-    } else {
-      // If no ingredient is selected, show all drinks
-      renderDrinks(drinksData);
+      // Show flights if they match the search criteria, including date
+      if (sourceMatch && destinationMatch && searchboxMatch && dateMatch) {
+        $(`.${flight.name.replaceAll(" ", "")}`).removeClass("d-none");
+      }
     }
   });
 });
+
+// Helper function to format the date
+function convertToRequiredFormat(date) {
+  let orgdate = new Date(date);
+  let todaysDay = orgdate.getDate();
+  let todaysMonth = orgdate.getMonth() + 1;
+  let todaysYear = orgdate.getFullYear();
+
+  if (todaysDay.toString().length == 1) {
+    todaysDay = `0${todaysDay}`;
+  }
+  if (todaysMonth.toString().length == 1) {
+    todaysMonth = `0${todaysMonth}`;
+  }
+
+  return `${todaysYear}-${todaysMonth}-${todaysDay}`;
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+let jsonData = {
+  destinations: [
+    { id: 1, name: "City B" },
+    { id: 2, name: "City D" },
+    { id: 3, name: "City F" },
+    { id: 4, name: "City M" },
+    { id: 5, name: "City P" },
+  ],
+  sources: [
+    { id: 1, name: "City A" },
+    { id: 2, name: "City C" },
+    { id: 3, name: "City E" },
+    { id: 4, name: "City T" },
+    { id: 5, name: "City U" },
+    { id: 6, name: "City K" },
+  ],
+  flights: [
+    { flightID: 1, name: "Flight 1", price: 300, sourceID: 1, destinationID: 2, departureDate: "2023-12-15" },
+    { flightID: 2, name: "Flight 2", price: 250, sourceID: 3, destinationID: 4, departureDate: "2023-12-18" },
+    { flightID: 3, name: "Flight 3", price: 400, sourceID: 5, destinationID: 2, departureDate: "2023-12-20" },
+    { flightID: 4, name: "Flight 4", price: 350, sourceID: 2, destinationID: 1, departureDate: "2023-12-22" },
+    { flightID: 5, name: "Flight 5", price: 280, sourceID: 4, destinationID: 3, departureDate: "2023-12-25" },
+    { flightID: 6, name: "Flight 6", price: 420, sourceID: 6, destinationID: 5, departureDate: "2023-12-28" },
+    { flightID: 7, name: "Flight 7", price: 320, sourceID: 1, destinationID: 3, departureDate: "2023-12-30" },
+    { flightID: 8, name: "Flight 8", price: 260, sourceID: 3, destinationID: 5, departureDate: "2024-01-02" },
+    { flightID: 9, name: "Flight 9", price: 380, sourceID: 5, destinationID: 1, departureDate: "2024-01-05" },
+    { flightID: 10, name: "Flight 10", price: 310, sourceID: 2, destinationID: 4, departureDate: "2024-01-08" },
+  ]
+};
+
+let destinationDetails = jsonData.destinations;
+let flightDetails = jsonData.flights;
+let sourceDetails = jsonData.sources;
+let todaysDate = convertToRequiredFormat("2024-01-02");
+
+$(document).ready(() => {
+
+  for (let source of sourceDetails) {
+    let option = `<option value="${source.id}">${source.name}</option>`
+    $("#Source").append(option);
+  }
+
+  for (let destination of destinationDetails) {
+    let option = `<option value="${destination.id}">${destination.name}</option>`
+    $("#Destination").append(option);
+  }
+  for (let flight of flightDetails) {
+    let result = ""
+    let sourceText = "";
+    let destinationText = "";
+    for (let source of sourceDetails) {
+      if (flight.sourceID == source.id) {
+        sourceText = source.name;
+      }
+    }
+    for (let destination of destinationDetails) {
+      if (flight.destinationID == destination.id) {
+        destinationText = destination.name;
+      }
+    }
+    let tabledata = `
+              <tr id="item${flight.flightID}" class="${flight.name.replaceAll(" ", "")}">
+                <th scope="row">${flight.name}</th>
+                <td>${sourceText}</td>
+                <td>${destinationText}</td>
+                <td>${flight.price}</td>
+                <td><button class="btn btn-primary w-50" id="btnBook${flight.flightID}">Book</button></td>
+              </tr>
+    `;
+    result += tabledata
+    $("#flightDetails").append(result);
+  }
+
+  $("#btnSearch").click((e) => {
+    e.preventDefault();
+
+    let selectedSource = $("#Source").val();
+    let selectedDestination = $("#Destination").val();
+    let selectedDate = convertToRequiredFormat($("#departureDate").val());
+    let searchbox = $("#txtSearch").val();
+    $("#flightDetails tr").removeClass("d-none");
+
+    if (searchbox == "") {
+      if (selectedSource != "" && selectedDestination == "") {
+        for (let flight of flightDetails) {
+          $(`.${flight.name.replaceAll(" ", "")}`).addClass("d-none");
+
+          if (flight.sourceID == selectedSource) {
+            $(`.${flight.name.replaceAll(" ", "")}`).removeClass("d-none");
+          }
+
+        }
+      } else {
+        for (let flight of flightDetails) {
+          $(`.${flight.name.replaceAll(" ", "")}`).addClass("d-none");
+
+          if (flight.destinationID == selectedDestination) {
+            $(`.${flight.name.replaceAll(" ", "")}`).removeClass("d-none");
+          }
+
+        }
+      }
+    } else {
+      if (selectedSource == "" && selectedDestination == "") {
+        for (let flight of flightDetails) {
+          $(`.${flight.name.replaceAll(" ", "")}`).addClass("d-none");
+
+          if (flight.name == searchbox) {
+            $(`.${flight.name.replaceAll(" ", "")}`).removeClass("d-none");
+          }
+
+        }
+      } else if (selectedSource != "" && selectedDestination == "") {
+        for (let flight of flightDetails) {
+          $(`.${flight.name.replaceAll(" ", "")}`).addClass("d-none");
+
+          if (flight.sourceID == selectedSource && flight.name == searchbox) {
+            $(`.${flight.name.replaceAll(" ", "")}`).removeClass("d-none");
+          }
+
+        }
+      } else if (selectedSource == "" && selectedDestination != "") {
+        for (let flight of flightDetails) {
+          $(`.${flight.name.replaceAll(" ", "")}`).addClass("d-none");
+
+          if (flight.destinationID == selectedDestination && flight.name == searchbox) {
+            $(`.${flight.name.replaceAll(" ", "")}`).removeClass("d-none");
+          }
+
+        }
+      } else {
+        for (let flight of flightDetails) {
+          $(`.${flight.name.replaceAll(" ", "")}`).addClass("d-none");
+
+          if (flight.sourceID == selectedSource && flight.destinationID == selectedDestination && flight.name == searchbox) {
+            $(`.${flight.name.replaceAll(" ", "")}`).removeClass("d-none");
+          }
+
+        }
+      }
+    }
+  });
+
+})
+
+function convertToRequiredFormat(date) {
+  let orgdate = new Date(date);
+  let todaysDay = orgdate.getDate();
+  let todaysMonth = orgdate.getMonth() + 1;
+  let todaysYear = orgdate.getFullYear();
+
+  if (todaysDay.toString().length == 1) {
+    todaysDay = `0${todaysDay}`;
+  }
+  if (todaysMonth.toString().length == 1) {
+    todaysMonth = `0${todaysMonth}`;
+  }
+
+  return `${todaysYear}-${todaysMonth}-${todaysDay}`;
+}
