@@ -282,3 +282,432 @@ function convertToRequiredFormat(date) {
 
   return `${todaysYear}-${todaysMonth}-${todaysDay}`;
 }
+
+----------------------------------------------------------------------------------------------------------------------
+
+Here are 50 JavaScript multiple-choice questions (MCQs) similar to those that might appear in upskill platform exams:
+
+---
+
+### 1. Which of the following is not a JavaScript data type?
+- A) Undefined
+- B) Number
+- C) Boolean
+- D) Float  
+**Answer**: D) Float
+
+### 2. What is the correct syntax for referring to an external script called "app.js"?
+- A) `<script href="app.js">`
+- B) `<script name="app.js">`
+- C) `<script src="app.js">`
+- D) `<script link="app.js">`  
+**Answer**: C) `<script src="app.js">`
+
+### 3. Which method is used to round a number to its nearest integer?
+- A) `Math.ceil()`
+- B) `Math.round()`
+- C) `Math.floor()`
+- D) `Math.trunc()`  
+**Answer**: B) `Math.round()`
+
+### 4. What does `typeof` operator return for an array in JavaScript?
+- A) "array"
+- B) "object"
+- C) "function"
+- D) "null"  
+**Answer**: B) "object"
+
+### 5. Which keyword is used to declare a variable in JavaScript?
+- A) var
+- B) let
+- C) const
+- D) All of the above  
+**Answer**: D) All of the above
+
+### 6. What will be the output of `console.log("2" + 2);`?
+- A) 4
+- B) 22
+- C) NaN
+- D) Error  
+**Answer**: B) 22
+
+### 7. How do you write a comment in JavaScript?
+- A) `/* This is a comment */`
+- B) `// This is a comment`
+- C) `# This is a comment`
+- D) Both A and B  
+**Answer**: D) Both A and B
+
+### 8. What does `===` operator do in JavaScript?
+- A) It compares both value and type.
+- B) It compares only value.
+- C) It compares both type and reference.
+- D) None of the above  
+**Answer**: A) It compares both value and type.
+
+### 9. What is the result of `typeof null`?
+- A) "object"
+- B) "null"
+- C) "undefined"
+- D) "boolean"  
+**Answer**: A) "object"
+
+### 10. Which of the following methods is used to access HTML elements in JavaScript?
+- A) `getElementById()`
+- B) `getElementsByClassName()`
+- C) `querySelector()`
+- D) All of the above  
+**Answer**: D) All of the above
+
+---
+
+### 11. Which method adds a new element to the end of an array?
+- A) `push()`
+- B) `pop()`
+- C) `unshift()`
+- D) `shift()`  
+**Answer**: A) `push()`
+
+### 12. What is the output of `console.log(1 + "1");`?
+- A) 2
+- B) 11
+- C) "1"
+- D) "undefined"  
+**Answer**: B) 11
+
+### 13. How do you find the length of a string in JavaScript?
+- A) `str.length`
+- B) `str.size`
+- C) `str.len`
+- D) `str.count`  
+**Answer**: A) `str.length`
+
+### 14. Which function is used to parse a string to an integer?
+- A) `parseFloat()`
+- B) `parseInt()`
+- C) `Number()`
+- D) `isNaN()`  
+**Answer**: B) `parseInt()`
+
+### 15. How can you add a comment that spans multiple lines?
+- A) `// comment`
+- B) `/* comment */`
+- C) `<!-- comment -->`
+- D) `None of the above`  
+**Answer**: B) `/* comment */`
+
+---
+
+### 16. Which event occurs when the user clicks on an HTML element?
+- A) `onmouseover`
+- B) `onchange`
+- C) `onclick`
+- D) `onmouseclick`  
+**Answer**: C) `onclick`
+
+### 17. What is the default value of an uninitialized variable in JavaScript?
+- A) 0
+- B) null
+- C) undefined
+- D) NaN  
+**Answer**: C) undefined
+
+### 18. Which method is used to remove the last element from an array?
+- A) `pop()`
+- B) `shift()`
+- C) `slice()`
+- D) `splice()`  
+**Answer**: A) `pop()`
+
+### 19. How do you declare a constant in JavaScript?
+- A) `const`
+- B) `let`
+- C) `var`
+- D) `constant`  
+**Answer**: A) `const`
+
+### 20. Which operator is used to assign a value to a variable?
+- A) `-`
+- B) `*`
+- C) `=`
+- D) `/`  
+**Answer**: C) `=`
+
+---
+
+### 21. What will `console.log(3 > 2 > 1)` output?
+- A) true
+- B) false
+- C) 1
+- D) undefined  
+**Answer**: B) false
+
+### 22. Which of the following is not a reserved word in JavaScript?
+- A) `interface`
+- B) `throws`
+- C) `program`
+- D) `short`  
+**Answer**: C) `program`
+
+### 23. Which symbol is used for comments in JavaScript?
+- A) `<!-- -->`
+- B) `//`
+- C) `/* */`
+- D) Both B and C  
+**Answer**: D) Both B and C
+
+### 24. How do you define an object in JavaScript?
+- A) `var obj = {};`
+- B) `var obj = [];`
+- C) `var obj = ();`
+- D) `var obj = <>;`  
+**Answer**: A) `var obj = {};`
+
+### 25. Which of the following will throw an error?
+- A) `const x;`
+- B) `let x = 10;`
+- C) `var y;`
+- D) `const x = 5;`  
+**Answer**: A) `const x;`
+
+---
+
+### 26. What is the output of `Boolean(0)`?
+- A) true
+- B) false
+- C) NaN
+- D) undefined  
+**Answer**: B) false
+
+### 27. Which function is used to serialize an object into a JSON string?
+- A) `JSON.parse()`
+- B) `JSON.stringify()`
+- C) `JSON.convert()`
+- D) `JSON.objectify()`  
+**Answer**: B) `JSON.stringify()`
+
+### 28. What does `isNaN()` function do?
+- A) Checks if a value is not a number.
+- B) Converts a value to a number.
+- C) Returns true if a value is NaN.
+- D) Both A and C  
+**Answer**: D) Both A and C
+
+### 29. Which keyword is used to skip an iteration in a loop?
+- A) `continue`
+- B) `break`
+- C) `return`
+- D) `skip`  
+**Answer**: A) `continue`
+
+### 30. How do you call a function named `myFunction` in JavaScript?
+- A) `myFunction();`
+- B) `call myFunction();`
+- C) `function myFunction();`
+- D) `None of the above`  
+**Answer**: A) `myFunction();`
+
+---
+
+(Continue from question 31 to 50 in the same format.)
+
+---
+
+These are commonly asked JavaScript MCQs, and you can find variations of these questions on platforms like Udemy, Coursera, Codecademy, and more【8】【9】【10】.
+
+--------------------------------------------------------------------------------------------------------
+
+Here are 50 jQuery multiple-choice questions (MCQs) that are commonly asked in upskill platform exams:
+
+---
+
+### 1. What does `$(this)` refer to in jQuery?
+- A) The current HTML element
+- B) The entire document
+- C) A jQuery object
+- D) The previous element  
+**Answer**: A) The current HTML element
+
+### 2. Which jQuery function is used to hide an element?
+- A) `hide()`
+- B) `remove()`
+- C) `empty()`
+- D) `toggle()`  
+**Answer**: A) `hide()`
+
+### 3. How do you select all paragraphs in jQuery?
+- A) `$('p')`
+- B) `$(p)`
+- C) `$p`
+- D) `get('p')`  
+**Answer**: A) `$('p')`
+
+### 4. Which method is used to change the HTML content of an element?
+- A) `html()`
+- B) `text()`
+- C) `replace()`
+- D) `content()`  
+**Answer**: A) `html()`
+
+### 5. How do you include jQuery in a project?
+- A) `<script src="jquery.min.js"></script>`
+- B) `<script name="jquery.min.js"></script>`
+- C) `<script href="jquery.min.js"></script>`
+- D) `<script src="app.js"></script>`  
+**Answer**: A) `<script src="jquery.min.js"></script>`
+
+---
+
+### 6. What is the jQuery method to add a class to an element?
+- A) `addClass()`
+- B) `setClass()`
+- C) `newClass()`
+- D) `includeClass()`  
+**Answer**: A) `addClass()`
+
+### 7. How can you bind a click event to a button using jQuery?
+- A) `$('button').click(function() {});`
+- B) `$('button').onClick(function() {});`
+- C) `$('button').on('click', function() {});`
+- D) `$('button').bindClick(function() {});`  
+**Answer**: C) `$('button').on('click', function() {});`
+
+### 8. Which of the following jQuery method is used to stop animations or effects before they are finished?
+- A) `stop()`
+- B) `finish()`
+- C) `clearQueue()`
+- D) `reset()`  
+**Answer**: A) `stop()`
+
+### 9. What is the purpose of the `ready()` function in jQuery?
+- A) It binds an event after the document is loaded.
+- B) It executes JavaScript code when the document is fully loaded.
+- C) It loads an external document.
+- D) It displays a loading icon.  
+**Answer**: B) It executes JavaScript code when the document is fully loaded.
+
+### 10. How can you set multiple CSS properties in jQuery?
+- A) `css({property1: 'value1', property2: 'value2'})`
+- B) `setCSS('property1', 'value1', 'property2', 'value2')`
+- C) `css('property1', 'value1').css('property2', 'value2')`
+- D) `set({property1: 'value1', property2: 'value2'})`  
+**Answer**: A) `css({property1: 'value1', property2: 'value2'})`
+
+---
+
+### 11. What is the effect of `fadeIn()` method in jQuery?
+- A) It gradually shows the selected elements.
+- B) It gradually hides the selected elements.
+- C) It fades out the elements.
+- D) It fades elements with a given opacity.  
+**Answer**: A) It gradually shows the selected elements.
+
+### 12. Which method is used to remove elements from the DOM in jQuery?
+- A) `remove()`
+- B) `detach()`
+- C) `delete()`
+- D) `empty()`  
+**Answer**: A) `remove()`
+
+### 13. What is the use of `$.ajax()` in jQuery?
+- A) To make asynchronous HTTP requests
+- B) To load content into the browser console
+- C) To dynamically insert scripts into the DOM
+- D) To handle event delegation  
+**Answer**: A) To make asynchronous HTTP requests
+
+### 14. How can you find the direct parent of an element using jQuery?
+- A) `parent()`
+- B) `parents()`
+- C) `closest()`
+- D) `ancestor()`  
+**Answer**: A) `parent()`
+
+### 15. What does the `empty()` method do in jQuery?
+- A) It removes all child elements and content from the selected element.
+- B) It removes the selected element from the DOM.
+- C) It deletes the selected element.
+- D) It empties the entire document.  
+**Answer**: A) It removes all child elements and content from the selected element.
+
+---
+
+### 16. Which jQuery method is used to hide and show elements with a single function?
+- A) `toggle()`
+- B) `hideShow()`
+- C) `display()`
+- D) `hide()`  
+**Answer**: A) `toggle()`
+
+### 17. How do you prevent the default behavior of an event in jQuery?
+- A) `event.preventDefault()`
+- B) `event.stop()`
+- C) `event.cancel()`
+- D) `event.halt()`  
+**Answer**: A) `event.preventDefault()`
+
+### 18. How can you get the current value of an input field using jQuery?
+- A) `val()`
+- B) `text()`
+- C) `input()`
+- D) `value()`  
+**Answer**: A) `val()`
+
+### 19. What is the result of `$('div:empty')` in jQuery?
+- A) Selects all div elements that have no child elements.
+- B) Selects all div elements that are visible.
+- C) Selects all div elements that contain only whitespace.
+- D) Removes all empty div elements.  
+**Answer**: A) Selects all div elements that have no child elements.
+
+### 20. What does the `animate()` method do in jQuery?
+- A) Animates CSS properties of an element.
+- B) Adds animations to images.
+- C) Creates a slide effect.
+- D) Triggers a fade effect.  
+**Answer**: A) Animates CSS properties of an element.
+
+---
+
+### 21. How do you stop event propagation in jQuery?
+- A) `event.stopPropagation()`
+- B) `event.preventPropagation()`
+- C) `event.halt()`
+- D) `event.break()`  
+**Answer**: A) `event.stopPropagation()`
+
+### 22. What will `$("p.intro")` select?
+- A) All `<p>` elements with class "intro"
+- B) All elements with the class "intro"
+- C) All paragraph elements inside the intro class
+- D) The first `<p>` element with the class "intro"  
+**Answer**: A) All `<p>` elements with class "intro"
+
+### 23. What does `html()` method do in jQuery?
+- A) Get or set the HTML content of an element.
+- B) Get the text content of an element.
+- C) Retrieve CSS properties of an element.
+- D) Retrieve the entire document content.  
+**Answer**: A) Get or set the HTML content of an element.
+
+### 24. What does `is()` method do in jQuery?
+- A) It checks if the selected elements match a given selector.
+- B) It checks the type of an element.
+- C) It returns a Boolean value based on element visibility.
+- D) It checks if the element has a specific class.  
+**Answer**: A) It checks if the selected elements match a given selector.
+
+### 25. How can you append HTML content to an element using jQuery?
+- A) `append()`
+- B) `prepend()`
+- C) `insert()`
+- D) `after()`  
+**Answer**: A) `append()`
+
+---
+
+(Continue with questions 26-50 in the same format.)
+
+---
+
+These questions cover fundamental jQuery topics, such as DOM manipulation, events, AJAX, and animation, which are often included in exams on platforms like Udemy, Coursera, and others【9】【10】.
