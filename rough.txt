@@ -1,3 +1,77 @@
+// Interface for Product
+interface Product {
+  id: number;
+  name: string;
+  quantity: number;
+  reorderLevel: number;
+}
+
+// Inventory class to manage products
+class Inventory {
+  private products: Product[] = [];
+
+  // Add a product to the inventory
+  addProduct(product: Product): void {
+    this.products.push(product);
+    console.log(`Added product: ${product.name}`);
+  }
+
+  // Purchase a product by ID and reduce quantity
+  purchaseProduct(productId: number, quantity: number): void {
+    const product = this.products.find(p => p.id === productId);
+
+    if (!product) {
+      console.log('Product not found!');
+      return;
+    }
+
+    if (product.quantity < quantity) {
+      console.log(`Insufficient stock for ${product.name}.`);
+      return;
+    }
+
+    product.quantity -= quantity;
+    console.log(`Purchased ${quantity} ${product.name}(s). Remaining: ${product.quantity}`);
+
+    // Check if reorder is needed
+    if (product.quantity < product.reorderLevel) {
+      this.raiseReorderRequest(product);
+    }
+  }
+
+  // Raise reorder request
+  private raiseReorderRequest(product: Product): void {
+    console.log(`⚠️ Reorder Request: ${product.name} is low on stock! Quantity: ${product.quantity}`);
+  }
+
+  // Display inventory status
+  showInventory(): void {
+    console.log('\nCurrent Inventory:');
+    this.products.forEach(p =>
+      console.log(`${p.name} - Quantity: ${p.quantity}`)
+    );
+  }
+}
+
+// Example usage
+const inventory = new Inventory();
+
+// Adding products to inventory
+inventory.addProduct({ id: 1, name: 'Laptop', quantity: 10, reorderLevel: 5 });
+inventory.addProduct({ id: 2, name: 'Mouse', quantity: 8, reorderLevel: 5 });
+inventory.addProduct({ id: 3, name: 'Keyboard', quantity: 4, reorderLevel: 5 });
+
+// Simulating purchases
+inventory.purchaseProduct(1, 6); // Should reduce quantity, no reorder needed
+inventory.purchaseProduct(2, 4); // Should not raise reorder yet
+inventory.purchaseProduct(3, 2); // Should trigger reorder request
+
+// Show final inventory state
+inventory.showInventory();
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 let jsonData = {
   destinations: [
     { id: 1, name: "City B" },
