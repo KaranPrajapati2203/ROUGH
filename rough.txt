@@ -96,5 +96,338 @@ function uncensor(inputstring, missingwords) {
 
 uncensor("Wh*r* d*d my v*w*ls g*?", "eeioeo");
 
+function uncensor(str1, str2) {
+  let parts = str1.split("*"); // Split the string by '*'
+  let result = "";
+
+  // Loop through the parts and insert corresponding vowels from str2
+  for (let i = 0; i < parts.length - 1; i++) {
+    result += parts[i] + str2[i]; // Add each part followed by the corresponding vowel
+  }
+
+  result += parts[parts.length - 1]; // Add the last part (which doesn't need a vowel)
+
+  return result;
+}
+
 -------------------------------------------------------------------------------------------------------------
 
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electricity Bill Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <section class="myform">
+    <select name="consumertype" id="consumerType">
+      <option value="">Select Type</option>
+      <option value="Residential">Residential</option>
+      <option value="Commercial">Commercial</option>
+    </select>
+    <br />
+    <label for="unitsConsumed">Units Consumed (in kilowatt-hours, kWh):</label>
+    <input type="number" id="unitsConsumed" min="0" />
+    <br />
+    <label for="daysLate">Number of Days Late (if the bill is paid late):</label>
+    <input type="number" id="daysLate" min="0" max="30" />
+    <br />
+    <label for="outstandingBalance">Outstanding Balance from the previous month:</label>
+    <input type="number" id="outstandingBalance" min="0" />
+    <br />
+    <span id="error-div" class="error"></span><br />
+    <span id="totalCharges"></span><br />
+    <span id="discountOrPenalty"></span><br />
+    <span id="outstandingBalanceAdded"></span><br />
+    <span id="taxApplied"></span><br />
+    <span id="finalAmount"></span><br />
+    <input type="button" value="Calculate" id="calculate" onclick="calculate()" />
+  </section>
+  <script src="/main.js"></script>
+</body>
+
+</html>
+
+------
+
+function calculate() {
+  let isValid = validateForm();
+  if (isValid) {
+    calculateBill();
+  }
+}
+
+function calculateBill() {
+  let type = document.getElementById("consumerType").value;
+  let units = parseFloat(document.getElementById("unitsConsumed").value);
+  let latedays = parseInt(document.getElementById("daysLate").value);
+  let outstandingBalance = parseFloat(document.getElementById("outstandingBalance").value);
+
+  let price1 = 0, price2 = 0, price3 = 0;
+  let left = units;
+
+  // Residential and Commercial Pricing Logic
+  if (type === "Residential") {
+    price1 = Math.min(units, 100) * 1.5;
+    left -= 100;
+
+    if (left > 0) {
+      price2 = Math.min(left, 200) * 2;
+      left -= 200;
+
+      if (left > 0) {
+        price3 = left * 3;
+      }
+    }
+  } else {
+    price1 = Math.min(units, 200) * 2.5;
+    left -= 200;
+
+    if (left > 0) {
+      price2 = Math.min(left, 300) * 3.5;
+      left -= 300;
+
+      if (left > 0) {
+        price3 = left * 4.5;
+      }
+    }
+  }
+
+  let totalCharges = price1 + price2 + price3;
+
+  // Discount/Penalty Calculation
+  let discount = 0, penalty = 0;
+  if (latedays <= 15) {
+    discount = totalCharges * 0.1; // 10% discount if paid within 15 days
+  } else if (latedays > 15) {
+    let extraDays = Math.min(latedays - 15, 15); // Max penalty days capped at 30
+    penalty = totalCharges * 0.02 * extraDays; // 2% per day penalty
+  }
+
+  let netAmount = totalCharges - discount + penalty;
+  let tax = netAmount * 0.05; // 5% tax on net amount
+  let finalBill = netAmount + tax + outstandingBalance;
+
+  // Display Results
+  document.getElementById("totalCharges").innerText = `Total Consumption Charges: $${totalCharges.toFixed(2)}`;
+  document.getElementById("discountOrPenalty").innerText =
+    `Discount/Penalty Applied: $${(discount > 0 ? discount : penalty).toFixed(2)} (${discount > 0 ? "Discount" : "Penalty"})`;
+  document.getElementById("outstandingBalanceAdded").innerText =
+    `Outstanding Balance Added: $${outstandingBalance.toFixed(2)}`;
+  document.getElementById("taxApplied").innerText = `Tax Applied: $${tax.toFixed(2)}`;
+  document.getElementById("finalAmount").innerText = `Final Bill Amount: $${finalBill.toFixed(2)}`;
+}
+
+function validateForm() {
+  let flag = true;
+  let type = document.getElementById("consumerType").value;
+  let units = document.getElementById("unitsConsumed").value;
+  let latedays = document.getElementById("daysLate").value;
+  let outstandingBalance = document.getElementById("outstandingBalance").value;
+  let error = document.getElementById("error-div");
+
+  error.innerHTML = ""; // Clear any previous errors
+
+  if (!type || units === "" || latedays === "" || outstandingBalance === "") {
+    flag = false;
+    error.innerText = "Please fill in all fields";
+  } else if (units < 0) {
+    flag = false;
+    error.innerText = "Units consumed must be a positive number";
+  } else if (latedays < 0 || latedays > 30) {
+    flag = false;
+    error.innerText = "Days late must be between 0 and 30";
+  } else if (outstandingBalance < 0) {
+    flag = false;
+    error.innerText = "Outstanding balance cannot be negative";
+  }
+
+  return flag;
+}
+
+
+----------------------------------------------------------------------------
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <title>Q-3</title>
+</head>
+
+<body>
+  <table class="table">
+    <caption style="caption-side: top;">
+      <h1 style="color:black" id="caption"><span id="userName"></span><span id="empId" style="margin: 10px;"></span>
+      </h1>
+    </caption>
+    <thead>
+      <tr>
+        <th scope="col">Status</th>
+        <th scope="col">Type</th>
+        <th scope="col">Days</th>
+        <th scope="col">From Date</th>
+        <th scope="col">To Date</th>
+        <th scope="col">Applied On</th>
+        <th scope="col">Applied By</th>
+        <th scope="col">Handle</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+
+    </tbody>
+  </table>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/main.js"></script>
+</body>
+
+</html>
+
+------
+
+const LeaveTypesList = [
+  { LeaveTypeID: 6813, ObjectName: "Casual Leave (CL)", Color: "Green" },
+  { LeaveTypeID: 6809, ObjectName: "Comp Off (CO)", Color: "Blue" },
+  { LeaveTypeID: 6812, ObjectName: "Elective (EL)", Color: "orange" },
+  { LeaveTypeID: 6811, ObjectName: "Privilege Leave (PL)", Color: "yellow" },
+  { LeaveTypeID: 6814, ObjectName: "Sick Leave (SL)", Color: "purple" },
+];
+
+const LeaveStatusList = [
+  { LeaveStatusID: 1526, ObjectName: "Approve", Color: "blue" },
+  { LeaveStatusID: 1530, ObjectName: "Applied", Color: "blue" },
+  { LeaveStatusID: 1535, ObjectName: "Reject", Color: "red" },
+];
+
+const userLeaveHistory = {
+  EmployeeName: "Vikas",
+  EmpCode: 101,
+  LeaveHistoryList: [
+    {
+      LeaveHistoryId: 1,
+      FromDate: "2024-02-29",
+      FromDateDay: "2024-02-29 (Wed)",
+      ToDate: "2023-02-15",
+      ToDateDay: "2023-02-15 (Wed)",
+      Days: 1,
+      LeaveTypeID: 6811,
+      LeaveStatusID: 1526,
+      AppliedByName: "Nikunj Prajapati",
+      AppliedOn: "2023-02-21T18:49:31.41",
+    },
+    {
+      LeaveHistoryId: 2,
+      FromDate: "2023-02-06",
+      FromDateDay: "2023-02-06 (Mon)",
+      ToDate: "2023-02-06",
+      ToDateDay: "2023-02-06 (Mon)",
+      Days: 1,
+      LeaveTypeID: 6812,
+      LeaveStatusID: 1526,
+      AppliedByName: "Nikunj Prajapati",
+      AppliedOn: "2023-02-09T18:42:47.937",
+    },
+    {
+      LeaveHistoryId: 3,
+      FromDate: "2023-02-03",
+      FromDateDay: "2023-02-03 (Fri)",
+      ToDate: "2023-02-03",
+      ToDateDay: "2023-02-03 (Fri)",
+      Days: 0.5,
+      LeaveTypeID: 6809,
+      LeaveStatusID: 1535,
+      AppliedByName: "Nikunj Prajapati",
+      AppliedOn: "2023-02-03T00:00:00",
+    },
+    {
+      LeaveHistoryId: 4,
+      FromDate: "2023-02-03",
+      FromDateDay: "2023-04-03 (Fri)",
+      ToDate: "2023-02-03",
+      ToDateDay: "2023-04-03 (Fri)",
+      Days: 0.5,
+      LeaveTypeID: 6814,
+      LeaveStatusID: 1530,
+      AppliedByName: "Nikunj Prajapati",
+      AppliedOn: "2023-02-03T00:00:00",
+    },
+  ],
+};
+
+// Set Employee Name and Code
+document.getElementById("userName").innerText = userLeaveHistory.EmployeeName;
+document.getElementById("empId").innerText = `(${userLeaveHistory.EmpCode})`;
+
+let tbody = document.getElementById("tbody");
+let result = "";
+
+// Get the current date
+const currentDate = new Date();
+
+// Iterate over leave history using `for...of` loop
+for (let leave of userLeaveHistory.LeaveHistoryList) {
+  let leaveTypeColor = "black";
+  let leaveTypeName = "Unknown";
+  let leaveStatusColor = "black";
+  let leaveStatusName = "Unknown";
+
+  // Find the matching Leave Type
+  for (let type of LeaveTypesList) {
+    if (leave.LeaveTypeID === type.LeaveTypeID) {
+      leaveTypeColor = type.Color;
+      leaveTypeName = type.ObjectName;
+      break;
+    }
+  }
+
+  // Find the matching Leave Status
+  for (let status of LeaveStatusList) {
+    if (leave.LeaveStatusID === status.LeaveStatusID) {
+      leaveStatusColor = status.Color;
+      leaveStatusName = status.ObjectName;
+      break;
+    }
+  }
+
+  // Check if Edit and Delete buttons should be visible
+  const fromDate = new Date(leave.FromDate);
+  const showButtons = fromDate > currentDate ? "" : "hidden";
+
+  // Create table row
+  let tableRow = `
+    <tr>
+      <th scope="row" style="color:${leaveStatusColor}" id="statusColor_${leave.LeaveHistoryId}">
+        ${leaveStatusName}
+      </th>
+      <td style="color:${leaveTypeColor}" id="typeColor_${leave.LeaveHistoryId}">
+        ${leaveTypeName}
+      </td>
+      <td>${leave.Days}</td>
+      <td>${leave.FromDateDay}</td>
+      <td>${leave.ToDateDay}</td>
+      <td>${leave.AppliedOn}</td>
+      <td>${leave.AppliedByName}</td>
+      <td>
+        <button class="btn btn-primary ${showButtons}" id="button_edit_${leave.LeaveHistoryId}">Edit</button>
+        <button class="btn btn-danger ${showButtons}" id="button_remove_${leave.LeaveHistoryId}" style="margin:5px">Remove</button>
+      </td>
+    </tr>
+  `;
+
+  result += tableRow;
+}
+
+// Populate the table body with the generated rows
+tbody.innerHTML = result;
