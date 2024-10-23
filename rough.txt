@@ -1,139 +1,156 @@
-// Interface to represent a product
-interface Product {
-  id: string | number;
-  name: string;
-  quantity: number;
+interface VacancyDetails {
+    id: number | string;
+    title: string;
+    description: string;
+    numberOfOpenings: number | string;
 }
 
-// Optional interface to represent restock requests
-interface RestockRequest {
-  id: string | number;
-  quantity: number;
+interface ApplicantDetails {
+    id: number | string;
+    title: string;
+    candidateName: string;
+    candidateEmail: string;
+    candidateExperience: number | string;
+    numberOfOpenings: number | string;
 }
 
-class Inventory {
-  private products: Product[] = [];
+class JobPortal {
+    private vacancyDetailsArray: VacancyDetails[];
+    private applicationDetailsArray: ApplicantDetails[];
 
-  // Add new products to the inventory
-  addProduct(products: Product[]): void {
-    this.products.push(...products);
-  }
-
-  // Display all available products
-  showProducts(): void {
-    console.log("Available Products:", this.products);
-  }
-
-  // Purchase products and update the inventory
-  buyProduct(productList: Product[]): void {
-    for (const data of productList) {
-      const product = this.products.find(p => p.id === data.id);
-
-      if (!product) {
-        console.error(`Product with ID ${data.id} not found.`);
-        continue;
-      }
-
-      if (data.quantity > product.quantity) {
-        console.warn(`Insufficient quantity. "${product.name}" has only ${product.quantity} units.`);
-        continue;
-      }
-
-      product.quantity -= data.quantity;
-      console.log(`You bought ${data.quantity} units of "${product.name}".`);
-
-      if (product.quantity < 5) {
-        console.warn(`"${product.name}" is running low with ${product.quantity} units. Reorder ASAP!`);
-      }
+    constructor(vacancy: VacancyDetails[], application: ApplicantDetails[]) {
+        this.vacancyDetailsArray = vacancy;
+        this.applicationDetailsArray = application;
+        this.setVacancyTableData();
+        this.setApplicationTableData();
     }
-  }
 
-  // Restock inventory using restock requests
-  restockProduct(restockList: RestockRequest[]): void {
-    for (const request of restockList) {
-      const product = this.products.find(p => p.id === request.id);
-
-      if (!product) {
-        console.error(`Product with ID ${request.id} not found. Cannot restock.`);
-        continue;
-      }
-
-      product.quantity += request.quantity;
-      console.log(`Restocked ${request.quantity} units of "${product.name}".`);
+    createVacancy(vacancyObject: VacancyDetails) {
+        this.vacancyDetailsArray.push(vacancyObject);
+        localStorage.setItem("vacancyTableData", JSON.stringify(this.vacancyDetailsArray));
+        this.vacancyDetailsArray = JSON.parse(localStorage.getItem("vacancyTableData") || "[]");
+        this.setVacancyTableData();
     }
-  }
+
+    setVacancyTableData() {
+        let result = "";
+        if (localStorage.getItem("vacancyTableData")) {
+            for (let vacancy of this.vacancyDetailsArray) {
+                let tableData = `
+                <tr id="row-${vacancy.id}">
+                    <th scope="row">${vacancy.id}</th>
+                    <td id="title-${vacancy.id}">${vacancy.title}</td>
+                    <td id="description-${vacancy.id}">${vacancy.description}</td>
+                    <td id="opening-${vacancy.id}">${vacancy.numberOfOpenings}</td>
+                    <td><a href="#applysection"><button class="btn btn-outline-primary" onclick="jobPortal.setApplyData(${vacancy.id})">Apply</button></a></td>
+                </tr>`;
+                result += tableData;
+            }
+            (<HTMLTableElement>document.getElementById("vacancytbody")).innerHTML = result;
+        } else {
+            let tbody = <HTMLTableElement>document.getElementById("vacancytbody");
+            tbody.classList.add("text-center");
+            let tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="5">No Data Available!!</td>`;
+            tbody.appendChild(tr);
+        }
+    }
+
+    setApplyData(id: string) {
+        document.getElementById("applysection")?.classList.remove("d-none");
+        let title = (<HTMLInputElement>document.getElementById(`title-${id}`)).textContent;
+        let description = (<HTMLInputElement>document.getElementById(`description-${id}`)).textContent;
+        let opening = (<HTMLInputElement>document.getElementById(`opening-${id}`)).textContent;
+
+        (<HTMLFormElement>document.getElementById("applyjobid")).value = id;
+        (<HTMLFormElement>document.getElementById("applyjobtitle")).value = title;
+        (<HTMLFormElement>document.getElementById("applyjobdescription")).value = description;
+        (<HTMLFormElement>document.getElementById("applynumberofopenings")).value = opening;
+    }
+
+    createApplication(applicationObject: ApplicantDetails) {
+        this.applicationDetailsArray.push(applicationObject);
+        localStorage.setItem("applicantTableData", JSON.stringify(this.applicationDetailsArray));
+        this.applicationDetailsArray = JSON.parse(localStorage.getItem("applicantTableData") || "[]");
+        this.setApplicationTableData();
+    }
+
+    setApplicationTableData() {
+        if (localStorage.getItem("applicantTableData")) {
+            let result = "";
+            for (let application of this.applicationDetailsArray) {
+                let tableData = `
+                <tr id="apply-row-${application.id}">
+                    <th scope="row">${application.id}</th>
+                    <td id="apply-title-${application.id}">${application.title}</td>
+                    <td id="apply-name-${application.id}">${application.candidateName}</td>
+                    <td id="apply-email-${application.id}">${application.candidateEmail}</td>
+                    <td id="apply-experience-${application.id}">${application.candidateExperience}</td>
+                    <td id="apply-opening-${application.id}">${application.numberOfOpenings}</td>
+                    <td id="apply-button-${application.candidateName}"><button class="btn btn-outline-primary" onclick="jobPortal.setInterview('${application.candidateName}')">Schedule Interview</button></td>
+                </tr>`;
+                result += tableData;
+            }
+            (<HTMLTableElement>document.getElementById("applicanttbody")).innerHTML = result;
+        } else {
+            let tbody = <HTMLTableElement>document.getElementById("applicanttbody");
+            tbody.classList.add("text-center");
+            let tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="7">No Data Available!!</td>`;
+            tbody.appendChild(tr);
+        }
+    }
+
+    setInterview(candidateName: string) {
+        let target = document.getElementById(`apply-button-${candidateName}`);
+        let buttons = `
+        <button class="btn btn-outline-danger" id="reject-${candidateName}" onclick="jobPortal.displayResult('${candidateName}','reject')">Reject</button>
+        <button class="btn btn-outline-success" id="accept-${candidateName}" onclick="jobPortal.displayResult('${candidateName}','accept')">Accept</button>`;
+        (<HTMLTableElement>target).innerHTML = buttons;
+    }
+
+    displayResult(name: string, control: string) {
+        let resultButton;
+        if (control === "accept") {
+            resultButton = `<button class="btn btn-outline-success" disabled>Accepted</button>`;
+            alert(`${name} is hired.`);
+        } else {
+            resultButton = `<button class="btn btn-outline-danger" disabled>Rejected</button>`;
+            alert(`${name} is not hired.`);
+        }
+        let target = document.getElementById(`apply-button-${name}`);
+        (<HTMLTableElement>target).innerHTML = resultButton;
+    }
 }
 
-// Usage example
-const inventory = new Inventory();
+let vacancyDetails: VacancyDetails[] = JSON.parse(localStorage.getItem("vacancyTableData") || "[]");
+let applicantDetails: ApplicantDetails[] = JSON.parse(localStorage.getItem("applicantTableData") || "[]");
 
-// Add products to the inventory
-inventory.addProduct([
-  { id: 1, name: "item-1", quantity: 20 },
-  { id: 2, name: "item-2", quantity: 9 },
-  { id: 3, name: "item-3", quantity: 14 }
-]);
+let jobPortal = new JobPortal(vacancyDetails, applicantDetails);
 
-console.log("Initial Inventory:");
-inventory.showProducts();
+(<HTMLButtonElement>document.getElementById("createvancancybutton"))?.addEventListener("click", (event) => {
+    event.preventDefault();
+    let jobId = (<HTMLInputElement>document.getElementById("jobid")).value;
+    let jobTitle = (<HTMLInputElement>document.getElementById("jobtitle")).value;
+    let jobDescription = (<HTMLInputElement>document.getElementById("jobdescription")).value;
+    let jobOpening = (<HTMLInputElement>document.getElementById("numberofopenings")).value;
+    let vacancyObj = { id: jobId, title: jobTitle, description: jobDescription, numberOfOpenings: jobOpening };
+    jobPortal.createVacancy(vacancyObj);
+});
 
-// Simulate product purchases
-inventory.buyProduct([{ id: 1, name: "item-1", quantity: 18 }]);
-inventory.buyProduct([{ id: 2, name: "item-2", quantity: 11 }]); // Triggers warning for insufficient quantity
-inventory.buyProduct([{ id: 3, name: "item-3", quantity: 8 }]);
+(<HTMLButtonElement>document.getElementById("submitapplication"))?.addEventListener("click", (event) => {
+    event.preventDefault();
+    let jobId = (<HTMLInputElement>document.getElementById("applyjobid")).value;
+    let jobTitle = (<HTMLInputElement>document.getElementById("applyjobtitle")).value;
+    let personName = (<HTMLInputElement>document.getElementById("applypersonname")).value;
+    let personEmail = (<HTMLInputElement>document.getElementById("applypersonemail")).value;
+    let personExperience = (<HTMLInputElement>document.getElementById("applypersonexperience")).value;
+    let jobOpening = (<HTMLInputElement>document.getElementById("applynumberofopenings")).value;
+    let applicationObj = { id: jobId, title: jobTitle, candidateName: personName, candidateEmail: personEmail, candidateExperience: personExperience, numberOfOpenings: jobOpening };
+    jobPortal.createApplication(applicationObj);
+});
 
-// Restock inventory using restock requests
-inventory.restockProduct([{ id: 1, quantity: 30 }]);
+-------------------------------------------------------------------------------------------------------------------------------------------
 
-// Purchase with a new list
-const productList: Product[] = [
-  { id: 1, name: "item-1", quantity: 10 },
-  { id: 2, name: "item-2", quantity: 4 }
-];
-inventory.buyProduct(productList);
-
-// Attempt to buy all remaining units of "item-2" to trigger reorder warning
-inventory.buyProduct([{ id: 2, name: "item-2", quantity: 4 }]);
-
-// Final Inventory state
-console.log("Final Inventory:");
-inventory.showProducts();
-
-
--------------------------------------------------------------------------------------------------------------
-
-let bills = [5, 5, 5, 10, 20];
-
-var lemonadeChange = function (bills) {
-  let parts = []; // To store how many $5 bills are needed for each non-$5 bill
-  let fives = []; // To keep track of $5 bills
-
-  for (let bill of bills) {
-    if (bill === 5) {
-      fives.push(5); // Collect $5 bill
-    } else {
-      // Calculate how many $5 bills are needed as change
-      let part = (bill / 5) - 1; // The number of $5 bills needed for change
-      parts.push(part);
-    }
-  }
-
-  // Check if we can provide the required change
-  let canProvideChange = helperFunction(fives.length, parts);
-  return canProvideChange;
-};
-
-function helperFunction(fiveCount, partsArray) {
-  for (let part of partsArray) {
-    if (fiveCount >= part) {
-      // If we have enough $5 bills to give change
-      fiveCount -= part; // Use the necessary number of $5 bills
-    } else {
-      // Not enough $5 bills to give change
-      return false;
-    }
-  }
-  return true; // Successfully provided change for all bills
-}
-
-console.log(lemonadeChange(bills)); // Output: true
+check spelling
+increase colspan
