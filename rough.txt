@@ -1,156 +1,177 @@
-interface VacancyDetails {
-    id: number | string;
-    title: string;
-    description: string;
-    numberOfOpenings: number | string;
+// repository.ts
+export interface Item {
+    id: number;
+    name: string;
 }
 
-interface ApplicantDetails {
-    id: number | string;
-    title: string;
-    candidateName: string;
-    candidateEmail: string;
-    candidateExperience: number | string;
-    numberOfOpenings: number | string;
-}
+export class Repository<T> {
+    private items: T[] = [];
 
-class JobPortal {
-    private vacancyDetailsArray: VacancyDetails[];
-    private applicationDetailsArray: ApplicantDetails[];
-
-    constructor(vacancy: VacancyDetails[], application: ApplicantDetails[]) {
-        this.vacancyDetailsArray = vacancy;
-        this.applicationDetailsArray = application;
-        this.setVacancyTableData();
-        this.setApplicationTableData();
+    add(item: T): void {
+        this.items.push(item);
     }
 
-    createVacancy(vacancyObject: VacancyDetails) {
-        this.vacancyDetailsArray.push(vacancyObject);
-        localStorage.setItem("vacancyTableData", JSON.stringify(this.vacancyDetailsArray));
-        this.vacancyDetailsArray = JSON.parse(localStorage.getItem("vacancyTableData") || "[]");
-        this.setVacancyTableData();
+    getAll(): T[] {
+        return this.items;
     }
 
-    setVacancyTableData() {
-        let result = "";
-        if (localStorage.getItem("vacancyTableData")) {
-            for (let vacancy of this.vacancyDetailsArray) {
-                let tableData = `
-                <tr id="row-${vacancy.id}">
-                    <th scope="row">${vacancy.id}</th>
-                    <td id="title-${vacancy.id}">${vacancy.title}</td>
-                    <td id="description-${vacancy.id}">${vacancy.description}</td>
-                    <td id="opening-${vacancy.id}">${vacancy.numberOfOpenings}</td>
-                    <td><a href="#applysection"><button class="btn btn-outline-primary" onclick="jobPortal.setApplyData(${vacancy.id})">Apply</button></a></td>
-                </tr>`;
-                result += tableData;
+    findById(id: number): T | null {
+        let index = this.items.findIndex((element) => {
+            if (typeof element === "string") {
+                return false;
+            } else {
+                return (element as any).id === id;
             }
-            (<HTMLTableElement>document.getElementById("vacancytbody")).innerHTML = result;
+        });
+
+        if (index !== -1) {
+            return this.items[index];
         } else {
-            let tbody = <HTMLTableElement>document.getElementById("vacancytbody");
-            tbody.classList.add("text-center");
-            let tr = document.createElement("tr");
-            tr.innerHTML = `<td colspan="5">No Data Available!!</td>`;
-            tbody.appendChild(tr);
+            return null;
         }
     }
 
-    setApplyData(id: string) {
-        document.getElementById("applysection")?.classList.remove("d-none");
-        let title = (<HTMLInputElement>document.getElementById(`title-${id}`)).textContent;
-        let description = (<HTMLInputElement>document.getElementById(`description-${id}`)).textContent;
-        let opening = (<HTMLInputElement>document.getElementById(`opening-${id}`)).textContent;
+}
 
-        (<HTMLFormElement>document.getElementById("applyjobid")).value = id;
-        (<HTMLFormElement>document.getElementById("applyjobtitle")).value = title;
-        (<HTMLFormElement>document.getElementById("applyjobdescription")).value = description;
-        (<HTMLFormElement>document.getElementById("applynumberofopenings")).value = opening;
+------------
+// app.ts
+import { Item, Repository } from "./repository";
+
+const stringRepository = new Repository<string>();
+stringRepository.add("Hello");
+stringRepository.add("World");
+
+console.log("All strings:", stringRepository.getAll());
+
+console.log("Find string by ID:", stringRepository.findById(1));
+
+const objectRepository = new Repository<Item>();
+objectRepository.add({ id: 1, name: "Alice" });
+objectRepository.add({ id: 2, name: "Bob" });
+
+console.log("All items:", objectRepository.getAll());
+
+console.log("Find item by ID (1):", objectRepository.findById(1));
+
+console.log("Find item by ID (3):", objectRepository.findById(3));  
+
+-------------------------------------------------------------------------------------------------------------------
+
+export class Stack<T> {
+    private stack: T[] = [];
+    showstack(): T[] {
+        return this.stack;
     }
-
-    createApplication(applicationObject: ApplicantDetails) {
-        this.applicationDetailsArray.push(applicationObject);
-        localStorage.setItem("applicantTableData", JSON.stringify(this.applicationDetailsArray));
-        this.applicationDetailsArray = JSON.parse(localStorage.getItem("applicantTableData") || "[]");
-        this.setApplicationTableData();
+    push(item: T): void {
+        this.stack[this.stack.length] = item;
     }
-
-    setApplicationTableData() {
-        if (localStorage.getItem("applicantTableData")) {
-            let result = "";
-            for (let application of this.applicationDetailsArray) {
-                let tableData = `
-                <tr id="apply-row-${application.id}">
-                    <th scope="row">${application.id}</th>
-                    <td id="apply-title-${application.id}">${application.title}</td>
-                    <td id="apply-name-${application.id}">${application.candidateName}</td>
-                    <td id="apply-email-${application.id}">${application.candidateEmail}</td>
-                    <td id="apply-experience-${application.id}">${application.candidateExperience}</td>
-                    <td id="apply-opening-${application.id}">${application.numberOfOpenings}</td>
-                    <td id="apply-button-${application.candidateName}"><button class="btn btn-outline-primary" onclick="jobPortal.setInterview('${application.candidateName}')">Schedule Interview</button></td>
-                </tr>`;
-                result += tableData;
-            }
-            (<HTMLTableElement>document.getElementById("applicanttbody")).innerHTML = result;
-        } else {
-            let tbody = <HTMLTableElement>document.getElementById("applicanttbody");
-            tbody.classList.add("text-center");
-            let tr = document.createElement("tr");
-            tr.innerHTML = `<td colspan="7">No Data Available!!</td>`;
-            tbody.appendChild(tr);
+    pop(): T | null {
+        if (this.stack.length === 0) {
+            return null;
         }
+        let lastElement: T = this.stack[this.stack.length - 1];
+        this.stack.splice(this.stack.length - 1, 1);
+        return lastElement;
     }
-
-    setInterview(candidateName: string) {
-        let target = document.getElementById(`apply-button-${candidateName}`);
-        let buttons = `
-        <button class="btn btn-outline-danger" id="reject-${candidateName}" onclick="jobPortal.displayResult('${candidateName}','reject')">Reject</button>
-        <button class="btn btn-outline-success" id="accept-${candidateName}" onclick="jobPortal.displayResult('${candidateName}','accept')">Accept</button>`;
-        (<HTMLTableElement>target).innerHTML = buttons;
-    }
-
-    displayResult(name: string, control: string) {
-        let resultButton;
-        if (control === "accept") {
-            resultButton = `<button class="btn btn-outline-success" disabled>Accepted</button>`;
-            alert(`${name} is hired.`);
-        } else {
-            resultButton = `<button class="btn btn-outline-danger" disabled>Rejected</button>`;
-            alert(`${name} is not hired.`);
+    peek(): T | null {
+        if (this.stack.length === 0) {
+            return null;
         }
-        let target = document.getElementById(`apply-button-${name}`);
-        (<HTMLTableElement>target).innerHTML = resultButton;
+        let lastElement = this.stack[this.stack.length - 1]
+        return lastElement;
+    }
+    isEmpty(): boolean {
+        return this.stack.length === 0;
     }
 }
 
-let vacancyDetails: VacancyDetails[] = JSON.parse(localStorage.getItem("vacancyTableData") || "[]");
-let applicantDetails: ApplicantDetails[] = JSON.parse(localStorage.getItem("applicantTableData") || "[]");
+-----------------------
 
-let jobPortal = new JobPortal(vacancyDetails, applicantDetails);
+import { Stack } from "./repository";
 
-(<HTMLButtonElement>document.getElementById("createvancancybutton"))?.addEventListener("click", (event) => {
-    event.preventDefault();
-    let jobId = (<HTMLInputElement>document.getElementById("jobid")).value;
-    let jobTitle = (<HTMLInputElement>document.getElementById("jobtitle")).value;
-    let jobDescription = (<HTMLInputElement>document.getElementById("jobdescription")).value;
-    let jobOpening = (<HTMLInputElement>document.getElementById("numberofopenings")).value;
-    let vacancyObj = { id: jobId, title: jobTitle, description: jobDescription, numberOfOpenings: jobOpening };
-    jobPortal.createVacancy(vacancyObj);
-});
+let stringStack = new Stack<string>();
+stringStack.push("Hello");
+stringStack.push("World");
+stringStack.push("Typescript");
+console.log(stringStack.showstack());
+console.log(stringStack.pop());
+console.log(stringStack.showstack());
+console.log(stringStack.peek());
+console.log(stringStack.isEmpty());
 
-(<HTMLButtonElement>document.getElementById("submitapplication"))?.addEventListener("click", (event) => {
-    event.preventDefault();
-    let jobId = (<HTMLInputElement>document.getElementById("applyjobid")).value;
-    let jobTitle = (<HTMLInputElement>document.getElementById("applyjobtitle")).value;
-    let personName = (<HTMLInputElement>document.getElementById("applypersonname")).value;
-    let personEmail = (<HTMLInputElement>document.getElementById("applypersonemail")).value;
-    let personExperience = (<HTMLInputElement>document.getElementById("applypersonexperience")).value;
-    let jobOpening = (<HTMLInputElement>document.getElementById("applynumberofopenings")).value;
-    let applicationObj = { id: jobId, title: jobTitle, candidateName: personName, candidateEmail: personEmail, candidateExperience: personExperience, numberOfOpenings: jobOpening };
-    jobPortal.createApplication(applicationObj);
-});
+-----------------------------------------------------------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------------------------------------------------------------------
+export function sortArray<T>(input: T[], comparisonFunction: (a: T, b: T) => number) {
+    let copyOfArray: T[] = [...input];
+    console.log(copyOfArray.sort(comparisonFunction));
+    console.log(input);
+    return copyOfArray.sort(comparisonFunction)
+}
 
-check spelling
-increase colspan
+------------------------------
+
+import { sortArray } from "./repository";
+
+const numbers = [3, 1, 4, 1, 5, 9];
+const sortedNumbers = sortArray(numbers, (a, b) => a - b);
+console.log("Sorted Numbers (Ascending):", sortedNumbers);
+
+const strings = ["apple", "orange", "banana", "grape"];
+const sortedStrings = sortArray(strings, (a, b) => b.localeCompare(a));
+console.log("Sorted Strings (Descending):", sortedStrings);  
+
+interface Item {
+    id: number;
+    name: string;
+}
+
+const items: Item[] = [
+    { id: 3, name: "Item 3" },
+    { id: 1, name: "Item 1" },
+    { id: 2, name: "Item 2" }
+];
+
+const sortedItems = sortArray(items, (a, b) => a.id - b.id);
+console.log("Sorted Items by ID (Ascending):", sortedItems); 
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+export function mergeArrays<T>(arr1: T[], arr2: T[]) {
+    return arr1.concat(arr2);
+}
+export function findIndex<T>(arr: T[], predicate: (item: T) => boolean): number {
+    for (let i = 0; i < arr.length; i++) {
+        if (predicate(arr[i])) {
+            return i;  // Return index of first matching item
+        }
+    }
+    return -1;  // Return -1 if no matching item is found
+}
+export function removeDuplicates<T>(arr: T[]): T[] {
+    let set: T[] = Array.from(new Set(arr));
+    return set;
+}
+
+------------------
+
+import { findIndex, mergeArrays, removeDuplicates } from "./repository";
+let input1 = [1, 2, 3, 4, 5];
+let input2 = [50, 60, 70, 80, 90, 100];
+console.log(mergeArrays(input1, input2));
+
+let input3 = [1, 2, 3, 2];
+console.log(removeDuplicates(input3))
+
+interface Item {
+    id: number;
+    name: string;
+}
+
+const items: Item[] = [
+    { id: 1, name: "Item 1" },
+    { id: 2, name: "Item 2" },
+    { id: 3, name: "Item 3" }
+];
+
+const index = findIndex(items, item => item.id === 2);
+console.log("Index of Item with ID 2:", index);  // Output: 1
