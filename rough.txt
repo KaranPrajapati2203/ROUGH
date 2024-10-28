@@ -1,177 +1,138 @@
-// repository.ts
-export interface Item {
-    id: number;
-    name: string;
-}
+SELECT 
+    first_name, 
+    FORMAT(salary, '$##########') AS 'SALARY'
+FROM employees;
 
-export class Repository<T> {
-    private items: T[] = [];
+----------------------------------------------------------------------------------------------
 
-    add(item: T): void {
-        this.items.push(item);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Passenger List</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
-
-    getAll(): T[] {
-        return this.items;
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
     }
-
-    findById(id: number): T | null {
-        let index = this.items.findIndex((element) => {
-            if (typeof element === "string") {
-                return false;
-            } else {
-                return (element as any).id === id;
-            }
-        });
-
-        if (index !== -1) {
-            return this.items[index];
-        } else {
-            return null;
-        }
+    th {
+      background-color: #f2f2f2;
     }
+  </style>
+</head>
+<body>
 
-}
+  <h1>Passenger List</h1>
 
-------------
-// app.ts
-import { Item, Repository } from "./repository";
+  <input type="text" id="searchInput" placeholder="Enter Passenger ID" />
+  <button id="search">Search</button>
 
-const stringRepository = new Repository<string>();
-stringRepository.add("Hello");
-stringRepository.add("World");
+  <table id="passengerTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>State</th>
+        <th>City</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be dynamically inserted here -->
+    </tbody>
+  </table>
 
-console.log("All strings:", stringRepository.getAll());
+  <script src="script.js" type="module"></script>
+</body>
+</html>
 
-console.log("Find string by ID:", stringRepository.findById(1));
 
-const objectRepository = new Repository<Item>();
-objectRepository.add({ id: 1, name: "Alice" });
-objectRepository.add({ id: 2, name: "Bob" });
+----------------------------------------------------------------------------------------
 
-console.log("All items:", objectRepository.getAll());
+// Define Passenger type to ensure type safety
+type Passenger = {
+  ID: number;
+  Name: string;
+  Address: string;
+  State: string;
+  City: string;
+};
 
-console.log("Find item by ID (1):", objectRepository.findById(1));
-
-console.log("Find item by ID (3):", objectRepository.findById(3));  
-
--------------------------------------------------------------------------------------------------------------------
-
-export class Stack<T> {
-    private stack: T[] = [];
-    showstack(): T[] {
-        return this.stack;
-    }
-    push(item: T): void {
-        this.stack[this.stack.length] = item;
-    }
-    pop(): T | null {
-        if (this.stack.length === 0) {
-            return null;
-        }
-        let lastElement: T = this.stack[this.stack.length - 1];
-        this.stack.splice(this.stack.length - 1, 1);
-        return lastElement;
-    }
-    peek(): T | null {
-        if (this.stack.length === 0) {
-            return null;
-        }
-        let lastElement = this.stack[this.stack.length - 1]
-        return lastElement;
-    }
-    isEmpty(): boolean {
-        return this.stack.length === 0;
-    }
-}
-
------------------------
-
-import { Stack } from "./repository";
-
-let stringStack = new Stack<string>();
-stringStack.push("Hello");
-stringStack.push("World");
-stringStack.push("Typescript");
-console.log(stringStack.showstack());
-console.log(stringStack.pop());
-console.log(stringStack.showstack());
-console.log(stringStack.peek());
-console.log(stringStack.isEmpty());
-
------------------------------------------------------------------------------------------------------------------------------------
-
-export function sortArray<T>(input: T[], comparisonFunction: (a: T, b: T) => number) {
-    let copyOfArray: T[] = [...input];
-    console.log(copyOfArray.sort(comparisonFunction));
-    console.log(input);
-    return copyOfArray.sort(comparisonFunction)
-}
-
-------------------------------
-
-import { sortArray } from "./repository";
-
-const numbers = [3, 1, 4, 1, 5, 9];
-const sortedNumbers = sortArray(numbers, (a, b) => a - b);
-console.log("Sorted Numbers (Ascending):", sortedNumbers);
-
-const strings = ["apple", "orange", "banana", "grape"];
-const sortedStrings = sortArray(strings, (a, b) => b.localeCompare(a));
-console.log("Sorted Strings (Descending):", sortedStrings);  
-
-interface Item {
-    id: number;
-    name: string;
-}
-
-const items: Item[] = [
-    { id: 3, name: "Item 3" },
-    { id: 1, name: "Item 1" },
-    { id: 2, name: "Item 2" }
+// Sample data
+const data: Passenger[] = [
+  {
+    ID: 1,
+    Name: "John Doe",
+    Address: "123 Main St",
+    State: "California",
+    City: "Los Angeles",
+  },
+  {
+    ID: 2,
+    Name: "Jane Smith",
+    Address: "456 Elm St",
+    State: "New York",
+    City: "New York City",
+  },
+  {
+    ID: 3,
+    Name: "Alice Johnson",
+    Address: "789 Oak St",
+    State: "Texas",
+    City: "Houston",
+  },
 ];
 
-const sortedItems = sortArray(items, (a, b) => a.id - b.id);
-console.log("Sorted Items by ID (Ascending):", sortedItems); 
+// Create a Map with ID as key and Passenger object as value
+const passengerMap: Map<number, Passenger> = new Map();
+data.forEach((passenger) => {
+  passengerMap.set(passenger.ID, passenger);
+});
 
---------------------------------------------------------------------------------------------------------------------------------
+// Function to render passengers in the table
+const renderTable = (passengers: Passenger[]) => {
+  const tbody = document.querySelector<HTMLTableSectionElement>("#passengerTable tbody");
+  if (tbody) {
+    tbody.innerHTML = ""; // Clear existing rows
+    passengers.forEach((passenger) => {
+      const row = document.createElement("tr");
+      row.id = `passenger${passenger.ID}`; // Set row control id
 
-export function mergeArrays<T>(arr1: T[], arr2: T[]) {
-    return arr1.concat(arr2);
-}
-export function findIndex<T>(arr: T[], predicate: (item: T) => boolean): number {
-    for (let i = 0; i < arr.length; i++) {
-        if (predicate(arr[i])) {
-            return i;  // Return index of first matching item
-        }
+      row.innerHTML = `
+        <td>${passenger.ID}</td>
+        <td>${passenger.Name}</td>
+        <td>${passenger.Address}</td>
+        <td>${passenger.State}</td>
+        <td>${passenger.City}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+};
+
+// Render all passengers initially
+renderTable(data);
+
+// Search functionality
+const searchInput = document.querySelector<HTMLInputElement>("#searchInput");
+const searchButton = document.querySelector<HTMLButtonElement>("#search");
+
+searchButton?.addEventListener("click", () => {
+  const searchValue = searchInput?.value;
+  if (searchValue) {
+    const passengerID = parseInt(searchValue);
+    const passenger = passengerMap.get(passengerID);
+    if (passenger) {
+      renderTable([passenger]); // Render only the matching passenger
+    } else {
+      alert("Passenger not found.");
     }
-    return -1;  // Return -1 if no matching item is found
-}
-export function removeDuplicates<T>(arr: T[]): T[] {
-    let set: T[] = Array.from(new Set(arr));
-    return set;
-}
-
-------------------
-
-import { findIndex, mergeArrays, removeDuplicates } from "./repository";
-let input1 = [1, 2, 3, 4, 5];
-let input2 = [50, 60, 70, 80, 90, 100];
-console.log(mergeArrays(input1, input2));
-
-let input3 = [1, 2, 3, 2];
-console.log(removeDuplicates(input3))
-
-interface Item {
-    id: number;
-    name: string;
-}
-
-const items: Item[] = [
-    { id: 1, name: "Item 1" },
-    { id: 2, name: "Item 2" },
-    { id: 3, name: "Item 3" }
-];
-
-const index = findIndex(items, item => item.id === 2);
-console.log("Index of Item with ID 2:", index);  // Output: 1
+  } else {
+    renderTable(data); // Render all passengers if input is empty
+  }
+});
