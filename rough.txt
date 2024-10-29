@@ -1,138 +1,382 @@
+WITH EmployeeRank AS (
+    SELECT 
+        employee_id,
+        first_name + ' ' + last_name AS Name,
+        salary,
+        RANK() OVER (ORDER BY salary DESC) AS SalaryRank,
+        DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
+    FROM employees
+)
+SELECT * FROM EmployeeRank;
+
+----------
+
+WITH RankedSalaries AS (
+    SELECT 
+        employee_id, 
+        salary, 
+        DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
+    FROM employees
+)
+SELECT * 
+FROM RankedSalaries
+WHERE SalaryDenseRank = 4;
+
+---------
+
+WITH DepartmentSalaries AS (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        SUM(e.salary) AS TotalSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+)
+SELECT * FROM DepartmentSalaries;
+
+-------
+
+WITH DepartmentSalaries AS (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        SUM(e.salary) AS TotalSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+)
+SELECT * 
+FROM DepartmentSalaries
+ORDER BY TotalSalary DESC;
+
+------
+
+WITH MaxSalaries AS (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        MAX(e.salary) AS MaxSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+)
+SELECT * 
+FROM MaxSalaries
+ORDER BY MaxSalary ASC;
+
+-------
+
+WITH MinSalaries AS (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        MIN(e.salary) AS MinSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+)
+SELECT * 
+FROM MinSalaries
+ORDER BY MinSalary ASC;
+
+-------
+
+WITH DepartmentSalaries AS (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        SUM(e.salary) AS TotalSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+)
+SELECT * 
+FROM DepartmentSalaries
+WHERE TotalSalary > 50000
+ORDER BY TotalSalary DESC;
+
+---------------------------------------------------------------------------------------
+
+SELECT 
+    employee_id,
+    first_name + ' ' + last_name AS Name,
+    salary,
+    RANK() OVER (ORDER BY salary DESC) AS SalaryRank,
+    DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
+FROM 
+    (SELECT * FROM employees) AS e;
+
+------
+
+SELECT *
+FROM (
+    SELECT 
+        employee_id, 
+        salary, 
+        DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
+    FROM employees
+) AS RankedSalaries
+WHERE SalaryDenseRank = 4;
+
+-----
+
+SELECT 
+    ds.department_id, 
+    ds.department_name, 
+    ds.TotalSalary
+FROM (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        SUM(e.salary) AS TotalSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+) AS ds;
+
+-----
+
+SELECT 
+    ds.department_id, 
+    ds.department_name, 
+    ds.TotalSalary
+FROM (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        SUM(e.salary) AS TotalSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+) AS ds
+ORDER BY ds.TotalSalary DESC;
+
+------
+
+SELECT 
+    ms.department_id, 
+    ms.department_name, 
+    ms.MaxSalary
+FROM (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        MAX(e.salary) AS MaxSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+) AS ms
+ORDER BY ms.MaxSalary ASC;
+
+------
+
+SELECT 
+    ms.department_id, 
+    ms.department_name, 
+    ms.MinSalary
+FROM (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        MIN(e.salary) AS MinSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+) AS ms
+ORDER BY ms.MinSalary ASC;
+
+------
+
+SELECT 
+    ds.department_id, 
+    ds.department_name, 
+    ds.TotalSalary
+FROM (
+    SELECT 
+        e.department_id, 
+        d.department_name, 
+        SUM(e.salary) AS TotalSalary
+    FROM employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    GROUP BY e.department_id, d.department_name
+) AS ds
+WHERE ds.TotalSalary > 50000
+ORDER BY ds.TotalSalary DESC;
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+WITH EmployeeIncentives AS (
+    SELECT 
+        e.employee_id,
+        e.joining_date,
+        i.incentive_date
+    FROM 
+        employee e 
+        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
+)
+SELECT 
+    employee_id,
+    joining_date,
+    incentive_date,
+    DATEDIFF(day, joining_date, incentive_date) AS 'Difference in Days'
+FROM EmployeeIncentives;
+
+------
+
+WITH IncentiveEmployees AS (
+    SELECT 
+        e.employee_id, 
+        e.first_name, 
+        i.incentive_amount
+    FROM 
+        employee e 
+        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
+)
 SELECT 
     first_name, 
-    FORMAT(salary, '$##########') AS 'SALARY'
-FROM employees;
+    incentive_amount
+FROM IncentiveEmployees
+WHERE incentive_amount > 3000;
 
-----------------------------------------------------------------------------------------------
+------
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Passenger List</title>
-  <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-  </style>
-</head>
-<body>
+WITH AllEmployees AS (
+    SELECT 
+        e.employee_id, 
+        e.first_name, 
+        i.incentive_amount
+    FROM 
+        employee e 
+        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
+)
+SELECT 
+    first_name, 
+    incentive_amount
+FROM AllEmployees;
 
-  <h1>Passenger List</h1>
+------
 
-  <input type="text" id="searchInput" placeholder="Enter Passenger ID" />
-  <button id="search">Search</button>
+WITH EmployeeManager AS (
+    SELECT 
+        e1.first_name + ' ' + e1.last_name AS EmployeeName, 
+        e2.first_name + ' ' + e2.last_name AS ManagerName
+    FROM 
+        employee e1
+        INNER JOIN employee e2 ON e1.manager_id = e2.employee_id
+)
+SELECT 
+    EmployeeName, 
+    ManagerName
+FROM EmployeeManager;
 
-  <table id="passengerTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Address</th>
-        <th>State</th>
-        <th>City</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Rows will be dynamically inserted here -->
-    </tbody>
-  </table>
+------
 
-  <script src="script.js" type="module"></script>
-</body>
-</html>
+WITH IncentiveStatus AS (
+    SELECT 
+        e.first_name, 
+        ISNULL(i.incentive_amount, 0) AS IncentiveAmount
+    FROM 
+        employee e 
+        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
+)
+SELECT 
+    first_name, 
+    IncentiveAmount
+FROM IncentiveStatus;
 
+--------------------------------------------
 
-----------------------------------------------------------------------------------------
+SELECT 
+    ei.employee_id,
+    ei.joining_date,
+    ei.incentive_date,
+    DATEDIFF(day, ei.joining_date, ei.incentive_date) AS 'Difference in Days'
+FROM (
+    SELECT 
+        e.employee_id,
+        e.joining_date,
+        i.incentive_date
+    FROM 
+        employee e 
+        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
+) AS ei;
 
-// Define Passenger type to ensure type safety
-type Passenger = {
-  ID: number;
-  Name: string;
-  Address: string;
-  State: string;
-  City: string;
-};
+------
 
-// Sample data
-const data: Passenger[] = [
-  {
-    ID: 1,
-    Name: "John Doe",
-    Address: "123 Main St",
-    State: "California",
-    City: "Los Angeles",
-  },
-  {
-    ID: 2,
-    Name: "Jane Smith",
-    Address: "456 Elm St",
-    State: "New York",
-    City: "New York City",
-  },
-  {
-    ID: 3,
-    Name: "Alice Johnson",
-    Address: "789 Oak St",
-    State: "Texas",
-    City: "Houston",
-  },
-];
+SELECT 
+    ie.first_name, 
+    ie.incentive_amount
+FROM (
+    SELECT 
+        e.employee_id, 
+        e.first_name, 
+        i.incentive_amount
+    FROM 
+        employee e 
+        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
+) AS ie
+WHERE ie.incentive_amount > 3000;
 
-// Create a Map with ID as key and Passenger object as value
-const passengerMap: Map<number, Passenger> = new Map();
-data.forEach((passenger) => {
-  passengerMap.set(passenger.ID, passenger);
-});
+------
 
-// Function to render passengers in the table
-const renderTable = (passengers: Passenger[]) => {
-  const tbody = document.querySelector<HTMLTableSectionElement>("#passengerTable tbody");
-  if (tbody) {
-    tbody.innerHTML = ""; // Clear existing rows
-    passengers.forEach((passenger) => {
-      const row = document.createElement("tr");
-      row.id = `passenger${passenger.ID}`; // Set row control id
+SELECT 
+    ae.first_name, 
+    ae.incentive_amount
+FROM (
+    SELECT 
+        e.employee_id, 
+        e.first_name, 
+        i.incentive_amount
+    FROM 
+        employee e 
+        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
+) AS ae;
 
-      row.innerHTML = `
-        <td>${passenger.ID}</td>
-        <td>${passenger.Name}</td>
-        <td>${passenger.Address}</td>
-        <td>${passenger.State}</td>
-        <td>${passenger.City}</td>
-      `;
-      tbody.appendChild(row);
-    });
-  }
-};
+------
 
-// Render all passengers initially
-renderTable(data);
+SELECT 
+    em.EmployeeName, 
+    em.ManagerName
+FROM (
+    SELECT 
+        e1.first_name + ' ' + e1.last_name AS EmployeeName, 
+        e2.first_name + ' ' + e2.last_name AS ManagerName
+    FROM 
+        employee e1
+        INNER JOIN employee e2 ON e1.manager_id = e2.employee_id
+) AS em;
 
-// Search functionality
-const searchInput = document.querySelector<HTMLInputElement>("#searchInput");
-const searchButton = document.querySelector<HTMLButtonElement>("#search");
+------
 
-searchButton?.addEventListener("click", () => {
-  const searchValue = searchInput?.value;
-  if (searchValue) {
-    const passengerID = parseInt(searchValue);
-    const passenger = passengerMap.get(passengerID);
-    if (passenger) {
-      renderTable([passenger]); // Render only the matching passenger
-    } else {
-      alert("Passenger not found.");
-    }
-  } else {
-    renderTable(data); // Render all passengers if input is empty
-  }
-});
+SELECT 
+    is_data.first_name, 
+    is_data.IncentiveAmount
+FROM (
+    SELECT 
+        e.first_name, 
+        ISNULL(i.incentive_amount, 0) AS IncentiveAmount
+    FROM 
+        employee e 
+        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
+) AS is_data;
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE VIEW DisplayExperience AS
+SELECT
+    d.department_name,
+    e.first_name + ' ' + e.last_name AS Name, -- For SQL Server
+    -- Use CONCAT(e.first_name, ' ', e.last_name) for MySQL
+    e.hire_date,
+    e.salary,
+    SUM(DATEDIFF(year, j.start_date, ISNULL(j.end_date, SYSDATE()))) AS TotalExperience
+FROM
+    employees e
+    INNER JOIN departments d ON e.department_id = d.department_id
+    INNER JOIN job_history j ON e.employee_id = j.employee_id
+GROUP BY 
+    d.department_name, e.first_name, e.last_name, e.hire_date, e.salary
+HAVING 
+    SUM(DATEDIFF(year, j.start_date, ISNULL(j.end_date, SYSDATE()))) > 15;
