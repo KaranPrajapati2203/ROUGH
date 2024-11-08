@@ -1,382 +1,194 @@
-WITH EmployeeRank AS (
-    SELECT 
-        employee_id,
-        first_name + ' ' + last_name AS Name,
-        salary,
-        RANK() OVER (ORDER BY salary DESC) AS SalaryRank,
-        DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
-    FROM employees
-)
-SELECT * FROM EmployeeRank;
+### **Practice 3: S3 Bucket Operations**
 
-----------
+#### Step 1: Create a Private S3 Bucket (AWS Web Console)
 
-WITH RankedSalaries AS (
-    SELECT 
-        employee_id, 
-        salary, 
-        DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
-    FROM employees
-)
-SELECT * 
-FROM RankedSalaries
-WHERE SalaryDenseRank = 4;
+1. **Log in** to your AWS account and go to the **S3** service.
+2. Click **Create bucket**.
+3. **Name your bucket** and select the **Mumbai (ap-south-1)** region.
+4. **Disable public access** by checking **Block all public access** under **Bucket settings**.
+5. Click **Create bucket**.
 
----------
+#### Step 2: Upload and Download Files Using AWS SDK (JavaScript)
 
-WITH DepartmentSalaries AS (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        SUM(e.salary) AS TotalSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-)
-SELECT * FROM DepartmentSalaries;
+1. **Set up AWS SDK for JavaScript**:
+   - Install Node.js (if you haven't already).
+   - Run `npm install aws-sdk` in your project directory.
 
--------
+2. **Set up AWS Credentials**:
+   - Go to **IAM** in AWS Console, create a user with **Programmatic access**, and assign the **AmazonS3FullAccess** policy.
+   - Save the **Access Key ID** and **Secret Access Key**.
 
-WITH DepartmentSalaries AS (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        SUM(e.salary) AS TotalSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-)
-SELECT * 
-FROM DepartmentSalaries
-ORDER BY TotalSalary DESC;
+3. **Upload a File**:
+   - Create a JavaScript file (`upload.js`).
+   - Use the following code to upload a file to your bucket:
 
-------
+     ```javascript
+     const AWS = require('aws-sdk');
+     const fs = require('fs');
 
-WITH MaxSalaries AS (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        MAX(e.salary) AS MaxSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-)
-SELECT * 
-FROM MaxSalaries
-ORDER BY MaxSalary ASC;
+     AWS.config.update({
+       region: 'ap-south-1',
+       accessKeyId: 'YOUR_ACCESS_KEY',
+       secretAccessKey: 'YOUR_SECRET_KEY'
+     });
 
--------
+     const s3 = new AWS.S3();
+     const uploadParams = {
+       Bucket: 'YOUR_BUCKET_NAME',
+       Key: 'filename.ext', // File name in the bucket
+       Body: fs.createReadStream('path/to/local/file.ext')
+     };
 
-WITH MinSalaries AS (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        MIN(e.salary) AS MinSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-)
-SELECT * 
-FROM MinSalaries
-ORDER BY MinSalary ASC;
+     s3.upload(uploadParams, (err, data) => {
+       if (err) console.log("Error", err);
+       if (data) console.log("Upload Success", data.Location);
+     });
+     ```
 
--------
+4. **Download a File**:
+   - Create a JavaScript file (`download.js`) with the following code to download a file from the bucket:
 
-WITH DepartmentSalaries AS (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        SUM(e.salary) AS TotalSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-)
-SELECT * 
-FROM DepartmentSalaries
-WHERE TotalSalary > 50000
-ORDER BY TotalSalary DESC;
+     ```javascript
+     const AWS = require('aws-sdk');
+     const fs = require('fs');
 
----------------------------------------------------------------------------------------
+     AWS.config.update({
+       region: 'ap-south-1',
+       accessKeyId: 'YOUR_ACCESS_KEY',
+       secretAccessKey: 'YOUR_SECRET_KEY'
+     });
 
-SELECT 
-    employee_id,
-    first_name + ' ' + last_name AS Name,
-    salary,
-    RANK() OVER (ORDER BY salary DESC) AS SalaryRank,
-    DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
-FROM 
-    (SELECT * FROM employees) AS e;
+     const s3 = new AWS.S3();
+     const downloadParams = {
+       Bucket: 'YOUR_BUCKET_NAME',
+       Key: 'filename.ext'
+     };
 
-------
+     s3.getObject(downloadParams, (err, data) => {
+       if (err) console.log("Error", err);
+       else fs.writeFileSync('path/to/local/file.ext', data.Body);
+     });
+     ```
 
-SELECT *
-FROM (
-    SELECT 
-        employee_id, 
-        salary, 
-        DENSE_RANK() OVER (ORDER BY salary DESC) AS SalaryDenseRank
-    FROM employees
-) AS RankedSalaries
-WHERE SalaryDenseRank = 4;
+---
 
------
+### **Practice 4: Attach CloudFront to S3 Bucket**
 
-SELECT 
-    ds.department_id, 
-    ds.department_name, 
-    ds.TotalSalary
-FROM (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        SUM(e.salary) AS TotalSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-) AS ds;
+1. Go to **CloudFront** in AWS Console and click **Create Distribution**.
+2. **Select Web** as the delivery method.
+3. Under **Origin Settings**, set **Origin Domain Name** to your S3 bucket (choose the **Bucket name** format).
+4. Set **Restrict Bucket Access** to **Yes** and choose **Create a New Identity**.
+5. Enable **Redirect HTTP to HTTPS** for Viewer Protocol Policy.
+6. Click **Create Distribution**.
+7. Copy the **Domain Name** in the CloudFront dashboard to access the bucket content.
 
------
+---
 
-SELECT 
-    ds.department_id, 
-    ds.department_name, 
-    ds.TotalSalary
-FROM (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        SUM(e.salary) AS TotalSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-) AS ds
-ORDER BY ds.TotalSalary DESC;
+### **Practice 5: Create a t2.micro Windows EC2 Instance**
 
-------
+1. Go to **EC2** and click **Launch Instances**.
+2. Choose **Microsoft Windows Server** under **Free Tier Eligible** AMIs.
+3. Select **t2.micro** for instance type and proceed to configure.
+4. Under **Configure Security Group**, add **RDP** for Windows and **HTTP** if needed.
+5. Download the **.pem file**.
+6. **Connect to the Instance**:
+   - Use an RDP client on your computer.
+   - Convert `.pem` to `.ppk` with PuTTYgen if needed (for Windows).
+7. **Add Radix IP** in Security Group by editing inbound rules in EC2 Security Group.
 
-SELECT 
-    ms.department_id, 
-    ms.department_name, 
-    ms.MaxSalary
-FROM (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        MAX(e.salary) AS MaxSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-) AS ms
-ORDER BY ms.MaxSalary ASC;
+---
 
-------
+### **Practice 6: Elastic Beanstalk with Default .NET Application**
 
-SELECT 
-    ms.department_id, 
-    ms.department_name, 
-    ms.MinSalary
-FROM (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        MIN(e.salary) AS MinSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-) AS ms
-ORDER BY ms.MinSalary ASC;
+1. Go to **Elastic Beanstalk** in AWS Console.
+2. Choose **Create New Application**.
+3. Set **Platform** to **.NET on Windows Server**.
+4. Select **t2.micro** as the instance type.
+5. Click **Create Application** and wait for deployment.
+6. Once deployed, the **URL** will be available in the Elastic Beanstalk dashboard.
 
-------
+---
 
-SELECT 
-    ds.department_id, 
-    ds.department_name, 
-    ds.TotalSalary
-FROM (
-    SELECT 
-        e.department_id, 
-        d.department_name, 
-        SUM(e.salary) AS TotalSalary
-    FROM employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    GROUP BY e.department_id, d.department_name
-) AS ds
-WHERE ds.TotalSalary > 50000
-ORDER BY ds.TotalSalary DESC;
+### **Practice 7: Create an RDS and Connect from SSMS**
 
+1. Go to **RDS** and click **Create Database**.
+2. Choose **Microsoft SQL Server** as the engine.
+3. Select **t2.micro** for instance class and ensure **Free Tier** is checked.
+4. Set **Public Access** to **Yes** if you plan to access it externally.
+5. Under **Security Group**, allow inbound traffic for SQL Server (default port 1433).
+6. **Connect from SSMS**:
+   - Get the **endpoint** from the RDS dashboard.
+   - Use SQL Server Management Studio (SSMS) with the endpoint, username, and password.
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------
 
-WITH EmployeeIncentives AS (
-    SELECT 
-        e.employee_id,
-        e.joining_date,
-        i.incentive_date
-    FROM 
-        employee e 
-        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
-)
-SELECT 
-    employee_id,
-    joining_date,
-    incentive_date,
-    DATEDIFF(day, joining_date, incentive_date) AS 'Difference in Days'
-FROM EmployeeIncentives;
+const AWS = require('aws-sdk');
+const fs = require('fs');
+const readline = require('readline');
 
-------
+// Configure AWS SDK
+AWS.config.update({
+  region: 'ap-south-1',
+  accessKeyId: 'YOUR_ACCESS_KEY', // Replace with your access key
+  secretAccessKey: 'YOUR_SECRET_KEY' // Replace with your secret key
+});
 
-WITH IncentiveEmployees AS (
-    SELECT 
-        e.employee_id, 
-        e.first_name, 
-        i.incentive_amount
-    FROM 
-        employee e 
-        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
-)
-SELECT 
-    first_name, 
-    incentive_amount
-FROM IncentiveEmployees
-WHERE incentive_amount > 3000;
+const s3 = new AWS.S3();
+const bucketName = 'YOUR_BUCKET_NAME'; // Replace with your bucket name
 
-------
+// Create a readline interface to get user input
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
-WITH AllEmployees AS (
-    SELECT 
-        e.employee_id, 
-        e.first_name, 
-        i.incentive_amount
-    FROM 
-        employee e 
-        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
-)
-SELECT 
-    first_name, 
-    incentive_amount
-FROM AllEmployees;
+// Function to upload a file to S3
+const uploadFile = (filePath, key) => {
+  const uploadParams = {
+    Bucket: bucketName,
+    Key: key, // File name in the bucket
+    Body: fs.createReadStream(filePath) // Read the file from your local path
+  };
 
-------
+  s3.upload(uploadParams, (err, data) => {
+    if (err) console.log("Error uploading file:", err);
+    else console.log("Upload success:", data.Location);
+  });
+};
 
-WITH EmployeeManager AS (
-    SELECT 
-        e1.first_name + ' ' + e1.last_name AS EmployeeName, 
-        e2.first_name + ' ' + e2.last_name AS ManagerName
-    FROM 
-        employee e1
-        INNER JOIN employee e2 ON e1.manager_id = e2.employee_id
-)
-SELECT 
-    EmployeeName, 
-    ManagerName
-FROM EmployeeManager;
+// Function to download a file from S3
+const downloadFile = (key, downloadPath) => {
+  const downloadParams = {
+    Bucket: bucketName,
+    Key: key // Name of the file to download
+  };
 
-------
+  s3.getObject(downloadParams, (err, data) => {
+    if (err) console.log("Error downloading file:", err);
+    else {
+      fs.writeFileSync(downloadPath, data.Body); // Write the file to the local path
+      console.log("Download success:", downloadPath);
+    }
+  });
+};
 
-WITH IncentiveStatus AS (
-    SELECT 
-        e.first_name, 
-        ISNULL(i.incentive_amount, 0) AS IncentiveAmount
-    FROM 
-        employee e 
-        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
-)
-SELECT 
-    first_name, 
-    IncentiveAmount
-FROM IncentiveStatus;
-
---------------------------------------------
-
-SELECT 
-    ei.employee_id,
-    ei.joining_date,
-    ei.incentive_date,
-    DATEDIFF(day, ei.joining_date, ei.incentive_date) AS 'Difference in Days'
-FROM (
-    SELECT 
-        e.employee_id,
-        e.joining_date,
-        i.incentive_date
-    FROM 
-        employee e 
-        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
-) AS ei;
-
-------
-
-SELECT 
-    ie.first_name, 
-    ie.incentive_amount
-FROM (
-    SELECT 
-        e.employee_id, 
-        e.first_name, 
-        i.incentive_amount
-    FROM 
-        employee e 
-        INNER JOIN incentives i ON e.employee_id = i.employee_ref_id
-) AS ie
-WHERE ie.incentive_amount > 3000;
-
-------
-
-SELECT 
-    ae.first_name, 
-    ae.incentive_amount
-FROM (
-    SELECT 
-        e.employee_id, 
-        e.first_name, 
-        i.incentive_amount
-    FROM 
-        employee e 
-        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
-) AS ae;
-
-------
-
-SELECT 
-    em.EmployeeName, 
-    em.ManagerName
-FROM (
-    SELECT 
-        e1.first_name + ' ' + e1.last_name AS EmployeeName, 
-        e2.first_name + ' ' + e2.last_name AS ManagerName
-    FROM 
-        employee e1
-        INNER JOIN employee e2 ON e1.manager_id = e2.employee_id
-) AS em;
-
-------
-
-SELECT 
-    is_data.first_name, 
-    is_data.IncentiveAmount
-FROM (
-    SELECT 
-        e.first_name, 
-        ISNULL(i.incentive_amount, 0) AS IncentiveAmount
-    FROM 
-        employee e 
-        LEFT JOIN incentives i ON e.employee_id = i.employee_ref_id
-) AS is_data;
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-CREATE OR REPLACE VIEW DisplayExperience AS
-SELECT
-    d.department_name,
-    e.first_name + ' ' + e.last_name AS Name, -- For SQL Server
-    -- Use CONCAT(e.first_name, ' ', e.last_name) for MySQL
-    e.hire_date,
-    e.salary,
-    SUM(DATEDIFF(year, j.start_date, ISNULL(j.end_date, SYSDATE()))) AS TotalExperience
-FROM
-    employees e
-    INNER JOIN departments d ON e.department_id = d.department_id
-    INNER JOIN job_history j ON e.employee_id = j.employee_id
-GROUP BY 
-    d.department_name, e.first_name, e.last_name, e.hire_date, e.salary
-HAVING 
-    SUM(DATEDIFF(year, j.start_date, ISNULL(j.end_date, SYSDATE()))) > 15;
+// Prompt user for upload or download operation
+rl.question("Enter 'upload' to upload a file or 'download' to download a file: ", (operation) => {
+  if (operation.toLowerCase() === 'upload') {
+    rl.question("Enter the local file path to upload: ", (filePath) => {
+      const key = filePath.split('/').pop(); // Use the file name as the S3 key
+      uploadFile(filePath, key);
+      rl.close();
+    });
+  } else if (operation.toLowerCase() === 'download') {
+    rl.question("Enter the S3 file key to download: ", (key) => {
+      rl.question("Enter the local path to save the downloaded file: ", (downloadPath) => {
+        downloadFile(key, downloadPath);
+        rl.close();
+      });
+    });
+  } else {
+    console.log("Invalid operation. Please enter 'upload' or 'download'.");
+    rl.close();
+  }
+});
