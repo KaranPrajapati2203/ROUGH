@@ -1,194 +1,288 @@
-### **Practice 3: S3 Bucket Operations**
-
-#### Step 1: Create a Private S3 Bucket (AWS Web Console)
-
-1. **Log in** to your AWS account and go to the **S3** service.
-2. Click **Create bucket**.
-3. **Name your bucket** and select the **Mumbai (ap-south-1)** region.
-4. **Disable public access** by checking **Block all public access** under **Bucket settings**.
-5. Click **Create bucket**.
-
-#### Step 2: Upload and Download Files Using AWS SDK (JavaScript)
-
-1. **Set up AWS SDK for JavaScript**:
-   - Install Node.js (if you haven't already).
-   - Run `npm install aws-sdk` in your project directory.
-
-2. **Set up AWS Credentials**:
-   - Go to **IAM** in AWS Console, create a user with **Programmatic access**, and assign the **AmazonS3FullAccess** policy.
-   - Save the **Access Key ID** and **Secret Access Key**.
-
-3. **Upload a File**:
-   - Create a JavaScript file (`upload.js`).
-   - Use the following code to upload a file to your bucket:
-
-     ```javascript
-     const AWS = require('aws-sdk');
-     const fs = require('fs');
-
-     AWS.config.update({
-       region: 'ap-south-1',
-       accessKeyId: 'YOUR_ACCESS_KEY',
-       secretAccessKey: 'YOUR_SECRET_KEY'
-     });
-
-     const s3 = new AWS.S3();
-     const uploadParams = {
-       Bucket: 'YOUR_BUCKET_NAME',
-       Key: 'filename.ext', // File name in the bucket
-       Body: fs.createReadStream('path/to/local/file.ext')
-     };
-
-     s3.upload(uploadParams, (err, data) => {
-       if (err) console.log("Error", err);
-       if (data) console.log("Upload Success", data.Location);
-     });
-     ```
-
-4. **Download a File**:
-   - Create a JavaScript file (`download.js`) with the following code to download a file from the bucket:
-
-     ```javascript
-     const AWS = require('aws-sdk');
-     const fs = require('fs');
-
-     AWS.config.update({
-       region: 'ap-south-1',
-       accessKeyId: 'YOUR_ACCESS_KEY',
-       secretAccessKey: 'YOUR_SECRET_KEY'
-     });
-
-     const s3 = new AWS.S3();
-     const downloadParams = {
-       Bucket: 'YOUR_BUCKET_NAME',
-       Key: 'filename.ext'
-     };
-
-     s3.getObject(downloadParams, (err, data) => {
-       if (err) console.log("Error", err);
-       else fs.writeFileSync('path/to/local/file.ext', data.Body);
-     });
-     ```
+In SQL Server, there are several built-in stored procedures and system views that are commonly used for tasks related to database management, metadata retrieval, and troubleshooting. Here’s a list of some of the most frequently used ones:
 
 ---
 
-### **Practice 4: Attach CloudFront to S3 Bucket**
+### Commonly Used Built-In Stored Procedures
 
-1. Go to **CloudFront** in AWS Console and click **Create Distribution**.
-2. **Select Web** as the delivery method.
-3. Under **Origin Settings**, set **Origin Domain Name** to your S3 bucket (choose the **Bucket name** format).
-4. Set **Restrict Bucket Access** to **Yes** and choose **Create a New Identity**.
-5. Enable **Redirect HTTP to HTTPS** for Viewer Protocol Policy.
-6. Click **Create Distribution**.
-7. Copy the **Domain Name** in the CloudFront dashboard to access the bucket content.
+1. **sp_help**  
+   - Provides details about an object, such as a table, view, or stored procedure.
+   - Usage: `EXEC sp_help 'TableName'`
+
+2. **sp_who** and **sp_who2**  
+   - Displays information about current users, sessions, and processes.
+   - Usage: `EXEC sp_who` or `EXEC sp_who2`
+
+3. **sp_lock**  
+   - Shows information about locks currently held by active processes.
+   - Usage: `EXEC sp_lock`
+
+4. **sp_executesql**  
+   - Executes dynamic SQL and is often used for parameterized queries.
+   - Usage: `EXEC sp_executesql N'SELECT * FROM TableName WHERE Column = @Param', N'@Param INT', @Param = 10`
+
+5. **sp_rename**  
+   - Renames a database object, such as a table or column.
+   - Usage: `EXEC sp_rename 'OldName', 'NewName'`
+
+6. **sp_adduser** and **sp_addlogin**  
+   - Creates a new user or login in the SQL Server instance.
+   - Usage: `EXEC sp_adduser 'username'`
+
+7. **sp_helpindex**  
+   - Lists all indexes on a specified table.
+   - Usage: `EXEC sp_helpindex 'TableName'`
+
+8. **sp_helpconstraint**  
+   - Shows constraints (like primary key, foreign key) on a specified table.
+   - Usage: `EXEC sp_helpconstraint 'TableName'`
+
+9. **sp_configure**  
+   - Configures server-level settings.
+   - Usage: `EXEC sp_configure 'setting_name', value`
+
+10. **sp_tables**  
+    - Provides a list of all tables and views in the current database.
+    - Usage: `EXEC sp_tables`
 
 ---
 
-### **Practice 5: Create a t2.micro Windows EC2 Instance**
+### Commonly Used System Views
 
-1. Go to **EC2** and click **Launch Instances**.
-2. Choose **Microsoft Windows Server** under **Free Tier Eligible** AMIs.
-3. Select **t2.micro** for instance type and proceed to configure.
-4. Under **Configure Security Group**, add **RDP** for Windows and **HTTP** if needed.
-5. Download the **.pem file**.
-6. **Connect to the Instance**:
-   - Use an RDP client on your computer.
-   - Convert `.pem` to `.ppk` with PuTTYgen if needed (for Windows).
-7. **Add Radix IP** in Security Group by editing inbound rules in EC2 Security Group.
+1. **sys.tables**  
+   - Contains a row for each table object in the database.
+   - Usage: `SELECT * FROM sys.tables`
+
+2. **sys.columns**  
+   - Lists all columns for tables and views within the database.
+   - Usage: `SELECT * FROM sys.columns`
+
+3. **sys.indexes**  
+   - Provides information about indexes on tables and views.
+   - Usage: `SELECT * FROM sys.indexes`
+
+4. **sys.objects**  
+   - Contains a row for each object (tables, views, procedures, etc.) in the database.
+   - Usage: `SELECT * FROM sys.objects`
+
+5. **sys.procedures**  
+   - Contains information about all stored procedures in the database.
+   - Usage: `SELECT * FROM sys.procedures`
+
+6. **sys.dm_exec_sessions**  
+   - Provides session-level information for active connections.
+   - Usage: `SELECT * FROM sys.dm_exec_sessions`
+
+7. **sys.dm_exec_requests**  
+   - Displays information about each request currently being executed.
+   - Usage: `SELECT * FROM sys.dm_exec_requests`
+
+8. **sys.dm_exec_query_stats**  
+   - Contains aggregate performance statistics for cached query plans.
+   - Usage: `SELECT * FROM sys.dm_exec_query_stats`
+
+9. **sys.dm_tran_locks**  
+   - Provides details about active locks and transactions.
+   - Usage: `SELECT * FROM sys.dm_tran_locks`
+
+10. **information_schema.tables**  
+    - Standardized view that shows table metadata.
+    - Usage: `SELECT * FROM information_schema.tables`
 
 ---
 
-### **Practice 6: Elastic Beanstalk with Default .NET Application**
+These stored procedures and views are commonly used for database management, querying metadata, analyzing performance, and managing user sessions.
 
-1. Go to **Elastic Beanstalk** in AWS Console.
-2. Choose **Create New Application**.
-3. Set **Platform** to **.NET on Windows Server**.
-4. Select **t2.micro** as the instance type.
-5. Click **Create Application** and wait for deployment.
-6. Once deployed, the **URL** will be available in the Elastic Beanstalk dashboard.
+-----------------------------------------------------------------------------------------------------------------------------
+
+### 1. **Use of `STRING_SPLIT` in SQL Server**
+
+`STRING_SPLIT` is a function in SQL Server that splits a string into rows based on a specified delimiter. It’s especially helpful when you have a comma-separated string and want to convert it into rows.
+
+#### Example:
+Suppose you have a string of comma-separated values and want to get each value on a new row.
+
+```sql
+DECLARE @Colors NVARCHAR(100) = 'Red,Green,Blue,Yellow'
+
+SELECT value AS Color
+FROM STRING_SPLIT(@Colors, ',')
+```
+
+**Output:**
+| Color   |
+|---------|
+| Red     |
+| Green   |
+| Blue    |
+| Yellow  |
+
+In this example, `STRING_SPLIT` takes the `@Colors` string and splits it based on the comma delimiter, returning each color as a separate row.
 
 ---
 
-### **Practice 7: Create an RDS and Connect from SSMS**
+### 2. **Simple Example of a Correlated Subquery**
 
-1. Go to **RDS** and click **Create Database**.
-2. Choose **Microsoft SQL Server** as the engine.
-3. Select **t2.micro** for instance class and ensure **Free Tier** is checked.
-4. Set **Public Access** to **Yes** if you plan to access it externally.
-5. Under **Security Group**, allow inbound traffic for SQL Server (default port 1433).
-6. **Connect from SSMS**:
-   - Get the **endpoint** from the RDS dashboard.
-   - Use SQL Server Management Studio (SSMS) with the endpoint, username, and password.
+A **correlated subquery** is a subquery that refers to a column from the outer query. The subquery is executed once for each row processed by the outer query.
 
--------------------------------------------------------------------------------------------------------------------------------------------
+#### Example:
+Consider two tables: `Employees` and `Departments`.
 
-const AWS = require('aws-sdk');
-const fs = require('fs');
-const readline = require('readline');
+- `Employees` table:
+  | EmployeeID | EmployeeName | DepartmentID |
+  |------------|--------------|--------------|
+  | 1          | John         | 1            |
+  | 2          | Jane         | 2            |
+  | 3          | Mike         | 1            |
+  | 4          | Sara         | 3            |
 
-// Configure AWS SDK
-AWS.config.update({
-  region: 'ap-south-1',
-  accessKeyId: 'YOUR_ACCESS_KEY', // Replace with your access key
-  secretAccessKey: 'YOUR_SECRET_KEY' // Replace with your secret key
-});
+- `Departments` table:
+  | DepartmentID | DepartmentName |
+  |--------------|----------------|
+  | 1            | Sales          |
+  | 2            | Marketing      |
+  | 3            | IT             |
 
-const s3 = new AWS.S3();
-const bucketName = 'YOUR_BUCKET_NAME'; // Replace with your bucket name
+Suppose you want to find employees whose department has more than one employee.
 
-// Create a readline interface to get user input
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+Here’s how you can use a correlated subquery:
 
-// Function to upload a file to S3
-const uploadFile = (filePath, key) => {
-  const uploadParams = {
-    Bucket: bucketName,
-    Key: key, // File name in the bucket
-    Body: fs.createReadStream(filePath) // Read the file from your local path
-  };
+```sql
+SELECT EmployeeName
+FROM Employees e1
+WHERE (SELECT COUNT(*)
+       FROM Employees e2
+       WHERE e2.DepartmentID = e1.DepartmentID) > 1
+```
 
-  s3.upload(uploadParams, (err, data) => {
-    if (err) console.log("Error uploading file:", err);
-    else console.log("Upload success:", data.Location);
-  });
-};
+**Explanation:**
+- The outer query (`SELECT EmployeeName FROM Employees e1`) retrieves each employee.
+- The correlated subquery `(SELECT COUNT(*) FROM Employees e2 WHERE e2.DepartmentID = e1.DepartmentID)` calculates the number of employees in the same department as the current employee (`e1`).
+- If the count is greater than 1, the employee is selected in the result.
 
-// Function to download a file from S3
-const downloadFile = (key, downloadPath) => {
-  const downloadParams = {
-    Bucket: bucketName,
-    Key: key // Name of the file to download
-  };
+**Output:**
+| EmployeeName |
+|--------------|
+| John         |
+| Mike         |
 
-  s3.getObject(downloadParams, (err, data) => {
-    if (err) console.log("Error downloading file:", err);
-    else {
-      fs.writeFileSync(downloadPath, data.Body); // Write the file to the local path
-      console.log("Download success:", downloadPath);
-    }
-  });
-};
+In this case, `John` and `Mike` are both in the `Sales` department, which has more than one employee, so they are included in the output.
 
-// Prompt user for upload or download operation
-rl.question("Enter 'upload' to upload a file or 'download' to download a file: ", (operation) => {
-  if (operation.toLowerCase() === 'upload') {
-    rl.question("Enter the local file path to upload: ", (filePath) => {
-      const key = filePath.split('/').pop(); // Use the file name as the S3 key
-      uploadFile(filePath, key);
-      rl.close();
-    });
-  } else if (operation.toLowerCase() === 'download') {
-    rl.question("Enter the S3 file key to download: ", (key) => {
-      rl.question("Enter the local path to save the downloaded file: ", (downloadPath) => {
-        downloadFile(key, downloadPath);
-        rl.close();
-      });
-    });
-  } else {
-    console.log("Invalid operation. Please enter 'upload' or 'download'.");
-    rl.close();
-  }
-});
+------------------------------------------------------------------------------------------------------------------------------
+
+DECLARE @counter INT = 1;
+
+WHILE @counter <= 5000
+BEGIN
+    INSERT INTO Employees (EmployeeName, Salary, DepartmentID)
+    VALUES (
+        CONCAT('Employee', @counter),              -- EmployeeName
+        5000 + (RAND() * 5000),                    -- Random Salary between 5000 and 10000
+        1 + (ABS(CHECKSUM(NEWID())) % 3)           -- Random DepartmentID (1, 2, or 3)
+    );
+    SET @counter = @counter + 1;
+END;
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+Correlated subqueries in SQL are subqueries that depend on values from the outer query, which makes them unique because they are evaluated once for each row processed by the outer query. In a correlated subquery, the inner query references a column from the outer query, so it "correlates" with each row processed by the outer query. Let’s break down this concept and look at how it works, with examples.
+
+### Key Characteristics of Correlated Subqueries
+
+1. **Dependency on Outer Query**: The inner (subquery) part of a correlated subquery cannot run independently of the outer query because it refers to columns from the outer query.
+2. **Row-by-Row Execution**: The inner query is re-evaluated for each row that the outer query processes, which can sometimes lead to performance considerations, especially with large datasets.
+3. **Filtering or Aggregation Context**: Correlated subqueries are often used when you need to compare each row in a table with rows in the same table or another table, especially for tasks like finding matches, filtering, or aggregate values that vary for each row.
+
+### Example Scenario
+
+Let’s use the following tables as an example:
+
+- **Employees**:
+  | EmployeeID | EmployeeName | Salary | DepartmentID |
+  |------------|--------------|--------|--------------|
+  | 1          | John         | 5000   | 1            |
+  | 2          | Jane         | 7000   | 2            |
+  | 3          | Mike         | 6000   | 1            |
+  | 4          | Sara         | 9000   | 2            |
+  | 5          | Chris        | 5500   | 1            |
+
+- **Departments**:
+  | DepartmentID | DepartmentName |
+  |--------------|----------------|
+  | 1            | Sales          |
+  | 2            | Marketing      |
+
+#### Example 1: Finding Employees with the Highest Salary in Each Department
+
+Suppose you want to list the employees who have the highest salary within their respective departments. To achieve this, a correlated subquery can be used.
+
+```sql
+SELECT EmployeeName, Salary, DepartmentID
+FROM Employees e1
+WHERE Salary = (
+    SELECT MAX(Salary)
+    FROM Employees e2
+    WHERE e2.DepartmentID = e1.DepartmentID
+);
+```
+
+#### Explanation of the Query
+
+1. **Outer Query**: `SELECT EmployeeName, Salary, DepartmentID FROM Employees e1` – this selects the columns from the `Employees` table. Here, `e1` is an alias for `Employees`, allowing us to differentiate between the outer query and the subquery.
+2. **Correlated Subquery**: 
+   - `(SELECT MAX(Salary) FROM Employees e2 WHERE e2.DepartmentID = e1.DepartmentID)`: The subquery finds the maximum salary in each department.
+   - **Correlation**: `e2.DepartmentID = e1.DepartmentID` – this condition connects each row in the outer query to the rows in the subquery, ensuring the subquery filters data based on the department of each specific employee in the outer query.
+3. **Filtering Condition**: The outer query only selects rows where the employee’s salary matches the highest salary found by the subquery.
+
+**Output:**
+| EmployeeName | Salary | DepartmentID |
+|--------------|--------|--------------|
+| Jane         | 7000   | 2            |
+| Sara         | 9000   | 2            |
+
+#### How the Correlated Subquery Works Internally
+
+For each employee row in the `Employees` table, SQL Server:
+1. **Executes the Subquery**: Finds the maximum salary for the specific `DepartmentID` of the current employee.
+2. **Compares Results**: Compares the employee’s salary with the maximum salary for that department.
+3. **Returns Rows Matching Condition**: If an employee’s salary equals the department’s maximum, the employee is included in the results.
+
+---
+
+### Another Example: Checking if an Employee Has the Highest Salary in Their Department
+
+If we want to find employees who earn more than the average salary in their department, we can use a correlated subquery to compare each employee’s salary against the department’s average.
+
+```sql
+SELECT EmployeeName, Salary, DepartmentID
+FROM Employees e1
+WHERE Salary > (
+    SELECT AVG(Salary)
+    FROM Employees e2
+    WHERE e2.DepartmentID = e1.DepartmentID
+);
+```
+
+In this query:
+- The subquery calculates the average salary for each department by filtering the `Employees` table based on `DepartmentID` in the outer query.
+- For each employee, the subquery calculates the average salary of their department, and the outer query returns only those employees whose salaries are above this average.
+
+**Output:** This would return any employees who earn more than the average salary in their department.
+
+---
+
+### Advantages and Considerations
+
+#### Advantages:
+- **Dynamic Filtering**: Correlated subqueries are powerful for cases where data relationships need to be dynamically evaluated row-by-row.
+- **Complex Conditions**: They allow complex comparisons that would be difficult to express with simple joins or without the need for additional tables.
+
+#### Considerations:
+- **Performance**: Correlated subqueries can be slower, especially with large datasets, because they are executed repeatedly—once per row in the outer query.
+- **Optimization**: In some cases, correlated subqueries can be rewritten as joins, which may improve performance by reducing row-by-row execution.
+
+---
+
+### Conclusion
+
+Correlated subqueries are a powerful SQL feature that enables row-level comparisons and filtering, especially for cases where we need to evaluate relationships dynamically. However, due to their potential performance impact, they should be used thoughtfully.
