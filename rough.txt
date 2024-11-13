@@ -286,3 +286,228 @@ In this query:
 ### Conclusion
 
 Correlated subqueries are a powerful SQL feature that enables row-level comparisons and filtering, especially for cases where we need to evaluate relationships dynamically. However, due to their potential performance impact, they should be used thoughtfully.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Here's an analysis of each query with comments on any misinterpretations, corrections, and adjustments required for optimal results:
+
+---
+
+### Q1: List Names of Depositors with the Same Branch City as Input Customer’s City
+
+**Current Code:**
+```sql
+CREATE PROCEDURE sp_list_customer_name
+(@CustName VARCHAR(50))
+AS
+BEGIN
+	SELECT d.CNAME, b.BNAME, c.CITY
+	FROM DEPOSIT d 
+		LEFT JOIN CUSTOMER c ON d.CNAME = c.CNAME
+		LEFT JOIN BRANCH b ON d.BNAME = b.BNAME
+	WHERE
+		c.CITY = (SELECT CITY FROM CUSTOMER WHERE CNAME = @CustName)
+END
+
+EXECUTE sp_list_customer_name 'NAREN'
+```
+
+**Review and Corrections:**
+- The **LEFT JOIN** on `CUSTOMER` and `BRANCH` tables is unnecessary; use **INNER JOIN** instead for records that match.
+- The code correctly retrieves customers who have deposits in the same city as the input customer’s branch.
+
+**Corrected Code:**
+```sql
+CREATE PROCEDURE sp_list_customer_name
+(@CustName VARCHAR(50))
+AS
+BEGIN
+	SELECT d.CNAME, b.BNAME, c.CITY
+	FROM DEPOSIT d
+		INNER JOIN CUSTOMER c ON d.CNAME = c.CNAME
+		INNER JOIN BRANCH b ON d.BNAME = b.BNAME
+	WHERE c.CITY = (SELECT CITY FROM CUSTOMER WHERE CNAME = @CustName)
+END
+
+EXECUTE sp_list_customer_name 'NAREN';
+```
+
+---
+
+### Q2: List All Depositors in JSON Format for Branches Where the Input Customer Has an Account
+
+**Current Code:**
+```sql
+CREATE PROCEDURE sp_get_depositors
+(@CustName VARCHAR(MAX))
+AS
+BEGIN
+	SELECT DISTINCT c.CNAME, d.BNAME, b.CITY 
+	FROM CUSTOMER c
+		LEFT JOIN BRANCH b ON c.CITY = b.CITY  
+		LEFT JOIN DEPOSIT d ON c.CNAME = d.CNAME
+	WHERE 
+		b.CITY = (SELECT CITY FROM BRANCH WHERE BNAME IN(SELECT BNAME FROM DEPOSIT WHERE CNAME = @CustName))
+	FOR JSON PATH
+END
+
+EXEC sp_get_depositors 'NAREN';
+```
+
+**Review and Corrections:**
+- The requirement is to find all depositors who have accounts in the same branches as the input customer. However, the current query is matching **cities** instead of **branches**.
+- Use **INNER JOIN** and check directly for branch names.
+
+**Corrected Code:**
+```sql
+CREATE PROCEDURE sp_get_depositors
+(@CustName VARCHAR(50))
+AS
+BEGIN
+	SELECT DISTINCT c.CNAME, d.BNAME, b.CITY 
+	FROM CUSTOMER c
+		INNER JOIN DEPOSIT d ON c.CNAME = d.CNAME
+		INNER JOIN BRANCH b ON d.BNAME = b.BNAME
+	WHERE d.BNAME IN (SELECT BNAME FROM DEPOSIT WHERE CNAME = @CustName)
+	FOR JSON PATH
+END
+
+EXEC sp_get_depositors 'NAREN';
+```
+
+---
+
+### Q3: Count of Customers in a Given City
+
+**Current Code:**
+```sql
+CREATE PROCEDURE sp_get_count_by_city
+(@CityName VARCHAR(MAX))
+AS
+BEGIN
+	SELECT COUNT(DISTINCT c.CNAME), c.CITY
+	FROM CUSTOMER c INNER JOIN BRANCH b ON c.CITY = b.CITY
+	WHERE c.CITY = @CityName
+	GROUP BY c.CITY
+END
+
+EXEC sp_get_count_by_city 'DELHI'
+```
+
+**Review:**
+- This query will only count customers who live in a city where there is a branch. If this is the intent, it’s correct; otherwise, remove the join to `BRANCH`.
+
+**Final Code:** (No changes needed if the above is intended)
+
+---
+
+### Q4: List All Customers in Given City with Branch City as Mumbai or Delhi in JSON
+
+**Current Code:**
+```sql
+CREATE PROCEDURE sp_get_customer_conditional
+(@CityName VARCHAR(MAX))
+AS
+BEGIN
+	SELECT d.CNAME, c.CITY AS 'Customer City', d.BNAME AS 'Bank Branch', b.CITY
+	FROM CUSTOMER c
+		INNER JOIN DEPOSIT d ON c.CNAME = d.CNAME
+		INNER JOIN BRANCH b ON d.BNAME = b.BNAME
+	WHERE b.CITY IN ('MUMBAI','DELHI') AND c.CITY = @CityName
+	FOR JSON PATH
+END
+
+EXEC sp_get_customer_conditional 'MUMBAI';
+```
+
+**Review and Corrections:**
+- This query accurately filters customers based on their city and branch city constraints. No changes needed.
+
+---
+
+### Q5: Count of Customers Living in the Same City as Branch Location
+
+**Current Code:**
+```sql
+CREATE PROCEDURE sp_get_customer_count
+AS
+BEGIN
+	SELECT c.CITY, COUNT(DISTINCT c.CNAME) AS 'Number of Customers'
+	FROM CUSTOMER c INNER JOIN BRANCH b ON c.CITY = b.CITY
+	GROUP BY c.CITY
+END
+
+EXECUTE sp_get_customer_count
+```
+
+**Review:**
+- This query is correct and fulfills the requirement. No changes needed.
+
+---
+
+### Q6: Insert into `DEPOSIT` Table with JSON Input and Validations
+
+**Current Code:**
+```sql
+CREATE PROCEDURE sp_json_validation
+(@Json_Data VARCHAR(MAX))
+AS
+BEGIN
+	INSERT INTO CUSTOMER
+		SELECT * 
+		FROM OPENJSON(@Json_Data)
+		WITH(
+			CNAME VARCHAR(50) '$.CustomerName',
+			CITY VARCHAR(50) '$.City'
+		);
+	
+	INSERT INTO DEPOSIT
+		SELECT *, GETDATE() AS ADATE 
+		FROM OPENJSON(@Json_Data) 
+		WITH(
+			ACTNO VARCHAR(10) '$.ACTNO',
+			CNAME VARCHAR(50) '$.CustomerName',
+			BNAME VARCHAR(50) '$.Branch',
+			AMOUNT INT '$.amount'
+		)
+		WHERE AMOUNT > 10;
+END
+```
+
+**Review and Corrections:**
+- Currently, there’s no check for existing customers, which may lead to duplication. Use a condition to insert only new customers.
+- The code is correct in terms of **JSON parsing** and **validations** for amount and date.
+
+**Corrected Code:**
+```sql
+CREATE PROCEDURE sp_json_validation
+(@Json_Data VARCHAR(MAX))
+AS
+BEGIN
+	-- Insert into CUSTOMER only if the customer does not already exist
+	INSERT INTO CUSTOMER
+	SELECT CNAME, CITY
+	FROM OPENJSON(@Json_Data)
+	WITH(
+		CNAME VARCHAR(50) '$.CustomerName',
+		CITY VARCHAR(50) '$.City'
+	) AS new_data
+	WHERE NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE CNAME = new_data.CNAME);
+
+	-- Insert into DEPOSIT with validation on amount and current date
+	INSERT INTO DEPOSIT
+	SELECT ACTNO, CNAME, BNAME, AMOUNT, GETDATE() AS ADATE
+	FROM OPENJSON(@Json_Data) 
+	WITH(
+		ACTNO VARCHAR(10) '$.ACTNO',
+		CNAME VARCHAR(50) '$.CustomerName',
+		BNAME VARCHAR(50) '$.Branch',
+		AMOUNT INT '$.amount'
+	)
+	WHERE AMOUNT > 10;
+END
+```
+
+---
+
+These corrections should help in meeting the exact requirements for each query. Let me know if you have further questions!
