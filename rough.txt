@@ -510,4 +510,270 @@ END
 
 ---
 
-These corrections should help in meeting the exact requirements for each query. Let me know if you have further questions!
+-----------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE roles (
+    roleid INT PRIMARY KEY,
+    rolename VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE users (
+    userid INT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    useraddress VARCHAR(500) NOT NULL,
+    roleid INT REFERENCES roles(roleid) NOT NULL,
+    password VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE restaurants (
+    restaurantid INT PRIMARY KEY,
+    restaurantname VARCHAR(100) NOT NULL,
+    restaurantaddress VARCHAR(500) NOT NULL,
+    userid INT REFERENCES users(userid) NOT NULL
+);
+
+CREATE TABLE items (
+    itemid INT PRIMARY KEY,
+    itemname VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE menu (
+    menuid INT PRIMARY KEY,
+    itemid INT REFERENCES items(itemid) NOT NULL,
+    itemprice MONEY NOT NULL,
+    restaurantid INT REFERENCES restaurants(restaurantid) NOT NULL
+);
+
+CREATE TABLE cart (
+    cartid INT PRIMARY KEY,
+    userid INT REFERENCES users(userid) NOT NULL,
+    restaurantid INT REFERENCES restaurants(restaurantid) NOT NULL
+);
+
+CREATE TABLE cart_items (
+    cartid INT REFERENCES cart(cartid),
+    itemid INT REFERENCES items(itemid),
+    itemquantity INT DEFAULT 1,
+    PRIMARY KEY (cartid, itemid)
+);
+
+CREATE TABLE paymentstatus (
+    statusid INT PRIMARY KEY,
+    statusname VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE payment (
+    paymentid INT PRIMARY KEY,
+    cartid INT REFERENCES cart(cartid) NOT NULL,
+    userid INT REFERENCES users(userid) NOT NULL,
+    amount MONEY NOT NULL,
+    statusid INT REFERENCES paymentstatus(statusid) NOT NULL
+);
+
+CREATE TABLE delivery (
+    deliveryid INT PRIMARY KEY,
+    userid INT REFERENCES users(userid) NOT NULL,
+    cartid INT REFERENCES cart(cartid) NOT NULL,
+    paymentid INT REFERENCES payment(paymentid) NOT NULL
+);
+
+--------------------------------------------------------------------------------------------------------------------
+
+CREATE PROCEDURE insertIntoDeposit (
+    @insertjson NVARCHAR(MAX)
+)
+AS
+BEGIN
+    -- Parse each entry in the JSON array
+    DECLARE @Amount INT, @Adate DATE, @ACTNO INT, @Cname NVARCHAR(100), @Bname NVARCHAR(100);
+    
+    -- Open JSON array and process each item
+    DECLARE @json NVARCHAR(MAX) = @insertjson;
+    BEGIN TRY
+        -- Use OPENJSON to iterate over each item in the JSON array
+        WITH JSON_ITEMS AS (
+            SELECT *
+            FROM OPENJSON(@json)
+            WITH (
+                ACTNO INT '$.ACTNO',
+                Cname NVARCHAR(100) '$.Cname',
+                Bname NVARCHAR(100) '$.Bname',
+                Amount INT '$.Amount',
+                Adate DATE '$.Adate'
+            )
+        )
+        
+        INSERT INTO Deposit (ACTNO, Cname, Bname, Amount, Adate)
+        SELECT 
+            ACTNO,
+            Cname,
+            Bname,
+            Amount,
+            Adate
+        FROM JSON_ITEMS
+        WHERE Amount >= 10
+          AND Adate = CAST(GETDATE() AS DATE);
+
+    END TRY
+    BEGIN CATCH
+        -- Error handling
+        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
+        THROW 50000, @ErrorMessage, 1;
+    END CATCH
+END;
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+docker restart <container_id>: Restarts a container.
+
+docker exec -it <container_id> <command>: Runs a command inside a running container (e.g., bash for an interactive shell).
+
+docker logs <container_id>: Fetches the logs of a container.
+
+docker network ls: Lists all Docker networks.
+
+docker network create <network_name>: Creates a new Docker network.
+
+docker network connect <network_name> <container_name>: Connects a container to a network.
+
+docker volume ls: Lists all Docker volumes.
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+Here’s a list of essential Docker commands, organized by category, to help you with your list:
+
+### 1. **Docker Image Commands**
+
+- **`docker build -t <image_name> .`**: Builds an image from a Dockerfile in the current directory, tagging it with `<image_name>`.
+- **`docker images`**: Lists all Docker images on the system.
+- **`docker rmi <image_name>`**: Removes an image by name or ID.
+- **`docker pull <image_name>`**: Pulls an image from a Docker registry (e.g., Docker Hub).
+- **`docker tag <source_image> <target_image>`**: Creates a new tag for an image.
+
+### 2. **Docker Container Commands**
+
+- **`docker run -p <host_port>:<container_port> <image_name>`**: Runs a container from an image and maps a host port to the container’s port.
+- **`docker ps`**: Lists all running containers.
+- **`docker ps -a`**: Lists all containers, including stopped ones.
+- **`docker start <container_id>`**: Starts a stopped container.
+- **`docker stop <container_id>`**: Stops a running container.
+- **`docker restart <container_id>`**: Restarts a container.
+- **`docker rm <container_id>`**: Removes a stopped container.
+- **`docker exec -it <container_id> <command>`**: Runs a command inside a running container (e.g., `bash` for an interactive shell).
+- **`docker logs <container_id>`**: Fetches the logs of a container.
+
+### 3. **Docker Network Commands**
+
+- **`docker network ls`**: Lists all Docker networks.
+- **`docker network create <network_name>`**: Creates a new Docker network.
+- **`docker network connect <network_name> <container_name>`**: Connects a container to a network.
+- **`docker network disconnect <network_name> <container_name>`**: Disconnects a container from a network.
+
+### 4. **Docker Volume Commands**
+
+- **`docker volume create <volume_name>`**: Creates a new volume.
+- **`docker volume ls`**: Lists all Docker volumes.
+- **`docker volume rm <volume_name>`**: Removes a specific volume.
+- **`docker volume inspect <volume_name>`**: Displays detailed information about a volume.
+
+### 5. **Docker Compose Commands** (if using Docker Compose)
+
+- **`docker-compose up`**: Starts containers defined in a `docker-compose.yml` file.
+- **`docker-compose up -d`**: Starts containers in detached mode (background).
+- **`docker-compose down`**: Stops and removes containers, networks, and volumes created by `docker-compose up`.
+- **`docker-compose ps`**: Lists containers defined in the Compose file.
+- **`docker-compose logs`**: Shows logs for all services in a Compose setup.
+
+### 6. **Docker System Commands**
+
+- **`docker info`**: Displays system-wide information about Docker.
+- **`docker version`**: Displays Docker version details.
+- **`docker system prune`**: Removes unused data (containers, images, volumes, networks).
+- **`docker stats`**: Displays real-time statistics of running containers (CPU, memory usage).
+
+### 7. **Docker Inspect Commands**
+
+- **`docker inspect <container_id>`**: Provides detailed configuration data of a container or image.
+- **`docker inspect <image_id>`**: Provides detailed configuration data of an image.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Here's a categorized list of essential AWS CLI commands to help you get started:
+
+---
+
+### **General AWS CLI Commands**
+
+- **`aws configure`**: Set up AWS CLI with access keys, default region, and output format.
+- **`aws help`**: Display a list of commands or get help on a specific command, e.g., `aws s3 help`.
+- **`aws sts get-caller-identity`**: Display details about the authenticated user or role.
+
+### **S3 (Simple Storage Service)**
+
+- **`aws s3 ls`**: List all S3 buckets.
+- **`aws s3 mb s3://bucket-name`**: Create a new S3 bucket.
+- **`aws s3 cp <source> <destination>`**: Copy files to/from S3, e.g., `aws s3 cp file.txt s3://bucket-name/`.
+- **`aws s3 rm s3://bucket-name/file.txt`**: Delete a file from an S3 bucket.
+- **`aws s3 sync <local-folder> s3://bucket-name`**: Sync a local directory with an S3 bucket.
+
+### **EC2 (Elastic Compute Cloud)**
+
+- **`aws ec2 describe-instances`**: List all EC2 instances.
+- **`aws ec2 run-instances --image-id ami-id --instance-type t2.micro`**: Launch a new EC2 instance.
+- **`aws ec2 stop-instances --instance-ids i-1234567890abcdef0`**: Stop an EC2 instance.
+- **`aws ec2 start-instances --instance-ids i-1234567890abcdef0`**: Start an EC2 instance.
+- **`aws ec2 terminate-instances --instance-ids i-1234567890abcdef0`**: Terminate an EC2 instance.
+
+### **IAM (Identity and Access Management)**
+
+- **`aws iam list-users`**: List all IAM users.
+- **`aws iam create-user --user-name user-name`**: Create a new IAM user.
+- **`aws iam delete-user --user-name user-name`**: Delete an IAM user.
+- **`aws iam list-roles`**: List all IAM roles.
+- **`aws iam attach-user-policy --user-name user-name --policy-arn policy-arn`**: Attach a policy to a user.
+
+### **RDS (Relational Database Service)**
+
+- **`aws rds describe-db-instances`**: List RDS instances.
+- **`aws rds create-db-instance`**: Create a new RDS instance.
+- **`aws rds stop-db-instance --db-instance-identifier db-instance-id`**: Stop an RDS instance.
+- **`aws rds start-db-instance --db-instance-identifier db-instance-id`**: Start an RDS instance.
+- **`aws rds delete-db-instance --db-instance-identifier db-instance-id`**: Delete an RDS instance.
+
+### **CloudFront**
+
+- **`aws cloudfront create-distribution --origin-domain-name example-bucket.s3.amazonaws.com`**: Create a new CloudFront distribution.
+- **`aws cloudfront list-distributions`**: List all CloudFront distributions.
+- **`aws cloudfront delete-distribution --id distribution-id`**: Delete a CloudFront distribution.
+
+### **Elastic Beanstalk**
+
+- **`aws elasticbeanstalk create-application --application-name my-app`**: Create a new Elastic Beanstalk application.
+- **`aws elasticbeanstalk create-environment --application-name my-app --environment-name my-env --solution-stack-name "64bit Amazon Linux 2 v3.1.0 running Node.js 12"`**: Launch a new environment.
+- **`aws elasticbeanstalk terminate-environment --environment-name my-env`**: Terminate an Elastic Beanstalk environment.
+
+### **VPC (Virtual Private Cloud)**
+
+- **`aws ec2 create-vpc --cidr-block 10.0.0.0/16`**: Create a new VPC.
+- **`aws ec2 describe-vpcs`**: List all VPCs.
+- **`aws ec2 delete-vpc --vpc-id vpc-id`**: Delete a VPC.
+
+### **Lambda**
+
+- **`aws lambda list-functions`**: List all Lambda functions.
+- **`aws lambda create-function --function-name my-function --runtime nodejs14.x --role arn:aws:iam::account-id:role/lambda-role --handler index.handler --zip-file fileb://function.zip`**: Create a new Lambda function.
+- **`aws lambda delete-function --function-name my-function`**: Delete a Lambda function.
+
+### **CloudWatch**
+
+- **`aws cloudwatch list-metrics`**: List available CloudWatch metrics.
+- **`aws cloudwatch put-metric-alarm`**: Create a new CloudWatch alarm.
+- **`aws cloudwatch describe-alarms`**: List all CloudWatch alarms.
+
+### **ECS (Elastic Container Service)**
+
+- **`aws ecs list-clusters`**: List all ECS clusters.
+- **`aws ecs create-cluster --cluster-name my-cluster`**: Create a new ECS cluster.
+- **`aws ecs delete-cluster --cluster-name my-cluster`**: Delete an ECS cluster.
+
+---
