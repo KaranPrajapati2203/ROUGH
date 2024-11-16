@@ -776,4 +776,124 @@ Here's a categorized list of essential AWS CLI commands to help you get started:
 - **`aws ecs create-cluster --cluster-name my-cluster`**: Create a new ECS cluster.
 - **`aws ecs delete-cluster --cluster-name my-cluster`**: Delete an ECS cluster.
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Here’s how to approach each of your Docker tasks step-by-step:
+
 ---
+
+### **Practice 1: Deploy Vite JS Project Using Multi-Stage Build**
+
+1. **Create a Multi-Stage Dockerfile**:
+   ```dockerfile
+   # Stage 1: Build the project
+   FROM node:16 as builder
+   WORKDIR /app
+   COPY . .
+   RUN npm install
+   RUN npm run build
+
+   # Stage 2: Serve the project with NGINX
+   FROM nginx:alpine
+   COPY --from=builder /app/dist /usr/share/nginx/html
+   EXPOSE 5000
+   CMD ["nginx", "-g", "daemon off;"]
+   ```
+
+2. **Build and Run the Docker Image**:
+   ```bash
+   docker build -t vite-multi-stage .
+   docker run -p 5000:80 vite-multi-stage
+   ```
+
+---
+
+### **Practice 2: Deploy Vite JS Project Using Docker Compose**
+
+1. **Create a `docker-compose.yml` File**:
+   ```yaml
+   version: '3.8'
+   services:
+     vite:
+       build:
+         context: .
+         dockerfile: Dockerfile
+       volumes:
+         - .:/app
+       ports:
+         - "5001:5173"
+       command: ["npm", "run", "dev"]
+   ```
+
+2. **Create a Dockerfile for Development**:
+   ```dockerfile
+   FROM node:16
+   WORKDIR /app
+   COPY package*.json ./
+   RUN npm install
+   CMD ["npm", "run", "dev"]
+   ```
+
+3. **Run the Application with Docker Compose**:
+   ```bash
+   docker-compose up
+   ```
+
+   - Your project will be live at `http://localhost:5001`, with live changes reflecting due to the volume bind.
+
+---
+
+### **Practice 3: Push Docker Image to Docker Hub**
+
+1. **Create a Docker Hub Repository**:
+   - Go to Docker Hub and create a new repository (e.g., `vite-practice`).
+
+2. **Tag the Docker Image**:
+   ```bash
+   docker tag vite-multi-stage your-dockerhub-username/vite-practice:latest
+   ```
+
+3. **Login to Docker Hub**:
+   ```bash
+   docker login
+   ```
+
+4. **Push the Image to Docker Hub**:
+   ```bash
+   docker push your-dockerhub-username/vite-practice:latest
+   ```
+
+---
+
+### **Assignment 1: Deploy and Push Using Docker Compose**
+
+1. **Create `docker-compose.yml` File**:
+   ```yaml
+   version: '3.8'
+   services:
+     vite:
+       image: node:latest
+       volumes:
+         - .:/app
+       working_dir: /app
+       ports:
+         - "5002:5173"
+       command: ["npm", "run", "dev"]
+   ```
+
+2. **Run the Docker Compose Application**:
+   ```bash
+   docker-compose up
+   ```
+
+3. **Build and Push the Image to Docker Hub**:
+   ```bash
+   docker build -t your-dockerhub-username/htmlrepo:latest .
+   docker push your-dockerhub-username/htmlrepo:latest
+   ```
+
+   - Ensure the repository name is `HTMLrepo`.
+
+---
+
+Let me know if you need additional clarification or help with any specific step!
