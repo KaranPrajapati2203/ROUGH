@@ -897,3 +897,397 @@ Here’s how to approach each of your Docker tasks step-by-step:
 ---
 
 Let me know if you need additional clarification or help with any specific step!
+
+-----------------------------------------------------------------------------------------------------
+
+Here’s a collection of **50 AWS multiple-choice questions (MCQs)** covering various topics in AWS. These questions are designed to help you prepare for your test.  
+
+---
+
+### **General AWS Concepts**
+1. **What does AWS stand for?**  
+   a) Amazon Web Software  
+   b) Advanced Web Services  
+   c) Amazon Web Services  
+   d) Automated Web Server  
+   **Answer**: c) Amazon Web Services  
+
+2. **Which AWS service is used for content delivery?**  
+   a) CloudWatch  
+   b) CloudFront  
+   c) RDS  
+   d) Lambda  
+   **Answer**: b) CloudFront  
+
+3. **What is the primary purpose of Amazon S3?**  
+   a) Storing structured data  
+   b) Object storage for the cloud  
+   c) Compute services  
+   d) Machine learning  
+   **Answer**: b) Object storage for the cloud  
+
+4. **Which service allows you to run code without provisioning or managing servers?**  
+   a) EC2  
+   b) Lambda  
+   c) DynamoDB  
+   d) EKS  
+   **Answer**: b) Lambda  
+
+5. **AWS regions are made up of one or more _____.**  
+   a) Data centers  
+   b) Availability zones  
+   c) Edge locations  
+   d) Cloud centers  
+   **Answer**: b) Availability zones  
+
+---
+
+### **AWS Compute**
+6. **Which EC2 instance pricing model is the most cost-effective for workloads that are flexible in timing?**  
+   a) On-Demand  
+   b) Reserved  
+   c) Spot Instances  
+   d) Dedicated Hosts  
+   **Answer**: c) Spot Instances  
+
+7. **What is the minimum charge duration for a Spot Instance?**  
+   a) 1 minute  
+   b) 10 minutes  
+   c) 1 hour  
+   d) 1 second  
+   **Answer**: a) 1 minute  
+
+8. **Which service is used to containerize applications in AWS?**  
+   a) ECS  
+   b) CloudFormation  
+   c) Elastic Beanstalk  
+   d) CloudTrail  
+   **Answer**: a) ECS  
+
+9. **What does Amazon EKS stand for?**  
+   a) Elastic Kubernetes Service  
+   b) Elastic Kafka Service  
+   c) Extended Kubernetes Storage  
+   d) Enterprise Kubernetes Service  
+   **Answer**: a) Elastic Kubernetes Service  
+
+10. **Which AWS service is best for running batch jobs?**  
+    a) EC2  
+    b) Batch  
+    c) Lightsail  
+    d) RDS  
+    **Answer**: b) Batch  
+
+---
+
+### **AWS Storage**
+11. **What is the default consistency model in Amazon S3?**  
+    a) Eventual consistency  
+    b) Strong consistency  
+    c) Weak consistency  
+    d) Read-after-write consistency  
+    **Answer**: d) Read-after-write consistency  
+
+12. **Which S3 storage class is suitable for infrequent access?**  
+    a) Standard  
+    b) One Zone-IA  
+    c) Glacier  
+    d) Intelligent-Tiering  
+    **Answer**: b) One Zone-IA  
+
+13. **What is the durability of Amazon S3 Standard storage class?**  
+    a) 99.9%  
+    b) 99.99%  
+    c) 99.999999999%  
+    d) 100%  
+    **Answer**: c) 99.999999999%  
+
+14. **Which AWS storage service offers a file system interface?**  
+    a) EBS  
+    b) EFS  
+    c) S3  
+    d) Glacier  
+    **Answer**: b) EFS  
+
+15. **Which service should be used for archiving data?**  
+    a) S3 Glacier  
+    b) RDS  
+    c) CloudFront  
+    d) DynamoDB  
+    **Answer**: a) S3 Glacier  
+
+---
+
+### **AWS Networking**
+16. **What is the maximum size of an individual VPC CIDR block?**  
+    a) /16  
+    b) /24  
+    c) /32  
+    d) /8  
+    **Answer**: a) /16  
+
+17. **What does AWS Route 53 primarily provide?**  
+    a) CDN services  
+    b) Domain Name System (DNS) service  
+    c) IP management  
+    d) Load balancing  
+    **Answer**: b) Domain Name System (DNS) service  
+
+18. **Which service is used for load balancing?**  
+    a) ELB  
+    b) CloudFront  
+    c) API Gateway  
+    d) VPC  
+    **Answer**: a) ELB  
+
+19. **Which type of IP address is not persistent in AWS?**  
+    a) Public IP  
+    b) Elastic IP  
+    c) Private IP  
+    d) All of the above  
+    **Answer**: a) Public IP  
+
+20. **Which AWS networking component allows private connectivity to AWS services?**  
+    a) NAT Gateway  
+    b) VPC Endpoint  
+    c) Internet Gateway  
+    d) VPN Gateway  
+    **Answer**: b) VPC Endpoint  
+
+---
+
+### **AWS Security**
+21. **What does IAM stand for?**  
+    a) Identity and Authentication Management  
+    b) Identity and Access Management  
+    c) Internet Access Management  
+    d) Infrastructure Access Management  
+    **Answer**: b) Identity and Access Management  
+
+22. **What is the maximum number of IAM roles that can be assigned to an EC2 instance?**  
+    a) 1  
+    b) 5  
+    c) 10  
+    d) Unlimited  
+    **Answer**: a) 1  
+
+23. **Which AWS service can detect unauthorized activities?**  
+    a) CloudWatch  
+    b) GuardDuty  
+    c) CloudTrail  
+    d) Config  
+    **Answer**: b) GuardDuty  
+
+24. **What is the primary function of AWS KMS?**  
+    a) Encrypting and decrypting data  
+    b) Monitoring system performance  
+    c) Managing storage buckets  
+    d) Running compute instances  
+    **Answer**: a) Encrypting and decrypting data  
+
+25. **Which service is used to monitor API calls?**  
+    a) CloudTrail  
+    b) CloudWatch  
+    c) Config  
+    d) X-Ray  
+    **Answer**: a) CloudTrail  
+
+---
+
+### **AWS Databases**
+26. **Which AWS database service is NoSQL-based?**  
+    a) RDS  
+    b) Redshift  
+    c) DynamoDB  
+    d) Aurora  
+    **Answer**: c) DynamoDB  
+
+27. **What is the maximum size of a single DynamoDB item, including all attributes?**  
+    a) 400 KB  
+    b) 1 MB  
+    c) 10 MB  
+    d) 64 KB  
+    **Answer**: a) 400 KB  
+
+28. **Which database engine is not supported by RDS?**  
+    a) MySQL  
+    b) PostgreSQL  
+    c) MongoDB  
+    d) MariaDB  
+    **Answer**: c) MongoDB  
+
+29. **Which database service is ideal for data warehousing?**  
+    a) Redshift  
+    b) DynamoDB  
+    c) RDS  
+    d) Aurora  
+    **Answer**: a) Redshift  
+
+30. **What is the purpose of Amazon Neptune?**  
+    a) Graph database service  
+    b) Relational database  
+    c) Data warehousing  
+    d) NoSQL database  
+    **Answer**: a) Graph database service  
+
+---
+
+### **AWS CLI and Management**
+31. **What command is used to configure AWS CLI?**  
+    a) `aws setup`  
+    b) `aws configure`  
+    c) `aws init`  
+    d) `aws login`  
+    **Answer**: b) `aws configure`  
+
+32. **Which AWS service is used for automating deployments?**  
+    a) CodeDeploy  
+    b) CodeCommit  
+    c) CodePipeline  
+    d) CodeBuild  
+    **Answer**: a) CodeDeploy  
+
+33. **Which service provides an infrastructure as code capability?**  
+    a) CloudFormation  
+    b) OpsWorks  
+    c) Elastic Beanstalk  
+    d) Systems Manager  
+    **Answer**: a) CloudFormation  
+
+34. **Which service provides detailed billing reports?**  
+    a) Billing Dashboard  
+    b) Cost Explorer  
+    c) AWS Organizations  
+    d) Budgets  
+    **Answer**: b) Cost Explorer  
+
+35. **What command lists all S3 buckets in AWS CLI?**  
+    a) `aws s3 ls`  
+    b) `aws list buckets`  
+    c) `aws s3 list`  
+    d) `aws s3 view`  
+    **Answer**: a) `aws s3 ls`  
+
+---
+
+Would you like the remaining questions?
+
+Here are the remaining **25 AWS MCQs** to complete your set of 50:
+
+---
+
+### **AWS Analytics**
+36. **Which AWS service is used for big data processing?**  
+    a) Athena  
+    b) EMR  
+    c) Redshift  
+    d) QuickSight  
+    **Answer**: b) EMR  
+
+37. **What is the purpose of Amazon Kinesis?**  
+    a) Data storage  
+    b) Real-time data streaming  
+    c) Batch data processing  
+    d) Data visualization  
+    **Answer**: b) Real-time data streaming  
+
+38. **Which service is used for querying S3 data using SQL?**  
+    a) Redshift  
+    b) EMR  
+    c) Athena  
+    d) QuickSight  
+    **Answer**: c) Athena  
+
+39. **Which service is used for interactive dashboards and visualization?**  
+    a) EMR  
+    b) QuickSight  
+    c) Glue  
+    d) Kinesis  
+    **Answer**: b) QuickSight  
+
+40. **What is the primary purpose of AWS Glue?**  
+    a) Data catalog and ETL services  
+    b) Data visualization  
+    c) Machine learning  
+    d) Querying data  
+    **Answer**: a) Data catalog and ETL services  
+
+---
+
+### **AWS Machine Learning**
+41. **Which AWS service is a fully managed ML service?**  
+    a) SageMaker  
+    b) Polly  
+    c) Rekognition  
+    d) Lex  
+    **Answer**: a) SageMaker  
+
+42. **What is the purpose of Amazon Rekognition?**  
+    a) Image and video analysis  
+    b) Speech recognition  
+    c) Text-to-speech conversion  
+    d) Data encryption  
+    **Answer**: a) Image and video analysis  
+
+43. **Which AWS service converts text to speech?**  
+    a) Polly  
+    b) Transcribe  
+    c) Translate  
+    d) Lex  
+    **Answer**: a) Polly  
+
+44. **What is Amazon Lex used for?**  
+    a) Building chatbots  
+    b) Data analysis  
+    c) Text-to-speech  
+    d) Data streaming  
+    **Answer**: a) Building chatbots  
+
+45. **Which AWS service is used for translating text between languages?**  
+    a) Translate  
+    b) Polly  
+    c) Lex  
+    d) Comprehend  
+    **Answer**: a) Translate  
+
+---
+
+### **AWS Monitoring and Logging**
+46. **Which AWS service provides monitoring and observability?**  
+    a) CloudWatch  
+    b) CloudTrail  
+    c) Config  
+    d) GuardDuty  
+    **Answer**: a) CloudWatch  
+
+47. **What is the primary use of Amazon CloudTrail?**  
+    a) Monitoring resource usage  
+    b) Logging API activity  
+    c) Monitoring performance metrics  
+    d) Debugging application errors  
+    **Answer**: b) Logging API activity  
+
+48. **Which AWS service provides governance, compliance, and change management?**  
+    a) CloudWatch  
+    b) Config  
+    c) CloudTrail  
+    d) Trusted Advisor  
+    **Answer**: b) Config  
+
+49. **Which service provides insights into potential security vulnerabilities?**  
+    a) GuardDuty  
+    b) CloudTrail  
+    c) Security Hub  
+    d) Macie  
+    **Answer**: c) Security Hub  
+
+50. **What is Amazon Macie used for?**  
+    a) Managing IAM roles  
+    b) Discovering and protecting sensitive data  
+    c) Monitoring network traffic  
+    d) Building machine learning models  
+    **Answer**: b) Discovering and protecting sensitive data  
+
+---
+
+Let me know if you'd like explanations or more questions in specific areas of AWS! Good luck with your test! 😊
