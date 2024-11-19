@@ -900,394 +900,384 @@ Let me know if you need additional clarification or help with any specific step!
 
 -----------------------------------------------------------------------------------------------------
 
-Here’s a collection of **50 AWS multiple-choice questions (MCQs)** covering various topics in AWS. These questions are designed to help you prepare for your test.  
-
----
-
-### **General AWS Concepts**
-1. **What does AWS stand for?**  
-   a) Amazon Web Software  
-   b) Advanced Web Services  
-   c) Amazon Web Services  
-   d) Automated Web Server  
-   **Answer**: c) Amazon Web Services  
-
-2. **Which AWS service is used for content delivery?**  
-   a) CloudWatch  
-   b) CloudFront  
-   c) RDS  
-   d) Lambda  
-   **Answer**: b) CloudFront  
-
-3. **What is the primary purpose of Amazon S3?**  
-   a) Storing structured data  
-   b) Object storage for the cloud  
-   c) Compute services  
-   d) Machine learning  
-   **Answer**: b) Object storage for the cloud  
-
-4. **Which service allows you to run code without provisioning or managing servers?**  
-   a) EC2  
-   b) Lambda  
-   c) DynamoDB  
-   d) EKS  
-   **Answer**: b) Lambda  
-
-5. **AWS regions are made up of one or more _____.**  
-   a) Data centers  
-   b) Availability zones  
-   c) Edge locations  
-   d) Cloud centers  
-   **Answer**: b) Availability zones  
-
----
-
-### **AWS Compute**
-6. **Which EC2 instance pricing model is the most cost-effective for workloads that are flexible in timing?**  
-   a) On-Demand  
-   b) Reserved  
-   c) Spot Instances  
-   d) Dedicated Hosts  
-   **Answer**: c) Spot Instances  
-
-7. **What is the minimum charge duration for a Spot Instance?**  
-   a) 1 minute  
-   b) 10 minutes  
-   c) 1 hour  
-   d) 1 second  
-   **Answer**: a) 1 minute  
-
-8. **Which service is used to containerize applications in AWS?**  
-   a) ECS  
-   b) CloudFormation  
-   c) Elastic Beanstalk  
-   d) CloudTrail  
-   **Answer**: a) ECS  
-
-9. **What does Amazon EKS stand for?**  
-   a) Elastic Kubernetes Service  
-   b) Elastic Kafka Service  
-   c) Extended Kubernetes Storage  
-   d) Enterprise Kubernetes Service  
-   **Answer**: a) Elastic Kubernetes Service  
-
-10. **Which AWS service is best for running batch jobs?**  
-    a) EC2  
-    b) Batch  
-    c) Lightsail  
-    d) RDS  
-    **Answer**: b) Batch  
-
----
-
-### **AWS Storage**
-11. **What is the default consistency model in Amazon S3?**  
-    a) Eventual consistency  
-    b) Strong consistency  
-    c) Weak consistency  
-    d) Read-after-write consistency  
-    **Answer**: d) Read-after-write consistency  
-
-12. **Which S3 storage class is suitable for infrequent access?**  
-    a) Standard  
-    b) One Zone-IA  
-    c) Glacier  
-    d) Intelligent-Tiering  
-    **Answer**: b) One Zone-IA  
-
-13. **What is the durability of Amazon S3 Standard storage class?**  
-    a) 99.9%  
-    b) 99.99%  
-    c) 99.999999999%  
-    d) 100%  
-    **Answer**: c) 99.999999999%  
-
-14. **Which AWS storage service offers a file system interface?**  
-    a) EBS  
-    b) EFS  
-    c) S3  
-    d) Glacier  
-    **Answer**: b) EFS  
-
-15. **Which service should be used for archiving data?**  
-    a) S3 Glacier  
-    b) RDS  
-    c) CloudFront  
-    d) DynamoDB  
-    **Answer**: a) S3 Glacier  
-
----
-
-### **AWS Networking**
-16. **What is the maximum size of an individual VPC CIDR block?**  
-    a) /16  
-    b) /24  
-    c) /32  
-    d) /8  
-    **Answer**: a) /16  
-
-17. **What does AWS Route 53 primarily provide?**  
-    a) CDN services  
-    b) Domain Name System (DNS) service  
-    c) IP management  
-    d) Load balancing  
-    **Answer**: b) Domain Name System (DNS) service  
-
-18. **Which service is used for load balancing?**  
-    a) ELB  
-    b) CloudFront  
-    c) API Gateway  
-    d) VPC  
-    **Answer**: a) ELB  
-
-19. **Which type of IP address is not persistent in AWS?**  
-    a) Public IP  
-    b) Elastic IP  
-    c) Private IP  
-    d) All of the above  
-    **Answer**: a) Public IP  
-
-20. **Which AWS networking component allows private connectivity to AWS services?**  
-    a) NAT Gateway  
-    b) VPC Endpoint  
-    c) Internet Gateway  
-    d) VPN Gateway  
-    **Answer**: b) VPC Endpoint  
-
----
-
-### **AWS Security**
-21. **What does IAM stand for?**  
-    a) Identity and Authentication Management  
-    b) Identity and Access Management  
-    c) Internet Access Management  
-    d) Infrastructure Access Management  
-    **Answer**: b) Identity and Access Management  
-
-22. **What is the maximum number of IAM roles that can be assigned to an EC2 instance?**  
-    a) 1  
-    b) 5  
-    c) 10  
-    d) Unlimited  
-    **Answer**: a) 1  
-
-23. **Which AWS service can detect unauthorized activities?**  
-    a) CloudWatch  
-    b) GuardDuty  
-    c) CloudTrail  
-    d) Config  
-    **Answer**: b) GuardDuty  
-
-24. **What is the primary function of AWS KMS?**  
-    a) Encrypting and decrypting data  
-    b) Monitoring system performance  
-    c) Managing storage buckets  
-    d) Running compute instances  
-    **Answer**: a) Encrypting and decrypting data  
-
-25. **Which service is used to monitor API calls?**  
-    a) CloudTrail  
-    b) CloudWatch  
-    c) Config  
-    d) X-Ray  
-    **Answer**: a) CloudTrail  
-
----
-
-### **AWS Databases**
-26. **Which AWS database service is NoSQL-based?**  
-    a) RDS  
-    b) Redshift  
-    c) DynamoDB  
-    d) Aurora  
-    **Answer**: c) DynamoDB  
-
-27. **What is the maximum size of a single DynamoDB item, including all attributes?**  
-    a) 400 KB  
-    b) 1 MB  
-    c) 10 MB  
-    d) 64 KB  
-    **Answer**: a) 400 KB  
-
-28. **Which database engine is not supported by RDS?**  
-    a) MySQL  
-    b) PostgreSQL  
-    c) MongoDB  
-    d) MariaDB  
-    **Answer**: c) MongoDB  
-
-29. **Which database service is ideal for data warehousing?**  
-    a) Redshift  
-    b) DynamoDB  
-    c) RDS  
-    d) Aurora  
-    **Answer**: a) Redshift  
-
-30. **What is the purpose of Amazon Neptune?**  
-    a) Graph database service  
-    b) Relational database  
-    c) Data warehousing  
-    d) NoSQL database  
-    **Answer**: a) Graph database service  
-
----
-
-### **AWS CLI and Management**
-31. **What command is used to configure AWS CLI?**  
-    a) `aws setup`  
-    b) `aws configure`  
-    c) `aws init`  
-    d) `aws login`  
-    **Answer**: b) `aws configure`  
-
-32. **Which AWS service is used for automating deployments?**  
-    a) CodeDeploy  
-    b) CodeCommit  
-    c) CodePipeline  
-    d) CodeBuild  
-    **Answer**: a) CodeDeploy  
-
-33. **Which service provides an infrastructure as code capability?**  
-    a) CloudFormation  
-    b) OpsWorks  
-    c) Elastic Beanstalk  
-    d) Systems Manager  
-    **Answer**: a) CloudFormation  
-
-34. **Which service provides detailed billing reports?**  
-    a) Billing Dashboard  
-    b) Cost Explorer  
-    c) AWS Organizations  
-    d) Budgets  
-    **Answer**: b) Cost Explorer  
-
-35. **What command lists all S3 buckets in AWS CLI?**  
-    a) `aws s3 ls`  
-    b) `aws list buckets`  
-    c) `aws s3 list`  
-    d) `aws s3 view`  
-    **Answer**: a) `aws s3 ls`  
-
----
-
-Would you like the remaining questions?
-
-Here are the remaining **25 AWS MCQs** to complete your set of 50:
-
----
-
-### **AWS Analytics**
-36. **Which AWS service is used for big data processing?**  
-    a) Athena  
-    b) EMR  
-    c) Redshift  
-    d) QuickSight  
-    **Answer**: b) EMR  
-
-37. **What is the purpose of Amazon Kinesis?**  
-    a) Data storage  
-    b) Real-time data streaming  
-    c) Batch data processing  
-    d) Data visualization  
-    **Answer**: b) Real-time data streaming  
-
-38. **Which service is used for querying S3 data using SQL?**  
-    a) Redshift  
-    b) EMR  
-    c) Athena  
-    d) QuickSight  
-    **Answer**: c) Athena  
-
-39. **Which service is used for interactive dashboards and visualization?**  
-    a) EMR  
-    b) QuickSight  
-    c) Glue  
-    d) Kinesis  
-    **Answer**: b) QuickSight  
-
-40. **What is the primary purpose of AWS Glue?**  
-    a) Data catalog and ETL services  
-    b) Data visualization  
-    c) Machine learning  
-    d) Querying data  
-    **Answer**: a) Data catalog and ETL services  
-
----
-
-### **AWS Machine Learning**
-41. **Which AWS service is a fully managed ML service?**  
-    a) SageMaker  
-    b) Polly  
-    c) Rekognition  
-    d) Lex  
-    **Answer**: a) SageMaker  
-
-42. **What is the purpose of Amazon Rekognition?**  
-    a) Image and video analysis  
-    b) Speech recognition  
-    c) Text-to-speech conversion  
-    d) Data encryption  
-    **Answer**: a) Image and video analysis  
-
-43. **Which AWS service converts text to speech?**  
-    a) Polly  
-    b) Transcribe  
-    c) Translate  
-    d) Lex  
-    **Answer**: a) Polly  
-
-44. **What is Amazon Lex used for?**  
-    a) Building chatbots  
-    b) Data analysis  
-    c) Text-to-speech  
-    d) Data streaming  
-    **Answer**: a) Building chatbots  
-
-45. **Which AWS service is used for translating text between languages?**  
-    a) Translate  
-    b) Polly  
-    c) Lex  
-    d) Comprehend  
-    **Answer**: a) Translate  
-
----
-
-### **AWS Monitoring and Logging**
-46. **Which AWS service provides monitoring and observability?**  
-    a) CloudWatch  
-    b) CloudTrail  
-    c) Config  
-    d) GuardDuty  
-    **Answer**: a) CloudWatch  
-
-47. **What is the primary use of Amazon CloudTrail?**  
-    a) Monitoring resource usage  
-    b) Logging API activity  
-    c) Monitoring performance metrics  
-    d) Debugging application errors  
-    **Answer**: b) Logging API activity  
-
-48. **Which AWS service provides governance, compliance, and change management?**  
-    a) CloudWatch  
-    b) Config  
-    c) CloudTrail  
-    d) Trusted Advisor  
-    **Answer**: b) Config  
-
-49. **Which service provides insights into potential security vulnerabilities?**  
-    a) GuardDuty  
-    b) CloudTrail  
-    c) Security Hub  
-    d) Macie  
-    **Answer**: c) Security Hub  
-
-50. **What is Amazon Macie used for?**  
-    a) Managing IAM roles  
-    b) Discovering and protecting sensitive data  
-    c) Monitoring network traffic  
-    d) Building machine learning models  
-    **Answer**: b) Discovering and protecting sensitive data  
-
----
-
-Let me know if you'd like explanations or more questions in specific areas of AWS! Good luck with your test! 😊
+Subject: Leave Request for 23rd November 2024
+
+Dear [Reporting Head's Name],
+
+I hope this email finds you well. I am writing to formally request leave for Saturday, 23rd November 2024, to attend a family function and a wedding.
+
+I have ensured that my current tasks are on track and will make the necessary arrangements to complete any pending work before my leave, to minimize any disruption. If there are any urgent tasks or priorities, please let me know, and I will address them in advance.
+
+Thank you for considering my request. Please let me know if any additional information is required.
+
+Warm regards,
+[Your Full Name]
+Trainee – Software Development
+[Your Contact Information, if necessary]
+
+--------------------------------------------------------------------------------------------------------
+
+I have learned the concepts of sql server, now i want to do hands on implementation. Give 10 questions each for the topics
+1. Stored procedure
+2. Derived Table
+3. CTE
+4. Views
+5. Temp table
+6. Trigger
+7. cursor
+8. Functions
+9. Indexes
+10. Common SQL server tasks to test DML,DQL,in built date,string and match functions
+Create 3 tables that have relation among them (give create query with some real dummy data inserted)
+Make sure these questions contains all the necessary topics of sql server so that I can practice and can get good command of sql server.
+Do not give easy question, keep the level between moderate and difficult
+
+-------------------------------------------------------------------------------------------------------------------
+
+### Database Schema: Related Tables
+
+```sql
+-- Create Tables
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerName NVARCHAR(100),
+    City NVARCHAR(50)
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT FOREIGN KEY REFERENCES Customers(CustomerID),
+    OrderDate DATE,
+    TotalAmount DECIMAL(10, 2)
+);
+
+CREATE TABLE OrderDetails (
+    OrderDetailID INT PRIMARY KEY,
+    OrderID INT FOREIGN KEY REFERENCES Orders(OrderID),
+    ProductName NVARCHAR(100),
+    Quantity INT,
+    Price DECIMAL(10, 2)
+);
+
+-- Insert Data for Customers
+INSERT INTO Customers VALUES
+(1, 'Rahul Sharma', 'Mumbai'),
+(2, 'Anjali Verma', 'Delhi'),
+(3, 'Ravi Kumar', 'Chennai'),
+(4, 'Pooja Singh', 'Bengaluru'),
+(5, 'Vikram Joshi', 'Kolkata'),
+(6, 'Neha Mehta', 'Pune'),
+(7, 'Amit Gupta', 'Hyderabad'),
+(8, 'Priya Das', 'Jaipur'),
+(9, 'Arjun Reddy', 'Ahmedabad'),
+(10, 'Deepa Nair', 'Thiruvananthapuram'),
+(11, 'Karan Malhotra', 'Lucknow'),
+(12, 'Sanya Iyer', 'Mysuru'),
+(13, 'Manish Kapoor', 'Chandigarh'),
+(14, 'Meera Choudhary', 'Bhopal'),
+(15, 'Siddharth Mishra', 'Nagpur'),
+(16, 'Ritika Jain', 'Surat'),
+(17, 'Akash Patel', 'Vadodara'),
+(18, 'Swati Sharma', 'Patna'),
+(19, 'Nitin Deshmukh', 'Indore'),
+(20, 'Roshni Singh', 'Jodhpur'),
+(21, 'Rajesh Khanna', 'Coimbatore'),
+(22, 'Sonal Agarwal', 'Amritsar'),
+(23, 'Varun Tiwari', 'Ranchi'),
+(24, 'Ishita Sen', 'Guwahati'),
+(25, 'Aditya Goyal', 'Agra');
+
+-- Insert Data for Orders
+INSERT INTO Orders VALUES
+(101, 1, '2024-10-01', 250.00),
+(102, 2, '2024-10-05', 450.00),
+(103, 3, '2024-10-10', 100.00),
+(104, 4, '2024-10-12', 600.00),
+(105, 5, '2024-10-15', 800.00),
+(106, 6, '2024-10-18', 300.00),
+(107, 7, '2024-10-20', 1200.00),
+(108, 8, '2024-10-22', 500.00),
+(109, 9, '2024-10-25', 750.00),
+(110, 10, '2024-10-28', 400.00),
+(111, 11, '2024-10-30', 550.00),
+(112, 12, '2024-11-01', 900.00),
+(113, 13, '2024-11-03', 350.00),
+(114, 14, '2024-11-06', 250.00),
+(115, 15, '2024-11-08', 700.00),
+(116, 16, '2024-11-10', 200.00),
+(117, 17, '2024-11-12', 100.00),
+(118, 18, '2024-11-14', 450.00),
+(119, 19, '2024-11-16', 650.00),
+(120, 20, '2024-11-18', 300.00),
+(121, 21, '2024-11-20', 480.00),
+(122, 22, '2024-11-22', 520.00),
+(123, 23, '2024-11-24', 410.00),
+(124, 24, '2024-11-26', 700.00),
+(125, 25, '2024-11-28', 900.00);
+
+-- Insert Data for OrderDetails
+INSERT INTO OrderDetails VALUES
+(1, 101, 'Laptop', 1, 250.00),
+(2, 102, 'Smartphone', 2, 225.00),
+(3, 103, 'Headphones', 2, 50.00),
+(4, 104, 'Tablet', 2, 300.00),
+(5, 105, 'Desktop', 1, 800.00),
+(6, 106, 'Smartwatch', 2, 150.00),
+(7, 107, 'Gaming Console', 1, 1200.00),
+(8, 108, 'Wireless Earbuds', 2, 250.00),
+(9, 109, 'Printer', 1, 750.00),
+(10, 110, 'Keyboard', 4, 100.00),
+(11, 111, 'Monitor', 2, 275.00),
+(12, 112, 'Router', 3, 300.00),
+(13, 113, 'Power Bank', 5, 350.00),
+(14, 114, 'Mouse', 5, 50.00),
+(15, 115, 'Camera', 1, 700.00),
+(16, 116, 'Speakers', 2, 100.00),
+(17, 117, 'Pendrive', 10, 10.00),
+(18, 118, 'Projector', 1, 450.00),
+(19, 119, 'Webcam', 2, 325.00),
+(20, 120, 'VR Headset', 1, 300.00),
+(21, 121, 'Hard Drive', 2, 240.00),
+(22, 122, 'SSD', 1, 520.00),
+(23, 123, 'Graphics Card', 1, 410.00),
+(24, 124, 'Motherboard', 1, 700.00),
+(25, 125, 'Processor', 1, 900.00);
+
+```
+
+### Practice Questions (Moderate to difficult)
+
+#### 1. Stored Procedures
+1. Create a stored procedure to retrieve all orders placed by a specific customer.
+2. Create a stored procedure to update the total amount of an order based on its details.
+3. Write a procedure to delete a customer by ID and all associated orders and order details.
+4. Create a procedure to calculate the total sales for a given date range.
+5. Write a procedure to fetch orders where the total amount exceeds a given value.
+6. Implement a procedure to archive orders older than a year into a new table.
+7. Write a stored procedure to insert a new customer and return the CustomerID.
+8. Create a procedure to split orders exceeding a specified amount into smaller orders.
+9. Write a procedure that logs changes to the OrderDetails table into an audit table.
+10. Implement a stored procedure to bulk insert orders using a TVP (Table-Valued Parameter).
+
+#### 2. Derived Tables
+1. Retrieve customers who have placed orders with a total amount greater than the average order total.
+2. Use a derived table to find the top three most expensive orders.
+3. Fetch the list of customers and their total order amounts using a derived table.
+4. Write a query to find products that appear in more than one order using derived tables.
+5. Retrieve orders with the highest and lowest total amounts using derived tables.
+6. Use a derived table to calculate the total revenue generated per city.
+7. Fetch the names of customers who have not placed any orders using derived tables.
+8. Identify orders where the number of items exceeds the average items per order.
+9. Use a derived table to calculate the rank of each order based on the total amount.
+10. Write a query to get the order count for each customer, sorted by the highest count.
+
+#### 3. Common Table Expressions (CTEs)
+1. Use a CTE to fetch customers along with their order count.
+2. Write a recursive CTE to generate a sequence of numbers (e.g., for pagination).
+3. Implement a CTE to find customers whose total order amount exceeds a certain threshold.
+4. Use a CTE to retrieve orders grouped by month and calculate monthly totals.
+5. Write a CTE to list the top N products by sales.
+6. Create a CTE to find customers who placed more than three orders.
+7. Use a CTE to find the order with the maximum total amount.
+8. Implement a CTE to calculate cumulative totals for each customer.
+9. Use a CTE to get hierarchical data (e.g., a self-referencing employee-manager table).
+10. Create a CTE to identify gaps in OrderIDs.
+
+#### 4. Views
+1. Create a view to show customer details along with their total order amounts.
+2. Write a view to display orders and their item details in a flat structure.
+3. Create a view to list customers who haven't placed any orders.
+4. Write a view to show the monthly sales summary.
+5. Create a view to list all orders with details of products priced above a certain value.
+6. Design a view to display customers who have placed orders exceeding their city's average.
+7. Create a view for frequently ordered products (appearing in more than 5 orders).
+8. Write a view to fetch orders placed in the last 6 months.
+9. Create a view to show customers along with the number of distinct products they've ordered.
+10. Design a view to calculate the average order value per city.
+
+#### 5. Temporary Tables
+1. Use a temporary table to store and retrieve the top 5 highest-paying customers.
+2. Create a temporary table to calculate and store monthly order totals.
+3. Populate a temporary table with customers who have placed at least two orders.
+4. Write a query to create a temp table for orders shipped in the last year.
+5. Use a temporary table to join OrderDetails with an external dataset.
+6. Create a temp table to find duplicate OrderIDs (if any).
+7. Use a temp table to store audit logs for modifications to the Customers table.
+8. Write a query to store results of complex calculations in a temp table and then filter.
+9. Use a temp table to rank customers by their total order amounts.
+10. Create a temp table for storing intermediate results of a recursive CTE.
+
+#### 6. Triggers
+1. Write a trigger to log all updates to the Customers table into an audit table.
+2. Create a trigger to prevent deletion of orders that have shipped.
+3. Write a trigger to enforce that no order can exceed $10,000.
+4. Implement a trigger to update the total amount in the Orders table after OrderDetails change.
+5. Create a trigger to disallow updates to customer names.
+6. Write a trigger to automatically archive deleted customers into another table.
+7. Implement a trigger to send alerts when orders are placed on weekends.
+8. Write a trigger to track changes to product quantities in the OrderDetails table.
+9. Create a trigger to prevent adding new products priced below $5.
+10. Write a trigger to update a "Last Modified" column in Customers on any change.
+
+#### 7. Cursors
+1. Write a cursor to iterate over orders and calculate the average amount for each customer.
+2. Create a cursor to fetch and process orders placed in a specific date range.
+3. Implement a cursor to update customer status based on total order amount.
+4. Write a cursor to delete orders older than a specific date one by one.
+5. Use a cursor to fetch customer names and send notifications for their highest-value orders.
+6. Write a cursor to adjust product prices in the OrderDetails table.
+7. Implement a cursor to calculate cumulative sales per customer.
+8. Use a cursor to find and update records with null values in a table.
+9. Create a cursor to transfer data from one table to another.
+10. Write a cursor to iterate through customers and generate a dynamic report.
+
+#### 8. Functions
+1. Create a scalar function to calculate the discount for an order based on its total.
+2. Write a function to return the total sales for a given customer.
+3. Create a table-valued function to list orders placed within a date range.
+4. Write a function to return the number of products in an order.
+5. Create a function to calculate the total quantity of items sold for a product.
+6. Implement a function to format customer names as "Last, First".
+7. Write a function to calculate the tax on an order based on its amount.
+8. Create a function to fetch the next available OrderID.
+9. Implement a function to check if a customer exists in the database.
+10. Write a function to return the average order value for a specific city.
+
+#### 9. Indexes
+1. Create an index to optimize queries fetching orders by CustomerID.
+2. Design a composite index for queries filtering by OrderDate and TotalAmount.
+3. Test performance of queries with and without an index on ProductName in OrderDetails.
+4. Implement an index to speed up searches on CustomerName in the Customers table.
+5. Create a unique index to enforce no duplicate entries in OrderDetails.
+6. Write a query to analyze the impact of indexing OrderIDs.
+7. Use the INCLUDE clause in an index for optimizing total amount queries.
+8. Create a filtered index for orders with a total amount above $500.
+9. Drop and recreate indexes to improve performance on slow queries.
+10. Use the SQL Server Profiler to measure query performance before and after indexing.
+
+#### 10. Common SQL Server Tasks
+1. Write queries using DML statements to update, delete, and insert records in Orders.
+2. Use DQL to fetch the top 5 customers based
+
+
+------------------------------------------------------------------------------------------------------------
+
+Easy to moderate
+
+### 1. Stored Procedures
+1. Create a stored procedure to fetch all orders for a given customer ID.
+2. Write a stored procedure to calculate the total sales for a given city.
+3. Create a stored procedure to insert a new customer and return the newly inserted CustomerID.
+4. Write a stored procedure to update the price of a product in the `OrderDetails` table for a given `OrderDetailID`.
+5. Create a stored procedure to delete all orders for a specific customer.
+6. Write a stored procedure to fetch all products purchased by customers from a specific city.
+7. Create a stored procedure to list orders with a total amount greater than a given threshold.
+8. Write a stored procedure to calculate and return the total quantity of a product sold.
+9. Create a stored procedure that accepts a date range and returns all orders within that range.
+10. Write a stored procedure to update multiple customer names based on a list of `CustomerID` values.
+
+### 2. Derived Tables
+1. Find the total amount spent by each customer using a derived table.
+2. Fetch the top 3 most expensive products in the `OrderDetails` table using a derived table.
+3. Write a query to calculate the average order amount and list customers whose orders exceed this average.
+4. Use a derived table to fetch all customers who have placed orders with a total amount greater than $300.
+5. Write a query to find the product with the highest quantity sold using a derived table.
+6. Use a derived table to calculate the total quantity sold for each product.
+7. Fetch customers who haven't placed any orders using a derived table.
+8. Use a derived table to list all orders along with the total price of their items.
+9. Write a query to find the city with the highest total sales using a derived table.
+10. Use a derived table to count the number of orders placed by each customer.
+
+### 3. Common Table Expressions (CTE)
+1. Write a CTE to find the total sales amount for each customer.
+2. Use a CTE to list all products and their total sales amounts.
+3. Write a recursive CTE to generate a sequence of numbers (e.g., for pagination purposes).
+4. Use a CTE to find all orders placed in the last 30 days.
+5. Create a CTE to rank customers by their total spending.
+6. Use a CTE to fetch all products with a total quantity sold greater than 1.
+7. Write a CTE to calculate the cumulative total sales for all orders.
+8. Create a CTE to list the average order amount for each city.
+9. Use a CTE to fetch the most recent order for each customer.
+10. Write a CTE to find customers who have placed more than one order.
+
+### 4. Views
+1. Create a view to list all orders with their customer names and total amounts.
+2. Create a view to display the total quantity sold for each product.
+3. Write a view to fetch all customers who have placed orders along with their order count.
+4. Create a view to show the details of orders placed in the current year.
+5. Write a view to fetch the top 5 customers by total spending.
+6. Create a view to display all products with their total sales amount and quantity.
+7. Create a view to fetch the orders along with their details in a single result set.
+8. Write a view to fetch all customers and their cities with their total order amount.
+9. Create a view to display all orders with their order date and the names of customers.
+10. Write a view to fetch all products sold in orders with a total amount greater than $200.
+
+### 5. Temporary Tables
+1. Create a temporary table to store the total sales amount for each customer and fetch the top spender.
+2. Write a query to store all orders placed in the last month into a temporary table and display them.
+3. Use a temporary table to calculate the total quantity sold for each product and fetch products with quantities greater than 2.
+4. Write a query to fetch all customers from New York and store them in a temporary table.
+5. Use a temporary table to list all orders along with their total price.
+6. Store all orders for a specific customer into a temporary table and calculate their total amount.
+7. Create a temporary table to store all orders with a total amount greater than $300 and fetch the results.
+8. Write a query to store the total sales amount for each city into a temporary table.
+9. Use a temporary table to fetch the details of all orders placed in the last 7 days.
+10. Create a temporary table to list all products with their total sales amounts.
+
+### 6. Triggers
+1. Create a trigger to log changes to the `Orders` table into an audit table.
+2. Write a trigger to prevent the deletion of customers who have active orders.
+3. Create a trigger to automatically update the `TotalAmount` in the `Orders` table when a new `OrderDetail` is added.
+4. Write a trigger to send an alert when an order exceeds a total amount of $500.
+5. Create a trigger to log changes to the `Customers` table into an audit table.
+6. Write a trigger to prevent the insertion of orders with a total amount less than $50.
+7. Create a trigger to automatically update the total quantity of a product in the `OrderDetails` table.
+8. Write a trigger to log all deletions from the `OrderDetails` table.
+9. Create a trigger to prevent updates to the `CustomerName` in the `Customers` table.
+10. Write a trigger to automatically insert a default value for `Price` if it is not provided in the `OrderDetails` table.
+
+### 7. Cursors
+1. Write a cursor to iterate through all customers and print their names and cities.
+2. Use a cursor to calculate the total sales for each customer and display the results.
+3. Write a cursor to fetch all orders and update their total amounts with a 10% discount.
+4. Use a cursor to list all products with their total quantities sold.
+5. Write a cursor to iterate through all orders placed in the last 7 days.
+6. Use a cursor to calculate and update the total sales for each city in a temporary table.
+7. Write a cursor to fetch all orders and print their details along with the customer names.
+8. Use a cursor to iterate through all customers and fetch their order history.
+9. Write a cursor to list all orders along with their total amounts in a readable format.
+10. Use a cursor to find and print all products sold in orders with a total amount greater than $200.
+
+### 8. Functions
+1. Create a scalar function to calculate the total price of an order given its `OrderID`.
+2. Write a scalar function to fetch the total quantity sold for a given product name.
+3. Create a table-valued function to list all orders for a specific customer.
+4. Write a scalar function to fetch the total sales amount for a given city.
+5. Create a scalar function to return the number of orders placed by a specific customer.
+6. Write a table-valued function to fetch all products with their total sales amounts.
+7. Create a scalar function to calculate the average order amount for a given city.
+8. Write a scalar function to fetch the highest order amount placed by a customer.
+9. Create a table-valued function to list all orders placed within a specific date range.
+10. Write a scalar function to fetch the total revenue generated by a specific product.
+
+### 9. Indexes
+1. Create an index on the `City` column of the `Customers` table and test its performance.
+2. Write a query to fetch all orders for a specific customer and analyze the effect of indexing on `CustomerID`.
+3. Create a composite index on `OrderDate` and `TotalAmount` in the `Orders` table and test its effect.
+4. Write a query to fetch the details of a specific order and test the impact of indexing `OrderID`.
+5. Create a non-clustered index on the `ProductName` column in the `OrderDetails` table and analyze its performance.
+6. Test the performance of a query fetching all orders placed within a specific date range with and without an index on `OrderDate`.
+7. Create an index on the `CustomerName` column in the `Customers` table and test its effect on search queries.
+8. Write a query to fetch all products with their total quantities sold and analyze the impact of indexing on `Price`.
+9. Create an index on `TotalAmount` in the `Orders` table and test its effect on aggregate queries.
+10. Analyze the impact of indexing on the `City` column in the `Customers` table for city-specific queries.
+
+### 10. Common SQL Server Tasks
+1. Write a query to calculate the total revenue generated from all orders.
+2. Use DML to update the price of a product in the `OrderDetails` table.
+3. Write a query using DQL to fetch all orders placed in the current year.
+4. Use a built-in date function to fetch all orders placed in the last 30 days.
+5. Write a query using a string function to find customers whose names contain the letter "a"
+
+
+
