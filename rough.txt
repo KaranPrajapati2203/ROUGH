@@ -526,3 +526,185 @@ export class ProfileComponent {
     <input type="number" name="stayingCost" id="stayingCost" [(ngModel)]="stayingCost" (input)="getTotal()">
 </p>
 <h3>Total cost: {{total}} Rs</h3>
+
+--------------------------------------------------------------------------------------------------------------------------
+
+3 - PT-9
+
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-profile',
+  standalone: true,
+  imports: [FormsModule, CommonModule],
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css'
+})
+export class ProfileComponent {
+  employees = [
+    { id: 1, name: 'Rahul', age: 22 },
+    { id: 2, name: 'Neil', age: 23 },
+    { id: 3, name: 'Nitin', age: 19 },
+    { id: 4, name: 'Mukesh', age: 52 },
+    { id: 5, name: 'Geeta', age: 36 }
+  ];
+  filteredEmployees = [...this.employees]; // Maintain a filtered list
+  searchInput: string = '';
+
+  // Method to filter employees based on search input
+  filterEmployees() {
+    const searchValue = this.searchInput.toLowerCase().trim();
+
+    if (searchValue === '') {
+      this.filteredEmployees = [...this.employees]; // Reset if input is empty
+    } else {
+      this.filteredEmployees = this.employees.filter((emp) =>
+        emp.id.toString().includes(searchValue) ||
+        emp.name.toLowerCase().includes(searchValue) ||
+        emp.age.toString().includes(searchValue)
+      );
+    }
+  }
+}
+
+-----
+
+<div>
+    <h2>Employee Search</h2>
+    <input type="text" [(ngModel)]="searchInput" (input)="filterEmployees()" placeholder="Search Something..." />
+</div>
+
+<table border="2" style="margin-top: 2em; width: 100%; text-align: left;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let employee of filteredEmployees">
+            <td>{{ employee.id }}</td>
+            <td>{{ employee.name }}</td>
+            <td>{{ employee.age }}</td>
+        </tr>
+        <!-- Message for no matching records -->
+        <tr *ngIf="filteredEmployees.length === 0">
+            <td colspan="3" style="text-align: center;">No matching employees found.</td>
+        </tr>
+    </tbody>
+</table>
+
+---------------------
+
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-profile',
+  standalone: true,
+  imports: [FormsModule, CommonModule],
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css'
+})
+export class ProfileComponent {
+  searchTerm: string = '';
+
+  rows = [
+    { id: 1, name: 'Alice', department: 'HR', age: 28 },
+    { id: 2, name: 'Bob', department: 'Engineering', age: 34 },
+    { id: 3, name: 'Charlie', department: 'Sales', age: 29 },
+    { id: 4, name: 'Diana', department: 'Marketing', age: 32 },
+    { id: 5, name: 'Ethan', department: 'Engineering', age: 25 }
+  ];
+
+  filterRow(row: any): boolean {
+    const searchText = this.searchTerm.toLowerCase();
+    return (
+      row.id.toString().includes(searchText) ||
+      row.name.toLowerCase().includes(searchText) ||
+      row.department.toLowerCase().includes(searchText) ||
+      row.age.toString().includes(searchText)
+    );
+  }
+}
+
+-----
+
+<h2>Employee Table with Search</h2>
+
+<div>
+    <label for="search">Search:</label>
+    <input type="text" id="search" [(ngModel)]="searchTerm" placeholder="Search in all columns" />
+</div>
+
+<table border="1" style="margin-top: 20px; border-collapse: collapse; width: 100%;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <ng-container *ngFor="let row of rows">
+            <tr *ngIf="filterRow(row)">
+                <td>{{ row.id }}</td>
+                <td>{{ row.name }}</td>
+                <td>{{ row.department }}</td>
+                <td>{{ row.age }}</td>
+            </tr>
+        </ng-container>
+    </tbody>
+</table>
+
+-------------------------------------------------------------------------
+
+3 - PT-3
+
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-profile',
+  standalone: true,
+  imports: [FormsModule, CommonModule],
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css'
+})
+export class ProfileComponent {
+  products = [
+    { id: 1, name: 'Laptop' },
+    { id: 2, name: 'Smartphone' },
+    { id: 3, name: 'Headphones' },
+    { id: 4, name: 'Keyboard' },
+    { id: 5, name: 'Mouse' },
+  ];
+}
+
+-----
+
+<h2>Editable Product List</h2>
+<table border="1" style="width: 100%; text-align: left;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Product Name</th>
+            <th>Edit Product</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let product of products">
+            <td>{{ product.id }}</td>
+            <td>{{ product.name }}</td>
+            <td>
+                <input type="text" [(ngModel)]="product.name" />
+            </td>
+        </tr>
+    </tbody>
+</table>
