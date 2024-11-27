@@ -708,3 +708,54 @@ export class ProfileComponent {
         </tr>
     </tbody>
 </table>
+
+-----------------------------------------------------------------------
+
+<div *ngFor="let student of students">
+  <p>
+    <span>{{ student.name }}</span>
+    <span>
+      <input
+        type="checkbox"
+        [(ngModel)]="student.ispresent"
+        [id]="student.name"
+      />
+      <label [for]="student.name">Present</label>
+    </span>
+  </p>
+</div>
+
+<div>
+  <h3>List of Present Students</h3>
+  <ol type="1">
+    <li *ngFor="let filter of filtered">{{ filter.name }}</li>
+  </ol>
+</div>
+
+----
+
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [FormsModule, CommonModule],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+})
+export class AppComponent {
+  students = [
+    { id: 1, name: 'neil', ispresent: false },
+    { id: 2, name: 'nitin', ispresent: false },
+    { id: 3, name: 'mukesh', ispresent: false },
+    { id: 4, name: 'navin', ispresent: false },
+    { id: 5, name: 'polishetty', ispresent: false },
+  ];
+
+  get filtered() {
+    return this.students.filter((student) => student.ispresent);
+  }
+}
+
