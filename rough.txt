@@ -1,351 +1,75 @@
-PT - 10
-
-forbidAdmin.ts
-
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-
-export function forbidAdminValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-        let isUserName = false;
-        if (control.value.trim().toLowerCase() === 'admin') {
-            isUserName = true;
-        }
-        return isUserName ? { forbidAdmin: true } : null;
-    };
-}
-
------
-
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { forbidAdminValidator } from '../../validators/forbidAdmin';
-
-interface UserData {
-  name: string;
-  email: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
+  styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent {
-  userForm!: FormGroup;
-  userData: UserData[] = [];
-  isValid: boolean = true;
-  isPasswordMatching: boolean = false;
-  dateFlag: boolean = false;
+export class ProfileComponent implements OnInit {
+  myForm!: FormGroup;
 
   ngOnInit() {
-    this.userForm = new FormGroup({
-      userName: new FormControl("", [Validators.required, Validators.minLength(3), forbidAdminValidator()]),
-      email: new FormControl(""),
-      phone: new FormControl("", [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern('^[0-9]+$')]),
-      password: new FormControl("", [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$')]),
-      confirmpassword: new FormControl("", [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$')]),
-      dob: new FormControl(null, Validators.required),
-      postalcode: new FormControl("", [Validators.required, Validators.pattern('^[1-9]{5}$|^[1-9]{5}[-][1-9]{4}$')]),
-    })
+    this.myForm = new FormGroup({
+      phone: new FormArray([
+        new FormControl('', [
+          Validators.required,
+          Validators.pattern(/^[0-9]{10}$/)
+        ])
+      ])
+    });
   }
-  submitData() {
-    if (this.userForm.valid) {
-      console.log(this.userForm.value);
-      this.userData.push(this.userForm.value);
-      console.log(this.userData);
-    } else {
-      this.isValid = false;
+
+  checkFormStatus() {
+    return this.phone.controls.some((control) => control.invalid && control.touched);
+  }
+
+  removeFields(index: number) {
+    this.phone.removeAt(index);
+    if (this.phone.length === 0) {
+      this.addNumberFields(); // Ensure at least one field remains
     }
   }
 
-  addEmailValidation(event: Event) {
-    console.log((<HTMLInputElement>event.target).checked);
-    let result = (<HTMLInputElement>event.target).checked;
-    if (result) {
-      this.userForm.controls['email'].setValidators([Validators.required])
-      console.log('in')
-    } else {
-      this.userForm.controls['email'].clearValidators();
-    }
-    this.userForm.controls['email'].updateValueAndValidity()
-  }
-
-  isAbove18() {
-    this.dateFlag = false;
-    let inputDate = new Date(this.dateOfBirth?.value);
-    let todayDate = new Date();
-    let condition = (todayDate.getTime() - inputDate.getTime()) / (1000 * 60 * 60 * 24);
-    if (condition >= 18 * 365.25) {
-      this.dateFlag = true;
-    }
-  }
-
-  checkPassword() {
-    if (this.confirmpassword?.value === this.password?.value) {
-      this.isPasswordMatching = true;
-    } else {
-      this.isPasswordMatching = false;
-    }
-  }
-
-  flag: boolean = true;
-  patch() {
-    if (this.flag) {
-      this.flag = false;
-      this.userForm.patchValue({
-        email: 'updatedemail@gmail.com'
-      })
-    } else {
-      this.flag = true;
-      this.userForm.patchValue({
-        email: ''
-      })
-    }
-  }
-
-  // forms get methods
-  get postalCode() {
-    return this.userForm.get('postalcode');
-  }
-
-  get dateOfBirth() {
-    return this.userForm.get('dob');
-  }
-
-  get confirmpassword() {
-    return this.userForm.get('confirmpassword');
-  }
-
-  get password() {
-    return this.userForm.get('password');
+  addNumberFields() {
+    this.phone.push(
+      new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[0-9]{10}$/)
+      ])
+    );
   }
 
   get phone() {
-    return this.userForm.get('phone');
+    return this.myForm.get('phone') as FormArray;
   }
-
-  get email() {
-    return this.userForm.get('email');
-  }
-
-  get name() {
-    return this.userForm.get('userName');
-  }
-
 }
 
 -----
 
-<form id="userForm" [formGroup]="userForm" (submit)="submitData()">
+<form [formGroup]="myForm">
+    <button type="button" (click)="addNumberFields()" id="add-phone-button">
+        Add Phone Number
+    </button>
 
-    <!-- name  -->
-    <p>
-        <label for="username-input">Full Name:</label>
-        <input type="text" formControlName="userName" id="username-input">
-        <span *ngIf="name?.invalid && (name?.touched || name?.dirty)">
-            <p *ngIf="name?.hasError('minlength')" class="error" id="fullname-error">
-                Full name must be at least 3 characters
-            </p>
-            <p *ngIf="name?.hasError('required')" class="error" id="fullname-error-required">
-                Full name must cannot be empty
-            </p>
-            <p *ngIf="name?.hasError('forbidAdmin')" class="error" id="username-error">
-                Username cannot contain "admin"
-            </p>
+    <ng-container formArrayName="phone" *ngFor="let control of phone.controls; let i = index">
+        <div>
+            <label for="phone-input-{{ i }}">Enter Phone Number:</label>
+            <input type="number" [formControlName]="i" id="phone-input-{{ i }}" name="phone-input" />
+            <button type="button" (click)="removeFields(i)" id="remove-phone-button-{{ i }}" *ngIf="phone.length > 1">
+                Remove
+            </button>
+        </div>
+
+        <span *ngIf="control.invalid && control.touched" class="error" id="phone-error-{{ i }}">
+            Phone number must be 10 digits.
         </span>
-    </p>
+    </ng-container>
 
-    <!-- email  -->
-    <p>
-        <label for="email-input">Email:</label>
-        <input type="text" formControlName="email" id="email-input">
-
-        <!-- newsletter -->
-        <span>
-            <input (click)="addEmailValidation($event)" type="checkbox" name="subscribe-checkbox"
-                id="subscribe-checkbox">
-            <label for="subscribe-checkbox">Subscribe to newsletter</label>
-        </span>
-
-        <span *ngIf="email?.invalid && (email?.dirty || email?.touched)">
-            <p *ngIf="email?.hasError('required')" class="error" id="subscribe-error">Email is required for subscription
-            </p>
-            <p *ngIf="email?.hasError('email')" class="error" id="email-error">Invalid email address</p>
-        </span>
-    </p>
-
-    <!-- phone number  -->
-    <p>
-        <label for="phone-input">Phone Number:</label>
-        <input type="text" formControlName="phone" name="phone" id="phone-input">
-        <span *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)">
-            <p class="error" *ngIf="phone?.hasError('minlength') || phone?.hasError('maxlength')" id="phone-error">
-                Phone number must be 10 digits</p>
-            <p class="error" *ngIf="phone?.hasError('pattern')" id="phone-error-pattern">Only numbers are allowed</p>
-        </span>
-    </p>
-
-    <!-- password  -->
-    <p>
-        <label for="password-input">Password:</label>
-        <input type="text" formControlName="password" (input)="checkPassword()" name="password" id="password-input">
-        <span *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="error" id="password-error">
-            Password must contain at least 8 characters, a number, and a special character
-        </span>
-    </p>
-
-    <!-- confirm-password  -->
-    <p>
-        <label for="confirm-password-input">Confirm Password:</label>
-        <input type="text" formControlName="confirmpassword" (input)="checkPassword()" name="confirm-password"
-            id="confirm-password-input">
-        <span *ngIf=" (confirmpassword?.dirty || confirmpassword?.touched) && !isPasswordMatching" class="error"
-            id="confirm-password-error">
-            Password does not match
-        </span>
-    </p>
-
-    <!-- Date of Birth  -->
-    <p>
-        <label for="dob-input">Date of Birth:</label>
-        <input type="date" formControlName="dob" (change)="isAbove18()" name="dob" id="dob-input">
-        <span *ngIf=" (dateOfBirth?.dirty || dateOfBirth?.touched) " id="dob-error">
-            <p *ngIf="dateOfBirth?.hasError('required') && dateOfBirth?.invalid" class="error">Enter Date of Birth</p>
-            <p *ngIf="!dateFlag" class="error">You must be at least 18 years old</p>
-        </span>
-    </p>
-
-    <!-- Postal Code  -->
-    <p>
-        <label for="postal-input">Postal Code:</label>
-        <input type="text" formControlName="postalcode" name="dob" id="postal-input">
-        <span *ngIf="(postalCode?.dirty || postalCode?.touched) && postalCode?.invalid" id="postal-error">
-            <p *ngIf="postalCode?.hasError('required')" class="error">Enter Postal Code</p>
-            <p *ngIf="postalCode?.hasError('pattern')" class="error">Invalid postal code format</p>
-        </span>
-    </p>
-
-    <p *ngIf="!isValid" class="error">Enter Fields Properly</p>
-    <!-- buttons  -->
-    <input type="submit" value="Submit" id="submit"><br>
-    <input type="button" (click)="patch()" value="Patch Value" id="patch-value">
-
-</form>
-<div>
-    <h2>User Data</h2>
-    <ol *ngIf="userData.length>0" id="user-data">
-        <li *ngFor="let data of userData">{{data | json}}</li>
-    </ol>
-</div>
-
-----------------------------------------------------------------------------------------------------------------------------------
-
-PT - 11
-
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-@Component({
-  selector: 'app-profile',
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
-  templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
-})
-
-export class ProfileComponent {
-  ageForm!: FormGroup;
-  ngOnInit() {
-    this.ageForm = new FormGroup({
-      age: new FormControl("", [Validators.required, Validators.min(1), Validators.max(100)])
-    })
-  }
-
-  get age() {
-    return this.ageForm.get('age');
-  }
-
-}
-
------
-
-<form [formGroup]="ageForm">
-    <label for="age-input">Age:</label>
-    <input type="number" formControlName="age" id="age-input">
-    <span *ngIf="ageForm.invalid&&(age?.dirty||age?.touched)">
-        <p *ngIf="(age?.hasError('min') || age?.hasError('max'))" class="error">Age must be between 1 and 100</p>
-        <p *ngIf="age?.hasError('required')" class="error">Age is required</p>
-    </span>
-</form>
-
----------------------------------------------------------------------------------------
-
-PT - 12
-
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-@Component({
-  selector: 'app-profile',
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
-  templateUrl: './profile.component.html',
-  styleUrl: './profile.component.css'
-})
-
-export class ProfileComponent {
-  addressForm!: FormGroup;
-  ngOnInit() {
-    this.addressForm = new FormGroup({
-      combineAddressForm: new FormGroup({
-        street: new FormControl("", [Validators.required]),
-        city: new FormControl("", [Validators.required]),
-        zip: new FormControl("", [Validators.required]),
-      }),
-      country: new FormControl("", Validators.required)
-    })
-  }
-
-  get country() {
-    return this.addressForm.get('country');
-  }
-  get combineAddress() {
-    return this.addressForm.get('combineAddressForm');
-  }
-
-}
-
------
-
-<form [formGroup]="addressForm">
-    <div formGroupName="combineAddressForm">
-        <p>
-            <label for="street-input">Enter Street:</label>
-            <input type="text" id="street-input" formControlName="street" />
-        </p>
-        <p>
-            <label for="city-input">Enter City:</label>
-            <input type="text" id="city-input" formControlName="city" />
-        </p>
-        <p>
-            <label for="zip-input">Enter Zip:</label>
-            <input type="text" id="zip-input" formControlName="zip" />
-        </p>
+    <div *ngIf="checkFormStatus()" class="error">
+        At least one valid phone number is required.
     </div>
-    <p *ngIf="combineAddress?.invalid && (combineAddress?.touched||combineAddress?.dirty)" class="error">
-        All address fields are required
-    </p>
-    <p>
-        <label for="country">Enter Country:</label>
-        <input type="text" id="country" formControlName="country" />
-        <span *ngIf="country?.invalid && (country?.touched||country?.dirty)" class="error">
-            Country is required.
-        </span>
-    </p>
 </form>
-
