@@ -73,3 +73,84 @@ export class ProfileComponent implements OnInit {
         At least one valid phone number is required.
     </div>
 </form>
+
+-------------------------------------------------------------------------------------------------------------------
+
+import { Component } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  phoneForm: FormGroup;
+
+  constructor() {
+    this.phoneForm = new FormGroup({
+      phoneNumbers: new FormArray([this.createPhoneControl()])
+    });
+  }
+
+  get phoneNumbers(): FormArray {
+    return this.phoneForm.get('phoneNumbers') as FormArray;
+  }
+
+  private createPhoneControl(): FormControl {
+    return new FormControl('', [
+      Validators.required,
+      Validators.pattern(/^\d{10}$/) // Validates 10-digit numeric phone numbers
+    ]);
+  }
+
+  addPhoneNumber(): void {
+    this.phoneNumbers.push(this.createPhoneControl());
+  }
+
+  removePhoneNumber(index: number): void {
+    if (this.phoneNumbers.length > 1) {
+      this.phoneNumbers.removeAt(index);
+    }
+  }
+
+  onSubmit(): void {
+    if (this.phoneForm.valid) {
+      console.log('Submitted Data:', this.phoneForm.value.phoneNumbers);
+    } else {
+      // Mark all controls as touched to display validation messages
+      this.phoneNumbers.controls.forEach(control => control.markAsTouched());
+    }
+  }
+}
+
+-----
+
+<div class="container">
+  <form [formGroup]="phoneForm" (ngSubmit)="onSubmit()">
+    <label for="phone-array">Contact Phone Numbers</label>
+    <div formArrayName="phoneNumbers" id="phone-array">
+      <div *ngFor="let control of phoneNumbers.controls; let i = index" [formGroupName]="i">
+        <input
+          type="text"
+          [id]="'phone-input-' + i"
+          [formControl]="control"
+          placeholder="Enter phone number"
+        />
+        <button
+          type="button"
+          [id]="'remove-phone-button-' + i"
+          (click)="removePhoneNumber(i)"
+          *ngIf="phoneNumbers.length > 1"
+        >
+          Remove
+        </button>
+        <div *ngIf="control.invalid && control.touched" [id]="'phone-error-' + i" class="error">
+          Phone number must be 10 digits
+        </div>
+      </div>
+    </div>
+    <button type="button" id="add-phone-button" (click)="addPhoneNumber()">Add Phone Number</button>
+    <button type="submit" id="submit-button">Submit</button>
+  </form>
+</div>
