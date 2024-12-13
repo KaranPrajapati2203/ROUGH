@@ -168,3 +168,64 @@ private employeesData: Employee[] = [
     { id: 39, name: 'Rahul Bhagat', email: 'rahul.bhagat@gmail.com', phone: 8547132096, status: 'active', position: 'hr', joiningdate: '2023-01-20', assignedprojectids: [1, 2] },
     { id: 40, name: 'Kriti Shukla', email: 'kriti.shukla@gmail.com', phone: 9746325108, status: 'inactive', position: 'manager', joiningdate: '2023-12-28', assignedprojectids: [3] },
 ];
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+<!-- Pagination -->
+<div class="mx-2 my-5 d-flex justify-content-center align-items-center">
+    <nav aria-label="...">
+        <ul class="pagination">
+            <!-- Previous Button -->
+            <li class="page-item" [class.disabled]="currentPage === 1" (click)="decrementPage()">
+                <a class="page-link" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <!-- Page Numbers -->
+            <li
+                *ngFor="let employee of employeesData | definePage; let i = index"
+                class="page-item"
+                [ngClass]="{ 'active': currentPage === i + 1 }"
+                (click)="goToPage(i + 1)">
+                <a class="page-link">{{ i + 1 }}</a>
+            </li>
+
+            <!-- Next Button -->
+            <li class="page-item" [class.disabled]="currentPage === lastPage" (click)="incrementPage()">
+                <a class="page-link" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+----------------------------------------------
+
+getEmployeesData() {
+    return this.employeesData.sort((a, b) => {
+      // Convert joiningdate to Date objects and compare them
+      const dateA = new Date(a.joiningdate);
+      const dateB = new Date(b.joiningdate);
+
+      return dateB.getTime() - dateA.getTime(); // Most recent first
+    });
+  }
+
+---------------------------------------------
+
+private projectsData: Project[] = [
+    { id: 1, name: 'TezJS', status: 'active' },
+    { id: 2, name: 'onPrintShop', status: 'active' },
+    { id: 3, name: 'OmniHR', status: 'active' },
+    { id: 4, name: 'QuickPay', status: 'inactive' },
+    { id: 5, name: 'HealthTrack', status: 'active' },
+    { id: 6, name: 'EduSphere', status: 'inactive' },
+    { id: 7, name: 'FitLife', status: 'active' },
+    { id: 8, name: 'TaskFlow', status: 'inactive' },
+    { id: 9, name: 'GreenEnergy', status: 'active' },
+    { id: 10, name: 'ShopEase', status: 'inactive' },
+    { id: 11, name: 'TravelBuddy', status: 'active' },
+    { id: 12, name: 'CodeX', status: 'inactive' }
+];
