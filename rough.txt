@@ -102,3 +102,69 @@ export class StockService {
 
 -------------------------------------------------------------------------------------------------------
 
+getSrNo(index: number, page: number): number {
+  return (page - 1) * this.pms.pageDataLimit + index + 1;
+}
+
+--------------
+
+searchByName() {
+  let result: Employee[] = [];
+  this.employeesData.forEach((employee: Employee) => {
+    if (employee.name.toLowerCase().includes(this.searchNameInput.trim().toLowerCase())) {
+      result.push(employee);
+    }
+  });
+  this.employeesData = result;
+  this.currentPage = 1; // Reset to first page
+  this.lastPage = Math.ceil(this.employeesData.length / this.pms.pageDataLimit);
+}
+
+----------
+
+this.lastPage = Math.ceil(this.employeesData.length / this.pms.pageDataLimit);
+
+---------
+
+private employeesData: Employee[] = [
+    { id: 1, name: 'Rajesh Sharma', email: 'rajesh.sharma@gmail.com', phone: 9876543210, status: 'active', position: 'developer', joiningdate: '2024-12-01', assignedprojectids: [1, 2] },
+    { id: 2, name: 'Anita Verma', email: 'anita.verma@gmail.com', phone: 9123456789, status: 'inactive', position: 'manager', joiningdate: '2023-05-15', assignedprojectids: [3] },
+    { id: 3, name: 'Karan Mehta', email: 'karan.mehta@gmail.com', phone: 9823456781, status: 'active', position: 'tester', joiningdate: '2022-11-20', assignedprojectids: [1] },
+    { id: 4, name: 'Neha Gupta', email: 'neha.gupta@gmail.com', phone: 8562347895, status: 'active', position: 'developer', joiningdate: '2021-09-10', assignedprojectids: [2, 3] },
+    { id: 5, name: 'Ravi Singh', email: 'ravi.singh@gmail.com', phone: 7543216987, status: 'inactive', position: 'hr', joiningdate: '2023-02-01', assignedprojectids: [1] },
+    { id: 6, name: 'Pooja Yadav', email: 'pooja.yadav@gmail.com', phone: 7485963214, status: 'active', position: 'manager', joiningdate: '2024-06-22', assignedprojectids: [2, 3] },
+    { id: 7, name: 'Amit Tripathi', email: 'amit.tripathi@gmail.com', phone: 9365412789, status: 'inactive', position: 'developer', joiningdate: '2022-03-05', assignedprojectids: [1] },
+    { id: 8, name: 'Sakshi Jain', email: 'sakshi.jain@gmail.com', phone: 9658741235, status: 'active', position: 'tester', joiningdate: '2024-10-14', assignedprojectids: [3] },
+    { id: 9, name: 'Deepak Joshi', email: 'deepak.joshi@gmail.com', phone: 8523697412, status: 'active', position: 'developer', joiningdate: '2023-01-19', assignedprojectids: [1, 2] },
+    { id: 10, name: 'Ritika Agarwal', email: 'ritika.agarwal@gmail.com', phone: 9814567230, status: 'inactive', position: 'hr', joiningdate: '2023-12-12', assignedprojectids: [2] },
+    { id: 11, name: 'Siddharth Kapoor', email: 'siddharth.kapoor@gmail.com', phone: 7865142039, status: 'active', position: 'manager', joiningdate: '2022-04-05', assignedprojectids: [3] },
+    { id: 12, name: 'Maya Nair', email: 'maya.nair@gmail.com', phone: 8462310957, status: 'inactive', position: 'developer', joiningdate: '2023-07-12', assignedprojectids: [1, 3] },
+    { id: 13, name: 'Vivek Tiwari', email: 'vivek.tiwari@gmail.com', phone: 9523416578, status: 'active', position: 'manager', joiningdate: '2024-02-25', assignedprojectids: [2] },
+    { id: 14, name: 'Kavita Rao', email: 'kavita.rao@gmail.com', phone: 8641257093, status: 'inactive', position: 'tester', joiningdate: '2023-05-20', assignedprojectids: [3] },
+    { id: 15, name: 'Manish Patil', email: 'manish.patil@gmail.com', phone: 7468159230, status: 'active', position: 'developer', joiningdate: '2024-03-01', assignedprojectids: [1, 2] },
+    { id: 16, name: 'Divya Reddy', email: 'divya.reddy@gmail.com', phone: 8942150367, status: 'inactive', position: 'hr', joiningdate: '2023-06-18', assignedprojectids: [2, 3] },
+    { id: 17, name: 'Nikhil Pandey', email: 'nikhil.pandey@gmail.com', phone: 9462531708, status: 'active', position: 'developer', joiningdate: '2024-08-11', assignedprojectids: [1] },
+    { id: 18, name: 'Sneha Choudhary', email: 'sneha.choudhary@gmail.com', phone: 9871245632, status: 'inactive', position: 'manager', joiningdate: '2023-09-30', assignedprojectids: [3] },
+    { id: 19, name: 'Arun Vyas', email: 'arun.vyas@gmail.com', phone: 9817563421, status: 'active', position: 'tester', joiningdate: '2023-11-24', assignedprojectids: [1, 2] },
+    { id: 20, name: 'Shreya Iyer', email: 'shreya.iyer@gmail.com', phone: 8712456930, status: 'inactive', position: 'developer', joiningdate: '2024-05-15', assignedprojectids: [2] },
+    { id: 21, name: 'Abhishek Dubey', email: 'abhishek.dubey@gmail.com', phone: 9854210367, status: 'active', position: 'developer', joiningdate: '2023-10-10', assignedprojectids: [1, 3] },
+    { id: 22, name: 'Nisha Kulkarni', email: 'nisha.kulkarni@gmail.com', phone: 9875234106, status: 'inactive', position: 'manager', joiningdate: '2024-07-08', assignedprojectids: [3] },
+    { id: 23, name: 'Rohan Malik', email: 'rohan.malik@gmail.com', phone: 9524187630, status: 'active', position: 'tester', joiningdate: '2023-01-05', assignedprojectids: [1] },
+    { id: 24, name: 'Meera Desai', email: 'meera.desai@gmail.com', phone: 8124593607, status: 'inactive', position: 'developer', joiningdate: '2022-12-01', assignedprojectids: [1, 2] },
+    { id: 25, name: 'Aditya Goyal', email: 'aditya.goyal@gmail.com', phone: 8962315074, status: 'active', position: 'developer', joiningdate: '2023-03-12', assignedprojectids: [3] },
+    { id: 26, name: 'Priyanka Bhardwaj', email: 'priyanka.bhardwaj@gmail.com', phone: 9354126078, status: 'inactive', position: 'manager', joiningdate: '2024-06-01', assignedprojectids: [2] },
+    { id: 27, name: 'Yash Chatterjee', email: 'yash.chatterjee@gmail.com', phone: 8542136790, status: 'active', position: 'tester', joiningdate: '2023-07-20', assignedprojectids: [1, 3] },
+    { id: 28, name: 'Lavanya Menon', email: 'lavanya.menon@gmail.com', phone: 9623485710, status: 'inactive', position: 'hr', joiningdate: '2023-02-25', assignedprojectids: [2] },
+    { id: 29, name: 'Suresh Nair', email: 'suresh.nair@gmail.com', phone: 9865324107, status: 'active', position: 'developer', joiningdate: '2024-04-15', assignedprojectids: [3] },
+    { id: 30, name: 'Tanya Bansal', email: 'tanya.bansal@gmail.com', phone: 9532178460, status: 'inactive', position: 'manager', joiningdate: '2024-09-10', assignedprojectids: [2] },
+    { id: 31, name: 'Ajay Srivastava', email: 'ajay.srivastava@gmail.com', phone: 8910234756, status: 'active', position: 'developer', joiningdate: '2023-06-18', assignedprojectids: [1, 2] },
+    { id: 32, name: 'Payal Sinha', email: 'payal.sinha@gmail.com', phone: 9512468073, status: 'inactive', position: 'tester', joiningdate: '2023-05-10', assignedprojectids: [3] },
+    { id: 33, name: 'Harshad Thakur', email: 'harshad.thakur@gmail.com', phone: 8745230169, status: 'active', position: 'manager', joiningdate: '2024-07-14', assignedprojectids: [2] },
+    { id: 34, name: 'Snehal Jadhav', email: 'snehal.jadhav@gmail.com', phone: 9875120463, status: 'inactive', position: 'developer', joiningdate: '2022-09-30', assignedprojectids: [3] },
+    { id: 35, name: 'Gaurav Dixit', email: 'gaurav.dixit@gmail.com', phone: 9472153084, status: 'active', position: 'tester', joiningdate: '2023-08-08', assignedprojectids: [1, 3] },
+    { id: 36, name: 'Shilpa Bhatt', email: 'shilpa.bhatt@gmail.com', phone: 9653412708, status: 'inactive', position: 'developer', joiningdate: '2023-11-12', assignedprojectids: [2] },
+    { id: 37, name: 'Vikas Chaudhary', email: 'vikas.chaudhary@gmail.com', phone: 9876543215, status: 'active', position: 'manager', joiningdate: '2024-05-18', assignedprojectids: [2] },
+    { id: 38, name: 'Anjali Rathore', email: 'anjali.rathore@gmail.com', phone: 8765243109, status: 'inactive', position: 'developer', joiningdate: '2023-04-07', assignedprojectids: [3] },
+    { id: 39, name: 'Rahul Bhagat', email: 'rahul.bhagat@gmail.com', phone: 8547132096, status: 'active', position: 'hr', joiningdate: '2023-01-20', assignedprojectids: [1, 2] },
+    { id: 40, name: 'Kriti Shukla', email: 'kriti.shukla@gmail.com', phone: 9746325108, status: 'inactive', position: 'manager', joiningdate: '2023-12-28', assignedprojectids: [3] },
+];
