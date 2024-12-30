@@ -1,216 +1,226 @@
-Your code is mostly functional, but there are a few areas where improvements can be made to make it more efficient, readable, and aligned with Angular best practices **without introducing BehaviorSubject**. Here are the optimizations and suggestions:
+using System;
+using System.Collections.Generic;
 
----
+namespace EmployeePayrollSystem
+{
+    // Base class
+    public class Employee
+    {
+        public int EmployeeId { get; set; }
+        public string Name { get; set; }
+        public string Department { get; set; }
 
-### 1. **Handling HTTP Responses**
-Currently, you're calling `subscribe()` directly in your `UserService` for `addUser`, `deleteUser`, and `updateUser`. This should ideally be avoided in the service layer. Instead, return the observable and subscribe to it in the component.
-
-#### Problem:
-Directly subscribing to HTTP requests inside the service breaks separation of concerns and makes it harder to manage side effects.
-
-#### Fix:
-Modify your service methods to return an observable and handle navigation in the component.
-
-```ts
-addUser(formData: User): Observable<any> {
-  return this.http.post(this.apiUrl, formData, this.httpOptions);
-}
-
-deleteUser(id: number): Observable<any> {
-  return this.http.delete<User>(`${this.apiUrl}/${id}`, this.httpOptions);
-}
-
-updateUser(formData: User): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${formData.id}`, formData, this.httpOptions);
-}
-```
-
-Now in your **`UserFormComponent`** and **`UserListComponent`**, handle these responses:
-
-```ts
-addUser() {
-  this.canSubmit = true;
-  if (this.userform.valid) {
-    this.userService.addUser(this.userform.value).subscribe({
-      next: () => {
-        alert('User added successfully');
-        this.userform.reset(); // Reset the form
-        this.router.navigate(['/user-list']); // Navigate after successful addition
-      },
-      error: (err) => console.error('Error adding user', err),
-    });
-  }
-}
-
-updateUser() {
-  this.canSubmit = true;
-  if (this.userform.valid) {
-    this.userService.updateUser(this.userform.value).subscribe({
-      next: () => {
-        alert('User updated successfully');
-        this.router.navigate(['/user-list']); // Navigate after successful update
-      },
-      error: (err) => console.error('Error updating user', err),
-    });
-  }
-}
-
-deleteUser(id: number) {
-  if (confirm(`Are you sure you want to delete user with ID "${id}"?`)) {
-    this.userService.deleteUser(id).subscribe({
-      next: () => {
-        alert('User deleted successfully');
-        this.getData(); // Refresh data after deletion
-      },
-      error: (err) => console.error('Error deleting user', err),
-    });
-  }
-}
-```
-
----
-
-### 2. **Avoid Multiple HTTP Requests**
-In your `getData()` method, you're calling `this.userService.getUsers()` every time you need to fetch data. This can be inefficient when the same data is frequently requested. Instead, use **local caching** by storing the fetched data in the service.
-
-#### Updated Service with Caching:
-```ts
-private cachedUsers: User[] = [];
-
-getUsers(currentPage?: number): Observable<User[]> {
-  if (this.cachedUsers.length > 0 && !currentPage) {
-    // Return cached data
-    return of(this.cachedUsers);
-  }
-  const page = currentPage ?? 1;
-  return this.http
-    .get<User[]>(`${this.apiUrl}?page=${page}&per_page=${this.pageSize}`, this.httpOptions)
-    .pipe(
-      tap((users) => {
-        if (!currentPage) {
-          this.cachedUsers = users; // Cache the data
+        public Employee(int employeeId, string name, string department)
+        {
+            EmployeeId = employeeId;
+            Name = name;
+            Department = department;
         }
-      })
-    );
+
+        public virtual void DisplayDetails()
+        {
+            Console.WriteLine($"ID: {EmployeeId}, Name: {Name}, Department: {Department}");
+        }
+    }
+
+    // Derived class
+    public class PermanentEmployee : Employee
+    {
+        public double AnnualSalary { get; set; }
+
+        public PermanentEmployee(int employeeId, string name, string department, double annualSalary)
+            : base(employeeId, name, department)
+        {
+            AnnualSalary = annualSalary;
+        }
+
+        public override void DisplayDetails()
+        {
+            base.DisplayDetails();
+            Console.WriteLine($"Annual Salary: {AnnualSalary:C}");
+        }
+    }
+
+    // Derived class
+    public class ContractEmployee : Employee
+    {
+        public double HourlyRate { get; set; }
+        public int HoursWorked { get; set; }
+
+        public ContractEmployee(int employeeId, string name, string department, double hourlyRate, int hoursWorked)
+            : base(employeeId, name, department)
+        {
+            HourlyRate = hourlyRate;
+            HoursWorked = hoursWorked;
+        }
+
+        public double CalculatePay()
+        {
+            return HourlyRate * HoursWorked;
+        }
+
+        public override void DisplayDetails()
+        {
+            base.DisplayDetails();
+            Console.WriteLine($"Hourly Rate: {HourlyRate:C}, Hours Worked: {HoursWorked}, Total Pay: {CalculatePay():C}");
+        }
+    }
+
+    // Encapsulation: Payroll System
+    public class Payroll
+    {
+        private List<Employee> Employees = new List<Employee>();
+
+        public void AddEmployee(Employee employee)
+        {
+            Employees.Add(employee);
+        }
+
+        public void DisplayAllEmployees()
+        {
+            foreach (var employee in Employees)
+            {
+                employee.DisplayDetails();
+                Console.WriteLine("----------------------");
+            }
+        }
+    }
+
+    // Entry point
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Payroll payroll = new Payroll();
+
+            // Add employees
+            payroll.AddEmployee(new PermanentEmployee(1, "Alice", "IT", 60000));
+            payroll.AddEmployee(new ContractEmployee(2, "Bob", "HR", 50, 120));
+
+            // Display all employees
+            payroll.DisplayAllEmployees();
+
+            Console.ReadLine();
+        }
+    }
 }
-```
 
-In `UserListComponent`, call `this.getData()` only when required.
+------------------------------------------------------------------------------------------------------------------------
 
----
+using System;
+using System.Collections.Generic;
 
-### 3. **Centralize Navigation Logic**
-Navigation (`router.navigateByUrl`) is scattered in your code, which reduces maintainability. Centralize the navigation logic in the component.
+namespace EmployeePayrollSystem
+{
+    // Base class
+    public class Employee
+    {
+        public int EmployeeId { get; set; }
+        public string Name { get; set; }
+        public string Department { get; set; }
 
-#### Example:
-Add reusable navigation methods in `UserListComponent`:
+        public Employee(int employeeId, string name, string department)
+        {
+            EmployeeId = employeeId;
+            Name = name;
+            Department = department;
+        }
 
-```ts
-navigateToList() {
-  this.router.navigate(['/user-list']);
+        public virtual void DisplayDetails()
+        {
+            Console.WriteLine($"ID: {EmployeeId}, Name: {Name}, Department: {Department}");
+        }
+
+        public virtual double CalculateSalary()
+        {
+            return 0.0;
+        }
+    }
+
+    // Derived class for permanent employees
+    public class PermanentEmployee : Employee
+    {
+        public double AnnualSalary { get; set; }
+
+        public PermanentEmployee(int employeeId, string name, string department, double annualSalary)
+            : base(employeeId, name, department)
+        {
+            AnnualSalary = annualSalary;
+        }
+
+        public override void DisplayDetails()
+        {
+            base.DisplayDetails();
+            Console.WriteLine($"Annual Salary: {AnnualSalary:C}");
+        }
+
+        public override double CalculateSalary()
+        {
+            return AnnualSalary / 12; // Monthly salary
+        }
+    }
+
+    // Derived class for contract employees
+    public class ContractEmployee : Employee
+    {
+        public double HourlyRate { get; set; }
+        public int HoursWorked { get; set; }
+
+        public ContractEmployee(int employeeId, string name, string department, double hourlyRate, int hoursWorked)
+            : base(employeeId, name, department)
+        {
+            HourlyRate = hourlyRate;
+            HoursWorked = hoursWorked;
+        }
+
+        public override void DisplayDetails()
+        {
+            base.DisplayDetails();
+            Console.WriteLine($"Hourly Rate: {HourlyRate:C}, Hours Worked: {HoursWorked}");
+        }
+
+        public override double CalculateSalary()
+        {
+            return HourlyRate * HoursWorked; // Total pay
+        }
+    }
+
+    // Encapsulation: Payroll System
+    public class Payroll
+    {
+        private List<Employee> Employees = new List<Employee>();
+
+        public void AddEmployee(Employee employee)
+        {
+            Employees.Add(employee);
+        }
+
+        public void DisplayAllEmployees()
+        {
+            foreach (var employee in Employees)
+            {
+                employee.DisplayDetails();
+                Console.WriteLine($"Monthly Salary: {employee.CalculateSalary():C}");
+                Console.WriteLine("----------------------");
+            }
+        }
+    }
+
+    // Entry point
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Payroll payroll = new Payroll();
+
+            // Add employees
+            payroll.AddEmployee(new PermanentEmployee(1, "Alice", "IT", 60000));
+            payroll.AddEmployee(new ContractEmployee(2, "Bob", "HR", 50, 120));
+
+            // Display all employees
+            payroll.DisplayAllEmployees();
+
+            Console.ReadLine();
+        }
+    }
 }
-
-navigateToAddUser() {
-  this.router.navigate(['/user-list/new']);
-}
-
-navigateToEditUser(id: number) {
-  this.router.navigate(['/user-list', id, 'edit']);
-}
-```
-
-And replace navigation calls with these reusable methods.
-
----
-
-### 4. **Dynamic Form Initialization**
-Instead of hardcoding `id: new FormControl(100)` in `FormGroup`, dynamically initialize the `FormGroup` based on whether it's a create or edit mode.
-
-#### Updated Code:
-```ts
-ngOnInit() {
-  this.genders = this.userService.genders;
-  this.status = this.userService.status;
-  this.selectedID = Number(this.route.snapshot.params['id']);
-
-  // Dynamically initialize the form
-  this.userform = new FormGroup({
-    id: new FormControl(this.selectedID || null), // null for new user
-    name: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    gender: new FormControl('', Validators.required),
-    status: new FormControl('', Validators.required),
-  });
-
-  if (this.selectedID) {
-    this.inEditMode = true;
-    this.inCreateMode = false;
-    this.patchValue();
-  } else {
-    this.inEditMode = false;
-    this.inCreateMode = true;
-  }
-}
-```
-
----
-
-### 5. **Error Handling for API Calls**
-Introduce proper error handling for API calls. For example, use the `catchError` operator to handle errors in the service:
-
-#### Updated Service:
-```ts
-getUsers(currentPage?: number): Observable<User[]> {
-  const page = currentPage ?? 1;
-  return this.http
-    .get<User[]>(`${this.apiUrl}?page=${page}&per_page=${this.pageSize}`, this.httpOptions)
-    .pipe(
-      catchError((err) => {
-        console.error('Error fetching users', err);
-        return throwError(() => err);
-      })
-    );
-}
-```
-
-And in the component, provide feedback to the user when an error occurs.
-
----
-
-### 6. **Reduce Hardcoded Data**
-Replace hardcoded pagination and `genders/status` with dynamic or configurable options.
-
-#### Pagination:
-Define pagination limits in the service and retrieve them dynamically:
-```ts
-getPaginationLinks(): number[] {
-  return Array.from({ length: 10 }, (_, i) => i + 1); // Dynamically generate page numbers
-}
-```
-
-Use this in your template:
-```html
-<li *ngFor="let page of paginationLinks" class="page-item" (click)="goToPage(page)">
-  <a class="page-link">{{ page }}</a>
-</li>
-```
-
-#### Gender and Status:
-Instead of defining `genders` and `status` in the service, fetch them dynamically (e.g., via API or constants file).
-
----
-
-### 7. **Code Cleanup and Consistency**
-- Remove unused variables like `pageSize` in components where not required.
-- Ensure consistent method naming (e.g., `getData` can be renamed to `loadUsers` for clarity).
-
----
-
-### Final Takeaways:
-1. Avoid subscribing in services; move it to components.
-2. Use caching to avoid redundant HTTP calls.
-3. Centralize reusable logic like navigation and pagination.
-4. Improve form initialization and error handling.
-5. Replace hardcoded values with dynamic configurations.
-
-These changes will make your code more efficient, easier to maintain, and better aligned with Angular's reactive programming paradigm.
