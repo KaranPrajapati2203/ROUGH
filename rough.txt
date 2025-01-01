@@ -1,226 +1,602 @@
+Practice 5
+Generic Collections
+Implement a generic method to merge two collections into one while removing duplicates.
+Create a generic method to find the median of a collection of numeric types.
+Write a program to implement a custom generic collection that supports filtering, sorting, and mapping.
+Design a generic collection to handle caching with time-to-live (TTL) for each entry.
+Implement a generic method to shuffle the elements of a collection randomly.
+
+-----
+
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace EmployeePayrollSystem
+class Program
 {
-    // Base class
-    public class Employee
+    public static IEnumerable<T> MergeCollections<T>(IEnumerable<T> collection1, IEnumerable<T> collection2)
     {
-        public int EmployeeId { get; set; }
-        public string Name { get; set; }
-        public string Department { get; set; }
-
-        public Employee(int employeeId, string name, string department)
-        {
-            EmployeeId = employeeId;
-            Name = name;
-            Department = department;
-        }
-
-        public virtual void DisplayDetails()
-        {
-            Console.WriteLine($"ID: {EmployeeId}, Name: {Name}, Department: {Department}");
-        }
+        return collection1.Union(collection2);
     }
 
-    // Derived class
-    public class PermanentEmployee : Employee
+    static void Main(string[] args)
     {
-        public double AnnualSalary { get; set; }
+        var list1 = new List<int> { 1, 2, 3, 4 };
+        var list2 = new List<int> { 3, 4, 5, 6 };
 
-        public PermanentEmployee(int employeeId, string name, string department, double annualSalary)
-            : base(employeeId, name, department)
-        {
-            AnnualSalary = annualSalary;
-        }
+        var merged = MergeCollections(list1, list2);
 
-        public override void DisplayDetails()
-        {
-            base.DisplayDetails();
-            Console.WriteLine($"Annual Salary: {AnnualSalary:C}");
-        }
-    }
-
-    // Derived class
-    public class ContractEmployee : Employee
-    {
-        public double HourlyRate { get; set; }
-        public int HoursWorked { get; set; }
-
-        public ContractEmployee(int employeeId, string name, string department, double hourlyRate, int hoursWorked)
-            : base(employeeId, name, department)
-        {
-            HourlyRate = hourlyRate;
-            HoursWorked = hoursWorked;
-        }
-
-        public double CalculatePay()
-        {
-            return HourlyRate * HoursWorked;
-        }
-
-        public override void DisplayDetails()
-        {
-            base.DisplayDetails();
-            Console.WriteLine($"Hourly Rate: {HourlyRate:C}, Hours Worked: {HoursWorked}, Total Pay: {CalculatePay():C}");
-        }
-    }
-
-    // Encapsulation: Payroll System
-    public class Payroll
-    {
-        private List<Employee> Employees = new List<Employee>();
-
-        public void AddEmployee(Employee employee)
-        {
-            Employees.Add(employee);
-        }
-
-        public void DisplayAllEmployees()
-        {
-            foreach (var employee in Employees)
-            {
-                employee.DisplayDetails();
-                Console.WriteLine("----------------------");
-            }
-        }
-    }
-
-    // Entry point
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Payroll payroll = new Payroll();
-
-            // Add employees
-            payroll.AddEmployee(new PermanentEmployee(1, "Alice", "IT", 60000));
-            payroll.AddEmployee(new ContractEmployee(2, "Bob", "HR", 50, 120));
-
-            // Display all employees
-            payroll.DisplayAllEmployees();
-
-            Console.ReadLine();
-        }
+        Console.WriteLine("Merged Collection: " + string.Join(", ", merged));
     }
 }
 
-------------------------------------------------------------------------------------------------------------------------
+-----
+
+public static T FindMedian<T>(IEnumerable<T> collection) where T : IComparable
+{
+    var sorted = collection.OrderBy(x => x).ToList();
+    int count = sorted.Count;
+
+    if (count == 0)
+        throw new InvalidOperationException("Collection cannot be empty.");
+
+    if (count % 2 == 0)
+    {
+        dynamic mid1 = sorted[count / 2 - 1];
+        dynamic mid2 = sorted[count / 2];
+        return (T)((mid1 + mid2) / 2);
+    }
+    else
+    {
+        return sorted[count / 2];
+    }
+}
+static void Main(string[] args)
+{
+    var numbers = new List<double> { 1.5, 3.5, 2.5, 4.5, 5.5 };
+    Console.WriteLine("Median: " + FindMedian(numbers));
+}
+
+-----
+
+public class CustomCollection<T>
+{
+    private List<T> _items;
+
+    public CustomCollection()
+    {
+        _items = new List<T>();
+    }
+
+    public void Add(T item)
+    {
+        _items.Add(item);
+    }
+
+    public IEnumerable<T> Filter(Func<T, bool> predicate)
+    {
+        return _items.Where(predicate);
+    }
+
+    public IEnumerable<T> Sort(Func<T, object> keySelector)
+    {
+        return _items.OrderBy(keySelector);
+    }
+
+    public IEnumerable<TResult> Map<TResult>(Func<T, TResult> selector)
+    {
+        return _items.Select(selector);
+    }
+}
+
+static void Main(string[] args)
+{
+    var collection = new CustomCollection<int>();
+    collection.Add(5);
+    collection.Add(3);
+    collection.Add(8);
+    collection.Add(1);
+
+    var filtered = collection.Filter(x => x > 4);
+    Console.WriteLine("Filtered: " + string.Join(", ", filtered));
+
+    var sorted = collection.Sort(x => x);
+    Console.WriteLine("Sorted: " + string.Join(", ", sorted));
+
+    var mapped = collection.Map(x => x * 2);
+    Console.WriteLine("Mapped: " + string.Join(", ", mapped));
+}
+
+-----
+
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+
+public class CacheItem<T>
+{
+    public T Value { get; }
+    public DateTime Expiration { get; }
+
+    public CacheItem(T value, TimeSpan ttl)
+    {
+        Value = value;
+        Expiration = DateTime.Now.Add(ttl);
+    }
+
+    public bool IsExpired => DateTime.Now > Expiration;
+}
+
+public class GenericCache<TKey, TValue>
+{
+    private ConcurrentDictionary<TKey, CacheItem<TValue>> _cache = new();
+
+    public void Add(TKey key, TValue value, TimeSpan ttl)
+    {
+        _cache[key] = new CacheItem<TValue>(value, ttl);
+    }
+
+    public TValue Get(TKey key)
+    {
+        if (_cache.TryGetValue(key, out var cacheItem))
+        {
+            if (!cacheItem.IsExpired)
+                return cacheItem.Value;
+
+            _cache.TryRemove(key, out _);
+        }
+
+        throw new KeyNotFoundException("Item not found or expired.");
+    }
+}
+
+static void Main(string[] args)
+{
+    var cache = new GenericCache<string, string>();
+    cache.Add("key1", "value1", TimeSpan.FromSeconds(5));
+
+    Console.WriteLine("Cached Value: " + cache.Get("key1"));
+    Thread.Sleep(6000);
+
+    try
+    {
+        Console.WriteLine(cache.Get("key1"));
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+}
+
+-----
+
+public static void Shuffle<T>(IList<T> collection)
+{
+    Random rand = new Random();
+    for (int i = collection.Count - 1; i > 0; i--)
+    {
+        int j = rand.Next(i + 1);
+        (collection[i], collection[j]) = (collection[j], collection[i]);
+    }
+}
+
+static void Main(string[] args)
+{
+    var list = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
+
+    Console.WriteLine("Original: " + string.Join(", ", list));
+
+    Shuffle(list);
+
+    Console.WriteLine("Shuffled: " + string.Join(", ", list));
+}
+
+---------------------------------------------------------------------------------------------
+
+Practice 6
+List
+Write a method to find and remove all duplicate elements from a list without using LINQ.
+Develop a function to split a list into sublists of a given size.
+Create a program to merge two sorted lists into one sorted list.
+Write a method to shift elements of a list cyclically to the left by a given number of positions.
+Implement a function to find the intersection of two lists without using built-in methods.
+
+-----
 
 using System;
 using System.Collections.Generic;
 
-namespace EmployeePayrollSystem
+class Program
 {
-    // Base class
-    public class Employee
+    public static void RemoveDuplicates<T>(List<T> list)
     {
-        public int EmployeeId { get; set; }
-        public string Name { get; set; }
-        public string Department { get; set; }
+        var seen = new HashSet<T>();
+        int index = 0;
 
-        public Employee(int employeeId, string name, string department)
+        while (index < list.Count)
         {
-            EmployeeId = employeeId;
-            Name = name;
-            Department = department;
-        }
-
-        public virtual void DisplayDetails()
-        {
-            Console.WriteLine($"ID: {EmployeeId}, Name: {Name}, Department: {Department}");
-        }
-
-        public virtual double CalculateSalary()
-        {
-            return 0.0;
-        }
-    }
-
-    // Derived class for permanent employees
-    public class PermanentEmployee : Employee
-    {
-        public double AnnualSalary { get; set; }
-
-        public PermanentEmployee(int employeeId, string name, string department, double annualSalary)
-            : base(employeeId, name, department)
-        {
-            AnnualSalary = annualSalary;
-        }
-
-        public override void DisplayDetails()
-        {
-            base.DisplayDetails();
-            Console.WriteLine($"Annual Salary: {AnnualSalary:C}");
-        }
-
-        public override double CalculateSalary()
-        {
-            return AnnualSalary / 12; // Monthly salary
-        }
-    }
-
-    // Derived class for contract employees
-    public class ContractEmployee : Employee
-    {
-        public double HourlyRate { get; set; }
-        public int HoursWorked { get; set; }
-
-        public ContractEmployee(int employeeId, string name, string department, double hourlyRate, int hoursWorked)
-            : base(employeeId, name, department)
-        {
-            HourlyRate = hourlyRate;
-            HoursWorked = hoursWorked;
-        }
-
-        public override void DisplayDetails()
-        {
-            base.DisplayDetails();
-            Console.WriteLine($"Hourly Rate: {HourlyRate:C}, Hours Worked: {HoursWorked}");
-        }
-
-        public override double CalculateSalary()
-        {
-            return HourlyRate * HoursWorked; // Total pay
-        }
-    }
-
-    // Encapsulation: Payroll System
-    public class Payroll
-    {
-        private List<Employee> Employees = new List<Employee>();
-
-        public void AddEmployee(Employee employee)
-        {
-            Employees.Add(employee);
-        }
-
-        public void DisplayAllEmployees()
-        {
-            foreach (var employee in Employees)
+            if (seen.Contains(list[index]))
             {
-                employee.DisplayDetails();
-                Console.WriteLine($"Monthly Salary: {employee.CalculateSalary():C}");
-                Console.WriteLine("----------------------");
+                list.RemoveAt(index);
+            }
+            else
+            {
+                seen.Add(list[index]);
+                index++;
             }
         }
     }
 
-    // Entry point
-    class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        var list = new List<int> { 1, 2, 2, 3, 4, 4, 5 };
+        Console.WriteLine("Original List: " + string.Join(", ", list));
+
+        RemoveDuplicates(list);
+
+        Console.WriteLine("List After Removing Duplicates: " + string.Join(", ", list));
+    }
+}
+
+-----
+
+public static List<List<T>> SplitList<T>(List<T> list, int size)
+{
+    var result = new List<List<T>>();
+    for (int i = 0; i < list.Count; i += size)
+    {
+        var sublist = list.GetRange(i, Math.Min(size, list.Count - i));
+        result.Add(sublist);
+    }
+    return result;
+}
+
+static void Main(string[] args)
+{
+    var list = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 };
+    int size = 3;
+
+    var sublists = SplitList(list, size);
+
+    Console.WriteLine("Sublists:");
+    foreach (var sublist in sublists)
+    {
+        Console.WriteLine(string.Join(", ", sublist));
+    }
+}
+
+-----
+
+public static List<int> MergeSortedLists(List<int> list1, List<int> list2)
+{
+    var merged = new List<int>();
+    int i = 0, j = 0;
+
+    while (i < list1.Count && j < list2.Count)
+    {
+        if (list1[i] <= list2[j])
         {
-            Payroll payroll = new Payroll();
-
-            // Add employees
-            payroll.AddEmployee(new PermanentEmployee(1, "Alice", "IT", 60000));
-            payroll.AddEmployee(new ContractEmployee(2, "Bob", "HR", 50, 120));
-
-            // Display all employees
-            payroll.DisplayAllEmployees();
-
-            Console.ReadLine();
+            merged.Add(list1[i]);
+            i++;
+        }
+        else
+        {
+            merged.Add(list2[j]);
+            j++;
         }
     }
+
+    while (i < list1.Count)
+    {
+        merged.Add(list1[i]);
+        i++;
+    }
+
+    while (j < list2.Count)
+    {
+        merged.Add(list2[j]);
+        j++;
+    }
+
+    return merged;
+}
+
+static void Main(string[] args)
+{
+    var list1 = new List<int> { 1, 3, 5 };
+    var list2 = new List<int> { 2, 4, 6 };
+
+    var merged = MergeSortedLists(list1, list2);
+
+    Console.WriteLine("Merged Sorted List: " + string.Join(", ", merged));
+}
+
+-----
+
+public static void ShiftLeft<T>(List<T> list, int positions)
+{
+    int n = list.Count;
+    positions = positions % n;
+
+    if (positions == 0) return;
+
+    Reverse(list, 0, positions - 1);
+    Reverse(list, positions, n - 1);
+    Reverse(list, 0, n - 1);
+}
+
+private static void Reverse<T>(List<T> list, int start, int end)
+{
+    while (start < end)
+    {
+        var temp = list[start];
+        list[start] = list[end];
+        list[end] = temp;
+
+        start++;
+        end--;
+    }
+}
+
+static void Main(string[] args)
+{
+    var list = new List<int> { 1, 2, 3, 4, 5 };
+    int positions = 2;
+
+    Console.WriteLine("Original List: " + string.Join(", ", list));
+
+    ShiftLeft(list, positions);
+
+    Console.WriteLine("List After Cyclic Shift: " + string.Join(", ", list));
+}
+
+-----
+
+public static List<T> FindIntersection<T>(List<T> list1, List<T> list2)
+{
+    var intersection = new List<T>();
+
+    foreach (var item in list1)
+    {
+        if (list2.Contains(item) && !intersection.Contains(item))
+        {
+            intersection.Add(item);
+        }
+    }
+
+    return intersection;
+}
+
+static void Main(string[] args)
+{
+    var list1 = new List<int> { 1, 2, 3, 4, 5 };
+    var list2 = new List<int> { 3, 4, 5, 6, 7 };
+
+    var intersection = FindIntersection(list1, list2);
+
+    Console.WriteLine("Intersection: " + string.Join(", ", intersection));
+}
+
+---------------------------------------------------------------------------------------------
+
+Practice 7
+Stack
+Write a program to sort a stack using only another stack and no additional data structures.
+Create a method to evaluate a postfix mathematical expression using a stack.
+Design a stack that supports retrieving the minimum element in O(1) time.
+Implement a function to reverse a string using a stack.
+Write a stack-based solution to convert an infix expression to a postfix expression.
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    public static void SortStack(Stack<int> inputStack)
+    {
+        var tempStack = new Stack<int>();
+
+        while (inputStack.Count > 0)
+        {
+            int temp = inputStack.Pop();
+
+            while (tempStack.Count > 0 && tempStack.Peek() > temp)
+            {
+                inputStack.Push(tempStack.Pop());
+            }
+
+            tempStack.Push(temp);
+        }
+
+        while (tempStack.Count > 0)
+        {
+            inputStack.Push(tempStack.Pop());
+        }
+    }
+
+    static void Main(string[] args)
+    {
+        var stack = new Stack<int>();
+        stack.Push(34);
+        stack.Push(3);
+        stack.Push(31);
+        stack.Push(98);
+        stack.Push(92);
+        stack.Push(23);
+
+        Console.WriteLine("Original Stack: " + string.Join(", ", stack));
+        SortStack(stack);
+        Console.WriteLine("Sorted Stack: " + string.Join(", ", stack));
+    }
+}
+
+-----
+
+public static int EvaluatePostfix(string expression)
+{
+    var stack = new Stack<int>();
+
+    foreach (var token in expression.Split(' '))
+    {
+        if (int.TryParse(token, out int number))
+        {
+            stack.Push(number);
+        }
+        else
+        {
+            int operand2 = stack.Pop();
+            int operand1 = stack.Pop();
+
+            switch (token)
+            {
+                case "+": stack.Push(operand1 + operand2); break;
+                case "-": stack.Push(operand1 - operand2); break;
+                case "*": stack.Push(operand1 * operand2); break;
+                case "/": stack.Push(operand1 / operand2); break;
+            }
+        }
+    }
+
+    return stack.Pop();
+}
+
+static void Main(string[] args)
+{
+    string expression = "5 1 2 + 4 * + 3 -";
+    Console.WriteLine($"Postfix Expression: {expression}");
+    Console.WriteLine("Result: " + EvaluatePostfix(expression));
+}
+
+-----
+
+public class MinStack
+{
+    private Stack<int> mainStack = new Stack<int>();
+    private Stack<int> minStack = new Stack<int>();
+
+    public void Push(int value)
+    {
+        mainStack.Push(value);
+        if (minStack.Count == 0 || value <= minStack.Peek())
+        {
+            minStack.Push(value);
+        }
+    }
+
+    public int Pop()
+    {
+        int value = mainStack.Pop();
+        if (value == minStack.Peek())
+        {
+            minStack.Pop();
+        }
+        return value;
+    }
+
+    public int GetMin()
+    {
+        return minStack.Peek();
+    }
+}
+
+static void Main(string[] args)
+{
+    var stack = new MinStack();
+    stack.Push(3);
+    stack.Push(5);
+    stack.Push(2);
+    stack.Push(1);
+
+    Console.WriteLine("Minimum: " + stack.GetMin()); // 1
+    stack.Pop();
+    Console.WriteLine("Minimum: " + stack.GetMin()); // 2
+}
+
+-----
+
+public static string ReverseString(string input)
+{
+    var stack = new Stack<char>();
+
+    foreach (char ch in input)
+    {
+        stack.Push(ch);
+    }
+
+    var reversed = new char[input.Length];
+    for (int i = 0; i < input.Length; i++)
+    {
+        reversed[i] = stack.Pop();
+    }
+
+    return new string(reversed);
+}
+
+static void Main(string[] args)
+{
+    string str = "Hello, World!";
+    Console.WriteLine("Original String: " + str);
+    Console.WriteLine("Reversed String: " + ReverseString(str));
+}
+
+-----
+
+public static string InfixToPostfix(string infix)
+{
+    var stack = new Stack<char>();
+    var result = new List<char>();
+
+    foreach (char token in infix)
+    {
+        if (char.IsLetterOrDigit(token))
+        {
+            result.Add(token);
+        }
+        else if (token == '(')
+        {
+            stack.Push(token);
+        }
+        else if (token == ')')
+        {
+            while (stack.Count > 0 && stack.Peek() != '(')
+            {
+                result.Add(stack.Pop());
+            }
+            stack.Pop(); // Remove '('
+        }
+        else
+        {
+            while (stack.Count > 0 && Precedence(stack.Peek()) >= Precedence(token))
+            {
+                result.Add(stack.Pop());
+            }
+            stack.Push(token);
+        }
+    }
+
+    while (stack.Count > 0)
+    {
+        result.Add(stack.Pop());
+    }
+
+    return new string(result.ToArray());
+}
+
+private static int Precedence(char op)
+{
+    return op switch
+    {
+        '+' or '-' => 1,
+        '*' or '/' => 2,
+        _ => 0,
+    };
+}
+
+static void Main(string[] args)
+{
+    string infix = "a+b*(c^d-e)^(f+g*h)-i";
+    Console.WriteLine("Infix Expression: " + infix);
+    Console.WriteLine("Postfix Expression: " + InfixToPostfix(infix));
 }
