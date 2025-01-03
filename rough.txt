@@ -1,10 +1,274 @@
-Practice 5
-Generic Collections
-Implement a generic method to merge two collections into one while removing duplicates.
-Create a generic method to find the median of a collection of numeric types.
-Write a program to implement a custom generic collection that supports filtering, sorting, and mapping.
-Design a generic collection to handle caching with time-to-live (TTL) for each entry.
-Implement a generic method to shuffle the elements of a collection randomly.
+Practice 8
+Queue
+Implement a circular queue that supports dynamic resizing.
+Create a method to merge two sorted queues into a single sorted queue.
+Write a program to simulate a ticket booking system using a queue, prioritizing VIP customers.
+Develop a solution to reverse the first k elements of a queue without altering the rest.
+Design a queue-based implementation for task scheduling with priorities.
+
+-----
+
+using System;
+
+public class CircularQueue<T>
+{
+    private T[] _array;
+    private int _head;
+    private int _tail;
+    private int _count;
+
+    public CircularQueue(int capacity)
+    {
+        _array = new T[capacity];
+        _head = 0;
+        _tail = 0;
+        _count = 0;
+    }
+
+    public void Enqueue(T item)
+    {
+        if (_count == _array.Length)
+        {
+            Resize();
+        }
+
+        _array[_tail] = item;
+        _tail = (_tail + 1) % _array.Length;
+        _count++;
+    }
+
+    public T Dequeue()
+    {
+        if (_count == 0)
+        {
+            throw new InvalidOperationException("Queue is empty.");
+        }
+
+        T item = _array[_head];
+        _head = (_head + 1) % _array.Length;
+        _count--;
+        return item;
+    }
+
+    public int Count => _count;
+
+    private void Resize()
+    {
+        T[] newArray = new T[_array.Length * 2];
+        for (int i = 0; i < _count; i++)
+        {
+            newArray[i] = _array[(_head + i) % _array.Length];
+        }
+        _array = newArray;
+        _head = 0;
+        _tail = _count;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        var queue = new CircularQueue<int>(3);
+        queue.Enqueue(1);
+        queue.Enqueue(2);
+        queue.Enqueue(3);
+        queue.Enqueue(4); // Triggers resizing
+
+        Console.WriteLine("Dequeued: " + queue.Dequeue());
+        queue.Enqueue(5);
+
+        while (queue.Count > 0)
+        {
+            Console.WriteLine(queue.Dequeue());
+        }
+    }
+}
+
+-----
+
+using System.Collections.Generic;
+
+public static Queue<int> MergeSortedQueues(Queue<int> queue1, Queue<int> queue2)
+{
+    var mergedQueue = new Queue<int>();
+
+    while (queue1.Count > 0 && queue2.Count > 0)
+    {
+        if (queue1.Peek() <= queue2.Peek())
+        {
+            mergedQueue.Enqueue(queue1.Dequeue());
+        }
+        else
+        {
+            mergedQueue.Enqueue(queue2.Dequeue());
+        }
+    }
+
+    while (queue1.Count > 0)
+    {
+        mergedQueue.Enqueue(queue1.Dequeue());
+    }
+
+    while (queue2.Count > 0)
+    {
+        mergedQueue.Enqueue(queue2.Dequeue());
+    }
+
+    return mergedQueue;
+}
+
+static void Main(string[] args)
+{
+    var queue1 = new Queue<int>(new[] { 1, 3, 5 });
+    var queue2 = new Queue<int>(new[] { 2, 4, 6 });
+
+    var mergedQueue = MergeSortedQueues(queue1, queue2);
+
+    Console.WriteLine("Merged Queue: " + string.Join(", ", mergedQueue));
+}
+
+-----
+
+using System.Collections.Generic;
+
+public class TicketBookingSystem
+{
+    private Queue<string> vipQueue = new Queue<string>();
+    private Queue<string> regularQueue = new Queue<string>();
+
+    public void Enqueue(string name, bool isVip)
+    {
+        if (isVip)
+        {
+            vipQueue.Enqueue(name);
+        }
+        else
+        {
+            regularQueue.Enqueue(name);
+        }
+    }
+
+    public string Dequeue()
+    {
+        if (vipQueue.Count > 0)
+        {
+            return vipQueue.Dequeue();
+        }
+        if (regularQueue.Count > 0)
+        {
+            return regularQueue.Dequeue();
+        }
+        throw new InvalidOperationException("No customers in the queue.");
+    }
+}
+
+static void Main(string[] args)
+{
+    var system = new TicketBookingSystem();
+    system.Enqueue("Alice", true);  // VIP
+    system.Enqueue("Bob", false);  // Regular
+    system.Enqueue("Charlie", true); // VIP
+
+    Console.WriteLine(system.Dequeue()); // Alice
+    Console.WriteLine(system.Dequeue()); // Charlie
+    Console.WriteLine(system.Dequeue()); // Bob
+}
+
+-----
+
+public static void ReverseFirstKElements<T>(Queue<T> queue, int k)
+{
+    if (k <= 0 || k > queue.Count)
+    {
+        throw new ArgumentException("Invalid value of k.");
+    }
+
+    var stack = new Stack<T>();
+
+    // Dequeue the first k elements and push onto the stack
+    for (int i = 0; i < k; i++)
+    {
+        stack.Push(queue.Dequeue());
+    }
+
+    // Enqueue the stack's elements back to the queue
+    while (stack.Count > 0)
+    {
+        queue.Enqueue(stack.Pop());
+    }
+
+    // Rotate the rest of the elements in the queue
+    int remaining = queue.Count - k;
+    for (int i = 0; i < remaining; i++)
+    {
+        queue.Enqueue(queue.Dequeue());
+    }
+}
+
+static void Main(string[] args)
+{
+    var queue = new Queue<int>(new[] { 1, 2, 3, 4, 5 });
+    int k = 3;
+
+    Console.WriteLine("Original Queue: " + string.Join(", ", queue));
+    ReverseFirstKElements(queue, k);
+    Console.WriteLine("Modified Queue: " + string.Join(", ", queue));
+}
+
+-----
+
+using System.Collections.Generic;
+
+public class TaskScheduler
+{
+    private SortedDictionary<int, Queue<string>> priorityQueues = new SortedDictionary<int, Queue<string>>();
+
+    public void AddTask(string task, int priority)
+    {
+        if (!priorityQueues.ContainsKey(priority))
+        {
+            priorityQueues[priority] = new Queue<string>();
+        }
+
+        priorityQueues[priority].Enqueue(task);
+    }
+
+    public string GetNextTask()
+    {
+        foreach (var key in priorityQueues.Keys)
+        {
+            if (priorityQueues[key].Count > 0)
+            {
+                return priorityQueues[key].Dequeue();
+            }
+        }
+
+        throw new InvalidOperationException("No tasks available.");
+    }
+}
+
+static void Main(string[] args)
+{
+    var scheduler = new TaskScheduler();
+    scheduler.AddTask("Task1", 2); // Priority 2
+    scheduler.AddTask("Task2", 1); // Priority 1
+    scheduler.AddTask("Task3", 3); // Priority 3
+
+    Console.WriteLine("Next Task: " + scheduler.GetNextTask()); // Task2
+    Console.WriteLine("Next Task: " + scheduler.GetNextTask()); // Task1
+    Console.WriteLine("Next Task: " + scheduler.GetNextTask()); // Task3
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+Practice 9
+Dictionary (Map Key-Value Pair)
+Implement a method to find the most frequently occurring value in a dictionary.
+Write a function to merge two dictionaries, combining values of common keys into a list.
+Create a program to group words by their lengths using a dictionary.
+Design a dictionary to store student grades and calculate the average grade for each student.
+Write a method to find all keys in a dictionary whose values satisfy a specific condition.
 
 -----
 
@@ -12,591 +276,811 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-class Program
+public class Program
 {
-    public static IEnumerable<T> MergeCollections<T>(IEnumerable<T> collection1, IEnumerable<T> collection2)
+    public static T FindMostFrequentValue<T>(Dictionary<string, T> dict)
     {
-        return collection1.Union(collection2);
+        return dict.Values
+                   .GroupBy(value => value)
+                   .OrderByDescending(group => group.Count())
+                   .First().Key;
     }
 
     static void Main(string[] args)
     {
-        var list1 = new List<int> { 1, 2, 3, 4 };
-        var list2 = new List<int> { 3, 4, 5, 6 };
-
-        var merged = MergeCollections(list1, list2);
-
-        Console.WriteLine("Merged Collection: " + string.Join(", ", merged));
-    }
-}
-
------
-
-public static T FindMedian<T>(IEnumerable<T> collection) where T : IComparable
-{
-    var sorted = collection.OrderBy(x => x).ToList();
-    int count = sorted.Count;
-
-    if (count == 0)
-        throw new InvalidOperationException("Collection cannot be empty.");
-
-    if (count % 2 == 0)
-    {
-        dynamic mid1 = sorted[count / 2 - 1];
-        dynamic mid2 = sorted[count / 2];
-        return (T)((mid1 + mid2) / 2);
-    }
-    else
-    {
-        return sorted[count / 2];
-    }
-}
-static void Main(string[] args)
-{
-    var numbers = new List<double> { 1.5, 3.5, 2.5, 4.5, 5.5 };
-    Console.WriteLine("Median: " + FindMedian(numbers));
-}
-
------
-
-public class CustomCollection<T>
-{
-    private List<T> _items;
-
-    public CustomCollection()
-    {
-        _items = new List<T>();
-    }
-
-    public void Add(T item)
-    {
-        _items.Add(item);
-    }
-
-    public IEnumerable<T> Filter(Func<T, bool> predicate)
-    {
-        return _items.Where(predicate);
-    }
-
-    public IEnumerable<T> Sort(Func<T, object> keySelector)
-    {
-        return _items.OrderBy(keySelector);
-    }
-
-    public IEnumerable<TResult> Map<TResult>(Func<T, TResult> selector)
-    {
-        return _items.Select(selector);
-    }
-}
-
-static void Main(string[] args)
-{
-    var collection = new CustomCollection<int>();
-    collection.Add(5);
-    collection.Add(3);
-    collection.Add(8);
-    collection.Add(1);
-
-    var filtered = collection.Filter(x => x > 4);
-    Console.WriteLine("Filtered: " + string.Join(", ", filtered));
-
-    var sorted = collection.Sort(x => x);
-    Console.WriteLine("Sorted: " + string.Join(", ", sorted));
-
-    var mapped = collection.Map(x => x * 2);
-    Console.WriteLine("Mapped: " + string.Join(", ", mapped));
-}
-
------
-
-using System;
-using System.Collections.Concurrent;
-using System.Threading;
-
-public class CacheItem<T>
-{
-    public T Value { get; }
-    public DateTime Expiration { get; }
-
-    public CacheItem(T value, TimeSpan ttl)
-    {
-        Value = value;
-        Expiration = DateTime.Now.Add(ttl);
-    }
-
-    public bool IsExpired => DateTime.Now > Expiration;
-}
-
-public class GenericCache<TKey, TValue>
-{
-    private ConcurrentDictionary<TKey, CacheItem<TValue>> _cache = new();
-
-    public void Add(TKey key, TValue value, TimeSpan ttl)
-    {
-        _cache[key] = new CacheItem<TValue>(value, ttl);
-    }
-
-    public TValue Get(TKey key)
-    {
-        if (_cache.TryGetValue(key, out var cacheItem))
+        var dictionary = new Dictionary<string, int>
         {
-            if (!cacheItem.IsExpired)
-                return cacheItem.Value;
+            { "A", 1 },
+            { "B", 2 },
+            { "C", 1 },
+            { "D", 3 },
+            { "E", 1 }
+        };
 
-            _cache.TryRemove(key, out _);
-        }
-
-        throw new KeyNotFoundException("Item not found or expired.");
+        Console.WriteLine("Most Frequent Value: " + FindMostFrequentValue(dictionary));
     }
 }
-
-static void Main(string[] args)
-{
-    var cache = new GenericCache<string, string>();
-    cache.Add("key1", "value1", TimeSpan.FromSeconds(5));
-
-    Console.WriteLine("Cached Value: " + cache.Get("key1"));
-    Thread.Sleep(6000);
-
-    try
-    {
-        Console.WriteLine(cache.Get("key1"));
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
-    }
-}
-
------
-
-public static void Shuffle<T>(IList<T> collection)
-{
-    Random rand = new Random();
-    for (int i = collection.Count - 1; i > 0; i--)
-    {
-        int j = rand.Next(i + 1);
-        (collection[i], collection[j]) = (collection[j], collection[i]);
-    }
-}
-
-static void Main(string[] args)
-{
-    var list = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
-
-    Console.WriteLine("Original: " + string.Join(", ", list));
-
-    Shuffle(list);
-
-    Console.WriteLine("Shuffled: " + string.Join(", ", list));
-}
-
----------------------------------------------------------------------------------------------
-
-Practice 6
-List
-Write a method to find and remove all duplicate elements from a list without using LINQ.
-Develop a function to split a list into sublists of a given size.
-Create a program to merge two sorted lists into one sorted list.
-Write a method to shift elements of a list cyclically to the left by a given number of positions.
-Implement a function to find the intersection of two lists without using built-in methods.
 
 -----
 
 using System;
 using System.Collections.Generic;
 
-class Program
+public class Program
 {
-    public static void RemoveDuplicates<T>(List<T> list)
+    public static Dictionary<TKey, List<TValue>> MergeDictionaries<TKey, TValue>(
+        Dictionary<TKey, TValue> dict1,
+        Dictionary<TKey, TValue> dict2)
     {
-        var seen = new HashSet<T>();
-        int index = 0;
+        var result = new Dictionary<TKey, List<TValue>>();
 
-        while (index < list.Count)
+        foreach (var kvp in dict1)
         {
-            if (seen.Contains(list[index]))
+            if (!result.ContainsKey(kvp.Key))
             {
-                list.RemoveAt(index);
+                result[kvp.Key] = new List<TValue>();
+            }
+            result[kvp.Key].Add(kvp.Value);
+        }
+
+        foreach (var kvp in dict2)
+        {
+            if (!result.ContainsKey(kvp.Key))
+            {
+                result[kvp.Key] = new List<TValue>();
+            }
+            result[kvp.Key].Add(kvp.Value);
+        }
+
+        return result;
+    }
+
+    static void Main(string[] args)
+    {
+        var dict1 = new Dictionary<string, int> { { "A", 1 }, { "B", 2 } };
+        var dict2 = new Dictionary<string, int> { { "B", 3 }, { "C", 4 } };
+
+        var mergedDict = MergeDictionaries(dict1, dict2);
+
+        foreach (var kvp in mergedDict)
+        {
+            Console.WriteLine($"{kvp.Key}: [{string.Join(", ", kvp.Value)}]");
+        }
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static Dictionary<int, List<string>> GroupWordsByLength(List<string> words)
+    {
+        var groupedDict = new Dictionary<int, List<string>>();
+
+        foreach (var word in words)
+        {
+            int length = word.Length;
+
+            if (!groupedDict.ContainsKey(length))
+            {
+                groupedDict[length] = new List<string>();
+            }
+
+            groupedDict[length].Add(word);
+        }
+
+        return groupedDict;
+    }
+
+    static void Main(string[] args)
+    {
+        var words = new List<string> { "apple", "bat", "cat", "dog", "elephant" };
+        var groupedDict = GroupWordsByLength(words);
+
+        foreach (var kvp in groupedDict)
+        {
+            Console.WriteLine($"Length {kvp.Key}: [{string.Join(", ", kvp.Value)}]");
+        }
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static Dictionary<string, double> CalculateAverageGrades(Dictionary<string, List<int>> grades)
+    {
+        var averages = new Dictionary<string, double>();
+
+        foreach (var student in grades)
+        {
+            double average = student.Value.Average();
+            averages[student.Key] = average;
+        }
+
+        return averages;
+    }
+
+    static void Main(string[] args)
+    {
+        var studentGrades = new Dictionary<string, List<int>>
+        {
+            { "Alice", new List<int> { 85, 90, 78 } },
+            { "Bob", new List<int> { 88, 92, 79 } },
+            { "Charlie", new List<int> { 80, 70, 85 } }
+        };
+
+        var averages = CalculateAverageGrades(studentGrades);
+
+        foreach (var kvp in averages)
+        {
+            Console.WriteLine($"{kvp.Key}: Average = {kvp.Value:F2}");
+        }
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static List<TKey> FindKeysByCondition<TKey, TValue>(
+        Dictionary<TKey, TValue> dict,
+        Predicate<TValue> condition)
+    {
+        var keys = new List<TKey>();
+
+        foreach (var kvp in dict)
+        {
+            if (condition(kvp.Value))
+            {
+                keys.Add(kvp.Key);
+            }
+        }
+
+        return keys;
+    }
+
+    static void Main(string[] args)
+    {
+        var dictionary = new Dictionary<string, int>
+        {
+            { "A", 10 },
+            { "B", 20 },
+            { "C", 30 },
+            { "D", 15 }
+        };
+
+        var keys = FindKeysByCondition(dictionary, value => value > 15);
+
+        Console.WriteLine("Keys with values > 15: " + string.Join(", ", keys));
+    }
+}
+
+---------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static T FindMostFrequentValue<T>(Dictionary<string, T> dict)
+    {
+        var frequency = new Dictionary<T, int>();
+        foreach (var value in dict.Values)
+        {
+            if (frequency.ContainsKey(value))
+            {
+                frequency[value]++;
             }
             else
             {
-                seen.Add(list[index]);
-                index++;
+                frequency[value] = 1;
             }
         }
+
+        T mostFrequent = default(T);
+        int maxCount = 0;
+
+        foreach (var kvp in frequency)
+        {
+            if (kvp.Value > maxCount)
+            {
+                maxCount = kvp.Value;
+                mostFrequent = kvp.Key;
+            }
+        }
+
+        return mostFrequent;
     }
 
     static void Main(string[] args)
     {
-        var list = new List<int> { 1, 2, 2, 3, 4, 4, 5 };
-        Console.WriteLine("Original List: " + string.Join(", ", list));
-
-        RemoveDuplicates(list);
-
-        Console.WriteLine("List After Removing Duplicates: " + string.Join(", ", list));
-    }
-}
-
------
-
-public static List<List<T>> SplitList<T>(List<T> list, int size)
-{
-    var result = new List<List<T>>();
-    for (int i = 0; i < list.Count; i += size)
-    {
-        var sublist = list.GetRange(i, Math.Min(size, list.Count - i));
-        result.Add(sublist);
-    }
-    return result;
-}
-
-static void Main(string[] args)
-{
-    var list = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 };
-    int size = 3;
-
-    var sublists = SplitList(list, size);
-
-    Console.WriteLine("Sublists:");
-    foreach (var sublist in sublists)
-    {
-        Console.WriteLine(string.Join(", ", sublist));
-    }
-}
-
------
-
-public static List<int> MergeSortedLists(List<int> list1, List<int> list2)
-{
-    var merged = new List<int>();
-    int i = 0, j = 0;
-
-    while (i < list1.Count && j < list2.Count)
-    {
-        if (list1[i] <= list2[j])
+        var dictionary = new Dictionary<string, int>
         {
-            merged.Add(list1[i]);
-            i++;
-        }
-        else
-        {
-            merged.Add(list2[j]);
-            j++;
-        }
-    }
+            { "A", 1 },
+            { "B", 2 },
+            { "C", 1 },
+            { "D", 3 },
+            { "E", 1 }
+        };
 
-    while (i < list1.Count)
-    {
-        merged.Add(list1[i]);
-        i++;
-    }
-
-    while (j < list2.Count)
-    {
-        merged.Add(list2[j]);
-        j++;
-    }
-
-    return merged;
-}
-
-static void Main(string[] args)
-{
-    var list1 = new List<int> { 1, 3, 5 };
-    var list2 = new List<int> { 2, 4, 6 };
-
-    var merged = MergeSortedLists(list1, list2);
-
-    Console.WriteLine("Merged Sorted List: " + string.Join(", ", merged));
-}
-
------
-
-public static void ShiftLeft<T>(List<T> list, int positions)
-{
-    int n = list.Count;
-    positions = positions % n;
-
-    if (positions == 0) return;
-
-    Reverse(list, 0, positions - 1);
-    Reverse(list, positions, n - 1);
-    Reverse(list, 0, n - 1);
-}
-
-private static void Reverse<T>(List<T> list, int start, int end)
-{
-    while (start < end)
-    {
-        var temp = list[start];
-        list[start] = list[end];
-        list[end] = temp;
-
-        start++;
-        end--;
+        Console.WriteLine("Most Frequent Value: " + FindMostFrequentValue(dictionary));
     }
 }
-
-static void Main(string[] args)
-{
-    var list = new List<int> { 1, 2, 3, 4, 5 };
-    int positions = 2;
-
-    Console.WriteLine("Original List: " + string.Join(", ", list));
-
-    ShiftLeft(list, positions);
-
-    Console.WriteLine("List After Cyclic Shift: " + string.Join(", ", list));
-}
-
------
-
-public static List<T> FindIntersection<T>(List<T> list1, List<T> list2)
-{
-    var intersection = new List<T>();
-
-    foreach (var item in list1)
-    {
-        if (list2.Contains(item) && !intersection.Contains(item))
-        {
-            intersection.Add(item);
-        }
-    }
-
-    return intersection;
-}
-
-static void Main(string[] args)
-{
-    var list1 = new List<int> { 1, 2, 3, 4, 5 };
-    var list2 = new List<int> { 3, 4, 5, 6, 7 };
-
-    var intersection = FindIntersection(list1, list2);
-
-    Console.WriteLine("Intersection: " + string.Join(", ", intersection));
-}
-
----------------------------------------------------------------------------------------------
-
-Practice 7
-Stack
-Write a program to sort a stack using only another stack and no additional data structures.
-Create a method to evaluate a postfix mathematical expression using a stack.
-Design a stack that supports retrieving the minimum element in O(1) time.
-Implement a function to reverse a string using a stack.
-Write a stack-based solution to convert an infix expression to a postfix expression.
 
 -----
 
 using System;
 using System.Collections.Generic;
 
-class Program
+public class Program
 {
-    public static void SortStack(Stack<int> inputStack)
+    public static Dictionary<TKey, List<TValue>> MergeDictionaries<TKey, TValue>(
+        Dictionary<TKey, TValue> dict1,
+        Dictionary<TKey, TValue> dict2)
     {
-        var tempStack = new Stack<int>();
+        var result = new Dictionary<TKey, List<TValue>>();
 
-        while (inputStack.Count > 0)
+        foreach (var kvp in dict1)
         {
-            int temp = inputStack.Pop();
-
-            while (tempStack.Count > 0 && tempStack.Peek() > temp)
+            if (!result.ContainsKey(kvp.Key))
             {
-                inputStack.Push(tempStack.Pop());
+                result[kvp.Key] = new List<TValue>();
             }
-
-            tempStack.Push(temp);
+            result[kvp.Key].Add(kvp.Value);
         }
 
-        while (tempStack.Count > 0)
+        foreach (var kvp in dict2)
         {
-            inputStack.Push(tempStack.Pop());
+            if (!result.ContainsKey(kvp.Key))
+            {
+                result[kvp.Key] = new List<TValue>();
+            }
+            result[kvp.Key].Add(kvp.Value);
+        }
+
+        return result;
+    }
+
+    static void Main(string[] args)
+    {
+        var dict1 = new Dictionary<string, int> { { "A", 1 }, { "B", 2 } };
+        var dict2 = new Dictionary<string, int> { { "B", 3 }, { "C", 4 } };
+
+        var mergedDict = MergeDictionaries(dict1, dict2);
+
+        foreach (var kvp in mergedDict)
+        {
+            Console.WriteLine($"{kvp.Key}: [{string.Join(", ", kvp.Value)}]");
+        }
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static Dictionary<int, List<string>> GroupWordsByLength(List<string> words)
+    {
+        var groupedDict = new Dictionary<int, List<string>>();
+
+        foreach (var word in words)
+        {
+            int length = word.Length;
+
+            if (!groupedDict.ContainsKey(length))
+            {
+                groupedDict[length] = new List<string>();
+            }
+
+            groupedDict[length].Add(word);
+        }
+
+        return groupedDict;
+    }
+
+    static void Main(string[] args)
+    {
+        var words = new List<string> { "apple", "bat", "cat", "dog", "elephant" };
+        var groupedDict = GroupWordsByLength(words);
+
+        foreach (var kvp in groupedDict)
+        {
+            Console.WriteLine($"Length {kvp.Key}: [{string.Join(", ", kvp.Value)}]");
+        }
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static Dictionary<string, double> CalculateAverageGrades(Dictionary<string, List<int>> grades)
+    {
+        var averages = new Dictionary<string, double>();
+
+        foreach (var student in grades)
+        {
+            int sum = 0;
+            foreach (var grade in student.Value)
+            {
+                sum += grade;
+            }
+            double average = (double)sum / student.Value.Count;
+            averages[student.Key] = average;
+        }
+
+        return averages;
+    }
+
+    static void Main(string[] args)
+    {
+        var studentGrades = new Dictionary<string, List<int>>
+        {
+            { "Alice", new List<int> { 85, 90, 78 } },
+            { "Bob", new List<int> { 88, 92, 79 } },
+            { "Charlie", new List<int> { 80, 70, 85 } }
+        };
+
+        var averages = CalculateAverageGrades(studentGrades);
+
+        foreach (var kvp in averages)
+        {
+            Console.WriteLine($"{kvp.Key}: Average = {kvp.Value:F2}");
+        }
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static List<TKey> FindKeysByCondition<TKey, TValue>(
+        Dictionary<TKey, TValue> dict,
+        Predicate<TValue> condition)
+    {
+        var keys = new List<TKey>();
+
+        foreach (var kvp in dict)
+        {
+            if (condition(kvp.Value))
+            {
+                keys.Add(kvp.Key);
+            }
+        }
+
+        return keys;
+    }
+
+    static void Main(string[] args)
+    {
+        var dictionary = new Dictionary<string, int>
+        {
+            { "A", 10 },
+            { "B", 20 },
+            { "C", 30 },
+            { "D", 15 }
+        };
+
+        var keys = FindKeysByCondition(dictionary, value => value > 15);
+
+        Console.WriteLine("Keys with values > 15: " + string.Join(", ", keys));
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 10
+Using Generic Collection Interfaces (ICollection)
+Implement a method using ICollection to remove items from a collection based on a predicate.
+Write a function that accepts an ICollection and returns the second largest element.
+Create a generic method using ICollection to compute the union of two collections.
+Develop a method to clone an ICollection into a new collection of the same type.
+Write a function using ICollection to implement pagination for large data sets.
+
+------
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static void RemoveByPredicate<T>(ICollection<T> collection, Predicate<T> predicate)
+    {
+        var itemsToRemove = new List<T>();
+
+        foreach (var item in collection)
+        {
+            if (predicate(item))
+            {
+                itemsToRemove.Add(item);
+            }
+        }
+
+        foreach (var item in itemsToRemove)
+        {
+            collection.Remove(item);
         }
     }
 
     static void Main(string[] args)
     {
-        var stack = new Stack<int>();
-        stack.Push(34);
-        stack.Push(3);
-        stack.Push(31);
-        stack.Push(98);
-        stack.Push(92);
-        stack.Push(23);
+        var numbers = new List<int> { 1, 2, 3, 4, 5, 6 };
+        RemoveByPredicate(numbers, x => x % 2 == 0); // Remove even numbers
 
-        Console.WriteLine("Original Stack: " + string.Join(", ", stack));
-        SortStack(stack);
-        Console.WriteLine("Sorted Stack: " + string.Join(", ", stack));
+        Console.WriteLine("Remaining items: " + string.Join(", ", numbers));
     }
 }
 
 -----
 
-public static int EvaluatePostfix(string expression)
+using System;
+using System.Collections.Generic;
+
+public class Program
 {
-    var stack = new Stack<int>();
-
-    foreach (var token in expression.Split(' '))
+    public static T FindSecondLargest<T>(ICollection<T> collection) where T : IComparable<T>
     {
-        if (int.TryParse(token, out int number))
-        {
-            stack.Push(number);
-        }
-        else
-        {
-            int operand2 = stack.Pop();
-            int operand1 = stack.Pop();
+        if (collection.Count < 2)
+            throw new InvalidOperationException("Collection must have at least two elements.");
 
-            switch (token)
+        T largest = default(T);
+        T secondLargest = default(T);
+        bool isInitialized = false;
+
+        foreach (var item in collection)
+        {
+            if (!isInitialized)
             {
-                case "+": stack.Push(operand1 + operand2); break;
-                case "-": stack.Push(operand1 - operand2); break;
-                case "*": stack.Push(operand1 * operand2); break;
-                case "/": stack.Push(operand1 / operand2); break;
+                largest = item;
+                secondLargest = item;
+                isInitialized = true;
+                continue;
+            }
+
+            if (item.CompareTo(largest) > 0)
+            {
+                secondLargest = largest;
+                largest = item;
+            }
+            else if (item.CompareTo(secondLargest) > 0 && !item.Equals(largest))
+            {
+                secondLargest = item;
+            }
+        }
+
+        return secondLargest;
+    }
+
+    static void Main(string[] args)
+    {
+        var numbers = new List<int> { 10, 20, 30, 40, 50 };
+        Console.WriteLine("Second Largest: " + FindSecondLargest(numbers));
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static ICollection<T> ComputeUnion<T>(ICollection<T> collection1, ICollection<T> collection2)
+    {
+        var union = new HashSet<T>();
+
+        foreach (var item in collection1)
+        {
+            union.Add(item);
+        }
+
+        foreach (var item in collection2)
+        {
+            union.Add(item);
+        }
+
+        return union;
+    }
+
+    static void Main(string[] args)
+    {
+        var collection1 = new List<int> { 1, 2, 3 };
+        var collection2 = new List<int> { 3, 4, 5 };
+
+        var union = ComputeUnion(collection1, collection2);
+
+        Console.WriteLine("Union: " + string.Join(", ", union));
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static ICollection<T> CloneCollection<T>(ICollection<T> collection)
+    {
+        var clonedCollection = new List<T>();
+
+        foreach (var item in collection)
+        {
+            clonedCollection.Add(item);
+        }
+
+        return clonedCollection;
+    }
+
+    static void Main(string[] args)
+    {
+        var original = new List<string> { "A", "B", "C" };
+        var cloned = CloneCollection(original);
+
+        Console.WriteLine("Original: " + string.Join(", ", original));
+        Console.WriteLine("Cloned: " + string.Join(", ", cloned));
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static ICollection<T> Paginate<T>(ICollection<T> collection, int pageNumber, int pageSize)
+    {
+        var result = new List<T>();
+        int skip = (pageNumber - 1) * pageSize;
+        int index = 0;
+
+        foreach (var item in collection)
+        {
+            if (index >= skip && result.Count < pageSize)
+            {
+                result.Add(item);
+            }
+            index++;
+
+            if (result.Count == pageSize)
+            {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    static void Main(string[] args)
+    {
+        var data = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int pageNumber = 2;
+        int pageSize = 3;
+
+        var paginated = Paginate(data, pageNumber, pageSize);
+
+        Console.WriteLine($"Page {pageNumber}: " + string.Join(", ", paginated));
+    }
+}
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 11
+Operations on Collection (Sort, Search, Index, Add, Count, Remove)
+Write a method to sort a collection of employees by multiple fields (e.g., age and then name).
+Create a function to search for an element in a sorted collection using binary search.
+Implement a method to insert an item at a specific index in a collection and maintain sorted order.
+Write a solution to count the occurrences of each unique element in a collection.
+Develop a method to remove items from a collection that are not present in another collection.
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Employee
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public override string ToString() => $"Name: {Name}, Age: {Age}";
+}
+
+public class Program
+{
+    public static void SortEmployees(List<Employee> employees)
+    {
+        employees.Sort((e1, e2) =>
+        {
+            int ageComparison = e1.Age.CompareTo(e2.Age);
+            if (ageComparison == 0)
+            {
+                return e1.Name.CompareTo(e2.Name);
+            }
+            return ageComparison;
+        });
+    }
+
+    static void Main(string[] args)
+    {
+        var employees = new List<Employee>
+        {
+            new Employee { Name = "Alice", Age = 30 },
+            new Employee { Name = "Bob", Age = 25 },
+            new Employee { Name = "Charlie", Age = 30 },
+            new Employee { Name = "Dave", Age = 25 }
+        };
+
+        SortEmployees(employees);
+        employees.ForEach(e => Console.WriteLine(e));
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static int BinarySearch<T>(List<T> sortedCollection, T target) where T : IComparable<T>
+    {
+        int left = 0, right = sortedCollection.Count - 1;
+
+        while (left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            int comparison = sortedCollection[mid].CompareTo(target);
+
+            if (comparison == 0)
+                return mid;
+            else if (comparison < 0)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+
+        return -1; // Not found
+    }
+
+    static void Main(string[] args)
+    {
+        var numbers = new List<int> { 1, 3, 5, 7, 9, 11 };
+        int target = 7;
+
+        int index = BinarySearch(numbers, target);
+        Console.WriteLine(index != -1 ? $"Found at index: {index}" : "Not Found");
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static void InsertAndSort<T>(List<T> collection, T item) where T : IComparable<T>
+    {
+        collection.Add(item);
+
+        // Insertion sort logic to maintain sorted order
+        for (int i = collection.Count - 1; i > 0; i--)
+        {
+            if (collection[i].CompareTo(collection[i - 1]) < 0)
+            {
+                // Swap elements
+                var temp = collection[i];
+                collection[i] = collection[i - 1];
+                collection[i - 1] = temp;
+            }
+            else
+            {
+                break;
             }
         }
     }
 
-    return stack.Pop();
-}
+    static void Main(string[] args)
+    {
+        var numbers = new List<int> { 1, 3, 5, 7 };
+        InsertAndSort(numbers, 4);
 
-static void Main(string[] args)
-{
-    string expression = "5 1 2 + 4 * + 3 -";
-    Console.WriteLine($"Postfix Expression: {expression}");
-    Console.WriteLine("Result: " + EvaluatePostfix(expression));
+        Console.WriteLine("Sorted Collection: " + string.Join(", ", numbers));
+    }
 }
 
 -----
 
-public class MinStack
+using System;
+using System.Collections.Generic;
+
+public class Program
 {
-    private Stack<int> mainStack = new Stack<int>();
-    private Stack<int> minStack = new Stack<int>();
-
-    public void Push(int value)
+    public static Dictionary<T, int> CountOccurrences<T>(ICollection<T> collection)
     {
-        mainStack.Push(value);
-        if (minStack.Count == 0 || value <= minStack.Peek())
+        var counts = new Dictionary<T, int>();
+
+        foreach (var item in collection)
         {
-            minStack.Push(value);
-        }
-    }
-
-    public int Pop()
-    {
-        int value = mainStack.Pop();
-        if (value == minStack.Peek())
-        {
-            minStack.Pop();
-        }
-        return value;
-    }
-
-    public int GetMin()
-    {
-        return minStack.Peek();
-    }
-}
-
-static void Main(string[] args)
-{
-    var stack = new MinStack();
-    stack.Push(3);
-    stack.Push(5);
-    stack.Push(2);
-    stack.Push(1);
-
-    Console.WriteLine("Minimum: " + stack.GetMin()); // 1
-    stack.Pop();
-    Console.WriteLine("Minimum: " + stack.GetMin()); // 2
-}
-
------
-
-public static string ReverseString(string input)
-{
-    var stack = new Stack<char>();
-
-    foreach (char ch in input)
-    {
-        stack.Push(ch);
-    }
-
-    var reversed = new char[input.Length];
-    for (int i = 0; i < input.Length; i++)
-    {
-        reversed[i] = stack.Pop();
-    }
-
-    return new string(reversed);
-}
-
-static void Main(string[] args)
-{
-    string str = "Hello, World!";
-    Console.WriteLine("Original String: " + str);
-    Console.WriteLine("Reversed String: " + ReverseString(str));
-}
-
------
-
-public static string InfixToPostfix(string infix)
-{
-    var stack = new Stack<char>();
-    var result = new List<char>();
-
-    foreach (char token in infix)
-    {
-        if (char.IsLetterOrDigit(token))
-        {
-            result.Add(token);
-        }
-        else if (token == '(')
-        {
-            stack.Push(token);
-        }
-        else if (token == ')')
-        {
-            while (stack.Count > 0 && stack.Peek() != '(')
+            if (counts.ContainsKey(item))
             {
-                result.Add(stack.Pop());
+                counts[item]++;
             }
-            stack.Pop(); // Remove '('
-        }
-        else
-        {
-            while (stack.Count > 0 && Precedence(stack.Peek()) >= Precedence(token))
+            else
             {
-                result.Add(stack.Pop());
+                counts[item] = 1;
             }
-            stack.Push(token);
+        }
+
+        return counts;
+    }
+
+    static void Main(string[] args)
+    {
+        var items = new List<string> { "apple", "banana", "apple", "orange", "banana", "apple" };
+        var occurrences = CountOccurrences(items);
+
+        foreach (var kvp in occurrences)
+        {
+            Console.WriteLine($"{kvp.Key}: {kvp.Value}");
+        }
+    }
+}
+
+-----
+
+using System;
+using System.Collections.Generic;
+
+public class Program
+{
+    public static void RemoveNonMatchingItems<T>(ICollection<T> mainCollection, ICollection<T> referenceCollection)
+    {
+        var itemsToRemove = new List<T>();
+
+        foreach (var item in mainCollection)
+        {
+            if (!referenceCollection.Contains(item))
+            {
+                itemsToRemove.Add(item);
+            }
+        }
+
+        foreach (var item in itemsToRemove)
+        {
+            mainCollection.Remove(item);
         }
     }
 
-    while (stack.Count > 0)
+    static void Main(string[] args)
     {
-        result.Add(stack.Pop());
+        var mainCollection = new List<int> { 1, 2, 3, 4, 5 };
+        var referenceCollection = new List<int> { 3, 4, 5, 6, 7 };
+
+        RemoveNonMatchingItems(mainCollection, referenceCollection);
+
+        Console.WriteLine("Filtered Collection: " + string.Join(", ", mainCollection));
     }
-
-    return new string(result.ToArray());
 }
 
-private static int Precedence(char op)
-{
-    return op switch
-    {
-        '+' or '-' => 1,
-        '*' or '/' => 2,
-        _ => 0,
-    };
-}
-
-static void Main(string[] args)
-{
-    string infix = "a+b*(c^d-e)^(f+g*h)-i";
-    Console.WriteLine("Infix Expression: " + infix);
-    Console.WriteLine("Postfix Expression: " + InfixToPostfix(infix));
-}
