@@ -1084,3 +1084,476 @@ public class Program
     }
 }
 
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+Assignment 1
+Rambo Rental Bikes is looking for developing a system to calculate the rentals of the bikes. System should accept the customer details, bike details and calculate the rental charges. DESCRIPTION OF PROJECTS System allows users to add customer details with bike rented. It computes rent for each customer. Systems displays the Bike details with summation of days of hire and rental payment. FUNCTIONALITY AND TASK Define a class called Mobike with the following description: Instance variables/data members: BikeNumber – to store the bike’s number PhoneNumber – to store the phone number of the customer Name – to store the name of the customer Days – to store the number of days the bike is taken on rent o charge – to calculate and store the rental charge Member methods: void Input( ) – to input and store the detail of the customer. void Compute( ) – to compute the rental charge void display( ) – to display the details in the following format: Bike No. PhoneNo No. of days Charge The rent for a mobike is charged on the following basis: First five days Rs 500 per day Next five days Rs 400 per day Rest of the days Rs 200 per day Use collection Framework to store 10 Customer Details. Implement List operation add, delete, edit and search functionality
+
+-------------------
+
+using System;
+using System.Collections.Generic;
+
+public class Mobike
+{
+    // Instance variables
+    public string BikeNumber { get; set; }
+    public string PhoneNumber { get; set; }
+    public string Name { get; set; }
+    public int Days { get; set; }
+    public double Charge { get; private set; }
+
+    // Method to input customer details
+    public void Input()
+    {
+        Console.Write("Enter Bike Number: ");
+        BikeNumber = Console.ReadLine();
+
+        Console.Write("Enter Phone Number: ");
+        PhoneNumber = Console.ReadLine();
+
+        Console.Write("Enter Name: ");
+        Name = Console.ReadLine();
+
+        Console.Write("Enter Number of Days: ");
+        Days = int.Parse(Console.ReadLine());
+    }
+
+    // Method to compute rental charge
+    public void Compute()
+    {
+        if (Days <= 5)
+        {
+            Charge = Days * 500;
+        }
+        else if (Days <= 10)
+        {
+            Charge = (5 * 500) + ((Days - 5) * 400);
+        }
+        else
+        {
+            Charge = (5 * 500) + (5 * 400) + ((Days - 10) * 200);
+        }
+    }
+
+    // Method to display details
+    public void Display()
+    {
+        Console.WriteLine($"{BikeNumber}\t{PhoneNumber}\t{Days}\t{Charge}");
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        List<Mobike> customers = new List<Mobike>();
+        int choice;
+
+        do
+        {
+            Console.WriteLine("\nRambo Rental Bikes System");
+            Console.WriteLine("1. Add Customer");
+            Console.WriteLine("2. Delete Customer");
+            Console.WriteLine("3. Edit Customer");
+            Console.WriteLine("4. Search Customer");
+            Console.WriteLine("5. Display All Customers");
+            Console.WriteLine("6. Exit");
+            Console.Write("Enter your choice: ");
+            choice = int.Parse(Console.ReadLine());
+
+            switch (choice)
+            {
+                case 1:
+                    AddCustomer(customers);
+                    break;
+
+                case 2:
+                    DeleteCustomer(customers);
+                    break;
+
+                case 3:
+                    EditCustomer(customers);
+                    break;
+
+                case 4:
+                    SearchCustomer(customers);
+                    break;
+
+                case 5:
+                    DisplayAllCustomers(customers);
+                    break;
+
+                case 6:
+                    Console.WriteLine("Exiting the system...");
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid choice! Please try again.");
+                    break;
+            }
+        } while (choice != 6);
+    }
+
+    // Add Customer
+    public static void AddCustomer(List<Mobike> customers)
+    {
+        var customer = new Mobike();
+        customer.Input();
+        customer.Compute();
+        customers.Add(customer);
+        Console.WriteLine("Customer added successfully!");
+    }
+
+    // Delete Customer
+    public static void DeleteCustomer(List<Mobike> customers)
+    {
+        Console.Write("Enter Bike Number to delete: ");
+        string bikeNumber = Console.ReadLine();
+
+        var customer = customers.Find(c => c.BikeNumber == bikeNumber);
+
+        if (customer != null)
+        {
+            customers.Remove(customer);
+            Console.WriteLine("Customer deleted successfully!");
+        }
+        else
+        {
+            Console.WriteLine("Customer not found!");
+        }
+    }
+
+    // Edit Customer
+    public static void EditCustomer(List<Mobike> customers)
+    {
+        Console.Write("Enter Bike Number to edit: ");
+        string bikeNumber = Console.ReadLine();
+
+        var customer = customers.Find(c => c.BikeNumber == bikeNumber);
+
+        if (customer != null)
+        {
+            Console.WriteLine("Editing details for Bike Number: " + bikeNumber);
+            customer.Input();
+            customer.Compute();
+            Console.WriteLine("Customer details updated successfully!");
+        }
+        else
+        {
+            Console.WriteLine("Customer not found!");
+        }
+    }
+
+    // Search Customer
+    public static void SearchCustomer(List<Mobike> customers)
+    {
+        Console.Write("Enter Bike Number to search: ");
+        string bikeNumber = Console.ReadLine();
+
+        var customer = customers.Find(c => c.BikeNumber == bikeNumber);
+
+        if (customer != null)
+        {
+            Console.WriteLine("Customer Details:");
+            Console.WriteLine("Bike No.\tPhone No.\tNo. of Days\tCharge");
+            customer.Display();
+        }
+        else
+        {
+            Console.WriteLine("Customer not found!");
+        }
+    }
+
+    // Display All Customers
+    public static void DisplayAllCustomers(List<Mobike> customers)
+    {
+        if (customers.Count == 0)
+        {
+            Console.WriteLine("No customers found!");
+            return;
+        }
+
+        Console.WriteLine("Customer Details:");
+        Console.WriteLine("Bike No.\tPhone No.\tNo. of Days\tCharge");
+        foreach (var customer in customers)
+        {
+            customer.Display();
+        }
+    }
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+
+public class Book
+{
+    public int BookID { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public bool IsAvailable { get; set; }
+
+    public override string ToString()
+    {
+        return $"ID: {BookID}, Title: {Title}, Author: {Author}, Available: {IsAvailable}";
+    }
+}
+
+public class BorrowingRecord<T>
+{
+    private Dictionary<string, List<T>> records = new Dictionary<string, List<T>>();
+
+    public void RecordBorrowing(string userID, T item)
+    {
+        if (!records.ContainsKey(userID))
+        {
+            records[userID] = new List<T>();
+        }
+        records[userID].Add(item);
+    }
+
+    public List<T> GetRecordsForUser(string userID)
+    {
+        if (records.ContainsKey(userID))
+            return records[userID];
+        return new List<T>();
+    }
+}
+
+public class User
+{
+    public int UserID { get; set; }
+    public string Name { get; set; }
+    public int BorrowCount { get; set; }
+
+    public override string ToString()
+    {
+        return $"UserID: {UserID}, Name: {Name}, BorrowCount: {BorrowCount}";
+    }
+}
+
+public class LibrarySystem
+{
+    private List<Book> books = new List<Book>();
+    private List<int> bookIDs = new List<int>();
+    private List<User> users = new List<User>();
+    private Stack<Book> recentBorrowedBooks = new Stack<Book>();
+    private Stack<Book> recentlyReturnedBooks = new Stack<Book>();
+    private Queue<string> waitingQueue = new Queue<string>();
+    private Dictionary<string, List<string>> keywordBooks = new Dictionary<string, List<string>>();
+    private BorrowingRecord<Book> borrowingRecords = new BorrowingRecord<Book>();
+
+    public void AddBook()
+    {
+        Console.Write("Enter Book ID: ");
+        int id = int.Parse(Console.ReadLine());
+        Console.Write("Enter Title: ");
+        string title = Console.ReadLine();
+        Console.Write("Enter Author: ");
+        string author = Console.ReadLine();
+
+        books.Add(new Book { BookID = id, Title = title, Author = author, IsAvailable = true });
+        bookIDs.Add(id);
+        Console.WriteLine("Book added successfully.");
+    }
+
+    public void FindBooksByAuthor()
+    {
+        Console.Write("Enter Author Name: ");
+        string author = Console.ReadLine();
+
+        var results = books.FindAll(book => book.Author == author);
+        if (results.Count == 0)
+        {
+            Console.WriteLine("No books found for this author.");
+        }
+        else
+        {
+            Console.WriteLine("Books by " + author + ":");
+            results.ForEach(book => Console.WriteLine(book));
+        }
+    }
+
+    public void BorrowBook()
+    {
+        Console.Write("Enter Book ID to borrow: ");
+        int bookID = int.Parse(Console.ReadLine());
+        var book = books.Find(b => b.BookID == bookID);
+
+        if (book != null && book.IsAvailable)
+        {
+            book.IsAvailable = false;
+            recentBorrowedBooks.Push(book);
+            Console.WriteLine($"You borrowed: {book.Title}");
+        }
+        else
+        {
+            Console.WriteLine("Book is not available. Adding you to the waiting queue...");
+            waitingQueue.Enqueue($"BookID: {bookID}");
+        }
+    }
+
+    public void ReturnBook()
+    {
+        Console.Write("Enter Book ID to return: ");
+        int bookID = int.Parse(Console.ReadLine());
+        var book = books.Find(b => b.BookID == bookID);
+
+        if (book != null)
+        {
+            book.IsAvailable = true;
+            recentlyReturnedBooks.Push(book);
+            Console.WriteLine($"You returned: {book.Title}");
+        }
+
+        if (recentlyReturnedBooks.Count >= 10)
+        {
+            TransferReturnedBooks();
+        }
+    }
+
+    public void ViewBorrowingRecords()
+    {
+        Console.Write("Enter User ID: ");
+        string userID = Console.ReadLine();
+
+        var records = borrowingRecords.GetRecordsForUser(userID);
+        if (records.Count > 0)
+        {
+            Console.WriteLine("Borrowing Records:");
+            records.ForEach(record => Console.WriteLine(record));
+        }
+        else
+        {
+            Console.WriteLine("No records found for this user.");
+        }
+    }
+
+    public void ManageUserAccounts()
+    {
+        Console.WriteLine("1. View All Users");
+        Console.WriteLine("2. Remove Users with Zero Borrowings");
+        int choice = int.Parse(Console.ReadLine());
+
+        if (choice == 1)
+        {
+            users.ForEach(user => Console.WriteLine(user));
+        }
+        else if (choice == 2)
+        {
+            users.RemoveAll(user => user.BorrowCount == 0);
+            Console.WriteLine("Removed users with zero borrowings.");
+        }
+    }
+
+    public void ViewWaitingQueue()
+    {
+        Console.WriteLine("Waiting Queue:");
+        foreach (var user in waitingQueue)
+        {
+            Console.WriteLine(user);
+        }
+    }
+
+    public void SearchBooksByKeyword()
+    {
+        Console.Write("Enter Keyword: ");
+        string keyword = Console.ReadLine();
+
+        if (keywordBooks.ContainsKey(keyword))
+        {
+            Console.WriteLine($"Books under keyword '{keyword}':");
+            keywordBooks[keyword].ForEach(title => Console.WriteLine(title));
+        }
+        else
+        {
+            Console.WriteLine("No books found for this keyword.");
+        }
+    }
+
+    public void SortBookCollection()
+    {
+        books.Sort((b1, b2) => b1.Title.CompareTo(b2.Title));
+        Console.WriteLine("Book collection sorted alphabetically.");
+    }
+
+    private void TransferReturnedBooks()
+    {
+        Console.WriteLine("Transferring recently returned books to available books collection...");
+        while (recentlyReturnedBooks.Count > 0)
+        {
+            recentlyReturnedBooks.Pop();
+        }
+        Console.WriteLine("Transfer complete.");
+    }
+
+    public void Run()
+    {
+        int choice;
+        do
+        {
+            Console.WriteLine("\nLibrary Management System");
+            Console.WriteLine("1. Add a Book");
+            Console.WriteLine("2. Search Book by Author");
+            Console.WriteLine("3. Borrow a Book");
+            Console.WriteLine("4. Return a Book");
+            Console.WriteLine("5. View Borrowing Records");
+            Console.WriteLine("6. Manage User Accounts");
+            Console.WriteLine("7. View Waiting Queue");
+            Console.WriteLine("8. Search Books by Keyword");
+            Console.WriteLine("9. Sort Book Collection");
+            Console.WriteLine("10. Exit");
+            Console.Write("Enter your choice: ");
+            choice = int.Parse(Console.ReadLine());
+
+            switch (choice)
+            {
+                case 1:
+                    AddBook();
+                    break;
+                case 2:
+                    FindBooksByAuthor();
+                    break;
+                case 3:
+                    BorrowBook();
+                    break;
+                case 4:
+                    ReturnBook();
+                    break;
+                case 5:
+                    ViewBorrowingRecords();
+                    break;
+                case 6:
+                    ManageUserAccounts();
+                    break;
+                case 7:
+                    ViewWaitingQueue();
+                    break;
+                case 8:
+                    SearchBooksByKeyword();
+                    break;
+                case 9:
+                    SortBookCollection();
+                    break;
+                case 10:
+                    Console.WriteLine("Exiting the system...");
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice! Please try again.");
+                    break;
+            }
+        } while (choice != 10);
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        LibrarySystem librarySystem = new LibrarySystem();
+        librarySystem.Run();
+    }
+}
+
