@@ -1,1559 +1,327 @@
-Practice 8
-Queue
-Implement a circular queue that supports dynamic resizing.
-Create a method to merge two sorted queues into a single sorted queue.
-Write a program to simulate a ticket booking system using a queue, prioritizing VIP customers.
-Develop a solution to reverse the first k elements of a queue without altering the rest.
-Design a queue-based implementation for task scheduling with priorities.
+using System.ComponentModel;
+using System.Net;
+using System.Text.Json;
 
------
-
-using System;
-
-public class CircularQueue<T>
+namespace Day4_Assignment2
 {
-    private T[] _array;
-    private int _head;
-    private int _tail;
-    private int _count;
-
-    public CircularQueue(int capacity)
+    internal class Book
     {
-        _array = new T[capacity];
-        _head = 0;
-        _tail = 0;
-        _count = 0;
-    }
+        public static List<Book> BookList = new List<Book>();
+        public static Dictionary<string, Queue<string>> WaitingQueue = new Dictionary<string, Queue<string>>();
 
-    public void Enqueue(T item)
-    {
-        if (_count == _array.Length)
+        public string BookID { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public bool Availability { get; set; }
+
+        public void ViewWaitingQueue()
         {
-            Resize();
-        }
-
-        _array[_tail] = item;
-        _tail = (_tail + 1) % _array.Length;
-        _count++;
-    }
-
-    public T Dequeue()
-    {
-        if (_count == 0)
-        {
-            throw new InvalidOperationException("Queue is empty.");
-        }
-
-        T item = _array[_head];
-        _head = (_head + 1) % _array.Length;
-        _count--;
-        return item;
-    }
-
-    public int Count => _count;
-
-    private void Resize()
-    {
-        T[] newArray = new T[_array.Length * 2];
-        for (int i = 0; i < _count; i++)
-        {
-            newArray[i] = _array[(_head + i) % _array.Length];
-        }
-        _array = newArray;
-        _head = 0;
-        _tail = _count;
-    }
-}
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        var queue = new CircularQueue<int>(3);
-        queue.Enqueue(1);
-        queue.Enqueue(2);
-        queue.Enqueue(3);
-        queue.Enqueue(4); // Triggers resizing
-
-        Console.WriteLine("Dequeued: " + queue.Dequeue());
-        queue.Enqueue(5);
-
-        while (queue.Count > 0)
-        {
-            Console.WriteLine(queue.Dequeue());
-        }
-    }
-}
-
------
-
-using System.Collections.Generic;
-
-public static Queue<int> MergeSortedQueues(Queue<int> queue1, Queue<int> queue2)
-{
-    var mergedQueue = new Queue<int>();
-
-    while (queue1.Count > 0 && queue2.Count > 0)
-    {
-        if (queue1.Peek() <= queue2.Peek())
-        {
-            mergedQueue.Enqueue(queue1.Dequeue());
-        }
-        else
-        {
-            mergedQueue.Enqueue(queue2.Dequeue());
-        }
-    }
-
-    while (queue1.Count > 0)
-    {
-        mergedQueue.Enqueue(queue1.Dequeue());
-    }
-
-    while (queue2.Count > 0)
-    {
-        mergedQueue.Enqueue(queue2.Dequeue());
-    }
-
-    return mergedQueue;
-}
-
-static void Main(string[] args)
-{
-    var queue1 = new Queue<int>(new[] { 1, 3, 5 });
-    var queue2 = new Queue<int>(new[] { 2, 4, 6 });
-
-    var mergedQueue = MergeSortedQueues(queue1, queue2);
-
-    Console.WriteLine("Merged Queue: " + string.Join(", ", mergedQueue));
-}
-
------
-
-using System.Collections.Generic;
-
-public class TicketBookingSystem
-{
-    private Queue<string> vipQueue = new Queue<string>();
-    private Queue<string> regularQueue = new Queue<string>();
-
-    public void Enqueue(string name, bool isVip)
-    {
-        if (isVip)
-        {
-            vipQueue.Enqueue(name);
-        }
-        else
-        {
-            regularQueue.Enqueue(name);
-        }
-    }
-
-    public string Dequeue()
-    {
-        if (vipQueue.Count > 0)
-        {
-            return vipQueue.Dequeue();
-        }
-        if (regularQueue.Count > 0)
-        {
-            return regularQueue.Dequeue();
-        }
-        throw new InvalidOperationException("No customers in the queue.");
-    }
-}
-
-static void Main(string[] args)
-{
-    var system = new TicketBookingSystem();
-    system.Enqueue("Alice", true);  // VIP
-    system.Enqueue("Bob", false);  // Regular
-    system.Enqueue("Charlie", true); // VIP
-
-    Console.WriteLine(system.Dequeue()); // Alice
-    Console.WriteLine(system.Dequeue()); // Charlie
-    Console.WriteLine(system.Dequeue()); // Bob
-}
-
------
-
-public static void ReverseFirstKElements<T>(Queue<T> queue, int k)
-{
-    if (k <= 0 || k > queue.Count)
-    {
-        throw new ArgumentException("Invalid value of k.");
-    }
-
-    var stack = new Stack<T>();
-
-    // Dequeue the first k elements and push onto the stack
-    for (int i = 0; i < k; i++)
-    {
-        stack.Push(queue.Dequeue());
-    }
-
-    // Enqueue the stack's elements back to the queue
-    while (stack.Count > 0)
-    {
-        queue.Enqueue(stack.Pop());
-    }
-
-    // Rotate the rest of the elements in the queue
-    int remaining = queue.Count - k;
-    for (int i = 0; i < remaining; i++)
-    {
-        queue.Enqueue(queue.Dequeue());
-    }
-}
-
-static void Main(string[] args)
-{
-    var queue = new Queue<int>(new[] { 1, 2, 3, 4, 5 });
-    int k = 3;
-
-    Console.WriteLine("Original Queue: " + string.Join(", ", queue));
-    ReverseFirstKElements(queue, k);
-    Console.WriteLine("Modified Queue: " + string.Join(", ", queue));
-}
-
------
-
-using System.Collections.Generic;
-
-public class TaskScheduler
-{
-    private SortedDictionary<int, Queue<string>> priorityQueues = new SortedDictionary<int, Queue<string>>();
-
-    public void AddTask(string task, int priority)
-    {
-        if (!priorityQueues.ContainsKey(priority))
-        {
-            priorityQueues[priority] = new Queue<string>();
-        }
-
-        priorityQueues[priority].Enqueue(task);
-    }
-
-    public string GetNextTask()
-    {
-        foreach (var key in priorityQueues.Keys)
-        {
-            if (priorityQueues[key].Count > 0)
+            Console.WriteLine("Books with Waiting Queues:");
+            foreach (var queue in WaitingQueue)
             {
-                return priorityQueues[key].Dequeue();
+                Console.WriteLine(JsonSerializer.Serialize(queue));
             }
         }
-
-        throw new InvalidOperationException("No tasks available.");
-    }
-}
-
-static void Main(string[] args)
-{
-    var scheduler = new TaskScheduler();
-    scheduler.AddTask("Task1", 2); // Priority 2
-    scheduler.AddTask("Task2", 1); // Priority 1
-    scheduler.AddTask("Task3", 3); // Priority 3
-
-    Console.WriteLine("Next Task: " + scheduler.GetNextTask()); // Task2
-    Console.WriteLine("Next Task: " + scheduler.GetNextTask()); // Task1
-    Console.WriteLine("Next Task: " + scheduler.GetNextTask()); // Task3
-}
-
------------------------------------------------------------------------------------------------------------------------------------
-
-Practice 9
-Dictionary (Map Key-Value Pair)
-Implement a method to find the most frequently occurring value in a dictionary.
-Write a function to merge two dictionaries, combining values of common keys into a list.
-Create a program to group words by their lengths using a dictionary.
-Design a dictionary to store student grades and calculate the average grade for each student.
-Write a method to find all keys in a dictionary whose values satisfy a specific condition.
-
------
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-public class Program
-{
-    public static T FindMostFrequentValue<T>(Dictionary<string, T> dict)
-    {
-        return dict.Values
-                   .GroupBy(value => value)
-                   .OrderByDescending(group => group.Count())
-                   .First().Key;
-    }
-
-    static void Main(string[] args)
-    {
-        var dictionary = new Dictionary<string, int>
+        public void SortBook()
         {
-            { "A", 1 },
-            { "B", 2 },
-            { "C", 1 },
-            { "D", 3 },
-            { "E", 1 }
-        };
-
-        Console.WriteLine("Most Frequent Value: " + FindMostFrequentValue(dictionary));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static Dictionary<TKey, List<TValue>> MergeDictionaries<TKey, TValue>(
-        Dictionary<TKey, TValue> dict1,
-        Dictionary<TKey, TValue> dict2)
-    {
-        var result = new Dictionary<TKey, List<TValue>>();
-
-        foreach (var kvp in dict1)
-        {
-            if (!result.ContainsKey(kvp.Key))
+            var result = BookList.OrderBy(x => x.Title).ToList();
+            Console.WriteLine("Sorted Books are:");
+            foreach (var item in result)
             {
-                result[kvp.Key] = new List<TValue>();
-            }
-            result[kvp.Key].Add(kvp.Value);
-        }
-
-        foreach (var kvp in dict2)
-        {
-            if (!result.ContainsKey(kvp.Key))
-            {
-                result[kvp.Key] = new List<TValue>();
-            }
-            result[kvp.Key].Add(kvp.Value);
-        }
-
-        return result;
-    }
-
-    static void Main(string[] args)
-    {
-        var dict1 = new Dictionary<string, int> { { "A", 1 }, { "B", 2 } };
-        var dict2 = new Dictionary<string, int> { { "B", 3 }, { "C", 4 } };
-
-        var mergedDict = MergeDictionaries(dict1, dict2);
-
-        foreach (var kvp in mergedDict)
-        {
-            Console.WriteLine($"{kvp.Key}: [{string.Join(", ", kvp.Value)}]");
-        }
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static Dictionary<int, List<string>> GroupWordsByLength(List<string> words)
-    {
-        var groupedDict = new Dictionary<int, List<string>>();
-
-        foreach (var word in words)
-        {
-            int length = word.Length;
-
-            if (!groupedDict.ContainsKey(length))
-            {
-                groupedDict[length] = new List<string>();
-            }
-
-            groupedDict[length].Add(word);
-        }
-
-        return groupedDict;
-    }
-
-    static void Main(string[] args)
-    {
-        var words = new List<string> { "apple", "bat", "cat", "dog", "elephant" };
-        var groupedDict = GroupWordsByLength(words);
-
-        foreach (var kvp in groupedDict)
-        {
-            Console.WriteLine($"Length {kvp.Key}: [{string.Join(", ", kvp.Value)}]");
-        }
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static Dictionary<string, double> CalculateAverageGrades(Dictionary<string, List<int>> grades)
-    {
-        var averages = new Dictionary<string, double>();
-
-        foreach (var student in grades)
-        {
-            double average = student.Value.Average();
-            averages[student.Key] = average;
-        }
-
-        return averages;
-    }
-
-    static void Main(string[] args)
-    {
-        var studentGrades = new Dictionary<string, List<int>>
-        {
-            { "Alice", new List<int> { 85, 90, 78 } },
-            { "Bob", new List<int> { 88, 92, 79 } },
-            { "Charlie", new List<int> { 80, 70, 85 } }
-        };
-
-        var averages = CalculateAverageGrades(studentGrades);
-
-        foreach (var kvp in averages)
-        {
-            Console.WriteLine($"{kvp.Key}: Average = {kvp.Value:F2}");
-        }
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static List<TKey> FindKeysByCondition<TKey, TValue>(
-        Dictionary<TKey, TValue> dict,
-        Predicate<TValue> condition)
-    {
-        var keys = new List<TKey>();
-
-        foreach (var kvp in dict)
-        {
-            if (condition(kvp.Value))
-            {
-                keys.Add(kvp.Key);
+                Console.WriteLine(JsonSerializer.Serialize(item));
             }
         }
-
-        return keys;
-    }
-
-    static void Main(string[] args)
-    {
-        var dictionary = new Dictionary<string, int>
+        public void SearchBook()
         {
-            { "A", 10 },
-            { "B", 20 },
-            { "C", 30 },
-            { "D", 15 }
-        };
-
-        var keys = FindKeysByCondition(dictionary, value => value > 15);
-
-        Console.WriteLine("Keys with values > 15: " + string.Join(", ", keys));
-    }
-}
-
----------------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static T FindMostFrequentValue<T>(Dictionary<string, T> dict)
-    {
-        var frequency = new Dictionary<T, int>();
-        foreach (var value in dict.Values)
-        {
-            if (frequency.ContainsKey(value))
+            Console.Write("Enter name of book to search: ");
+            string name = Console.ReadLine().Trim().ToLower();
+            if (string.IsNullOrEmpty(name))
             {
-                frequency[value]++;
+                Console.WriteLine("name cannot be empty");
+                SearchBook();
             }
             else
             {
-                frequency[value] = 1;
+                bool isFound = false;
+                foreach (Book book in BookList)
+                {
+                    if (book.Title.ToLower().Contains(name))
+                    {
+                        isFound = true;
+                        Console.WriteLine(JsonSerializer.Serialize(book));
+                    }
+                }
+
+                if (!isFound)
+                {
+                    Console.WriteLine($"Book having name {name} does not exists!!");
+                }
             }
         }
 
-        T mostFrequent = default(T);
-        int maxCount = 0;
-
-        foreach (var kvp in frequency)
+        public void ReturnBook()
         {
-            if (kvp.Value > maxCount)
+            Console.Write("Enter your name: ");
+            string name = Console.ReadLine();
+            Console.Write("Enter BookID you want to return: ");
+            string bookID = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(bookID.Trim()) || string.IsNullOrEmpty(name.Trim()))
             {
-                maxCount = kvp.Value;
-                mostFrequent = kvp.Key;
+                Console.WriteLine("All the fields are required, try again");
+                ReturnBook();
+                return;
+            }
+
+            bool isFound = false;
+
+            // Check if the borrowing record exists
+            foreach (var record in BorrowingRecord.BorrowingRecordStack)
+            {
+                if (record.BookID == bookID.Trim() && record.BorrowedBy.ToLower() == name.Trim().ToLower())
+                {
+                    isFound = true;
+                    record.HasReturnedBook = true;
+
+                    Console.WriteLine($"'{name}' has returned the book with ID '{bookID}'.");
+
+                    // Update book availability and handle waiting queue
+                    foreach (var book in BookList)
+                    {
+                        if (book.BookID == bookID.Trim())
+                        {
+                            book.Availability = true;
+
+                            // Decrement borrow count for the user
+                            User returningUser = null;
+                            foreach (var user in User.users)
+                            {
+                                if (user.Name.ToLower() == name.Trim().ToLower())
+                                {
+                                    returningUser = user;
+                                    break;
+                                }
+                            }
+
+                            if (returningUser != null)
+                            {
+                                returningUser.BorrowCount--;
+                                if (returningUser.BorrowCount == 0)
+                                {
+                                    User.users.Remove(returningUser); 
+                                }
+                            }
+
+                            // Check if there is a waiting queue for the book
+                            if (WaitingQueue.ContainsKey(bookID) && WaitingQueue[bookID].Count > 0)
+                            {
+                                // Assign the book to the next user in the queue
+                                string nextUserId = WaitingQueue[bookID].Dequeue();
+                                Console.WriteLine($"Book '{bookID}' is now assigned to User ID: {nextUserId}");
+
+                                BorrowingRecord newRecord = new BorrowingRecord
+                                {
+                                    BookID = book.BookID,
+                                    BookTitle = book.Title,
+                                    BorrowedBy = nextUserId
+                                };
+                                newRecord.AddNewBorrowingRecord(newRecord);
+
+                                // Update the book's availability to false
+                                book.Availability = false;
+
+                                // Add or update the next user in the users list
+                                bool userFound = false;
+                                foreach (var user in User.users)
+                                {
+                                    if (user.UserID == nextUserId)
+                                    {
+                                        user.BorrowCount++;
+                                        userFound = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!userFound)
+                                {
+                                    User newUser = new User { UserID = nextUserId, Name = nextUserId, BorrowCount = 1 };
+                                    User.users.Add(newUser);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine($"No one is waiting for book ID '{bookID}'. The book is now available.");
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (!isFound)
+            {
+                Console.WriteLine("Either the name or bookID does not exist.");
             }
         }
 
-        return mostFrequent;
-    }
 
-    static void Main(string[] args)
-    {
-        var dictionary = new Dictionary<string, int>
+        public void BorrowBook(string bookid)
         {
-            { "A", 1 },
-            { "B", 2 },
-            { "C", 1 },
-            { "D", 3 },
-            { "E", 1 }
-        };
-
-        Console.WriteLine("Most Frequent Value: " + FindMostFrequentValue(dictionary));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static Dictionary<TKey, List<TValue>> MergeDictionaries<TKey, TValue>(
-        Dictionary<TKey, TValue> dict1,
-        Dictionary<TKey, TValue> dict2)
-    {
-        var result = new Dictionary<TKey, List<TValue>>();
-
-        foreach (var kvp in dict1)
-        {
-            if (!result.ContainsKey(kvp.Key))
+            bool isFound = false;
+            foreach (Book book in BookList)
             {
-                result[kvp.Key] = new List<TValue>();
+                if (book.BookID == bookid)
+                {
+                    Console.Write("Enter User ID: ");
+                    string userId = Console.ReadLine().Trim();
+                    Console.Write("Enter Your Name: ");
+                    string userName = Console.ReadLine().Trim();
+
+                    if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(userName))
+                    {
+                        isFound = true;
+                        if (book.Availability)
+                        {
+                            book.Availability = false;
+                            User user = new User { UserID = userId, Name = userName, BorrowCount = 1 };
+                            User.users.Add(user);
+
+                            BorrowingRecord record = new BorrowingRecord
+                            {
+                                BookID = book.BookID,
+                                BookTitle = book.Title,
+                                BorrowedBy = userName
+                            };
+                            record.AddNewBorrowingRecord(record);
+
+                            Console.WriteLine($"Book '{book.Title}' borrowed by '{userName}'.");
+                        }
+                        else
+                        {
+                            //adding to queue
+                            if (!WaitingQueue.ContainsKey(bookid))
+                            {
+                                WaitingQueue[bookid] = new Queue<string>();
+                            }
+                            WaitingQueue[bookid].Enqueue(userId);
+                            Console.WriteLine($"Book '{bookid}' is unavailable. You have been added to the waiting queue.");
+
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Fields cannot be empty, try again");
+                    }
+                    break;
+                }
             }
-            result[kvp.Key].Add(kvp.Value);
-        }
-
-        foreach (var kvp in dict2)
-        {
-            if (!result.ContainsKey(kvp.Key))
+            if (!isFound)
             {
-                result[kvp.Key] = new List<TValue>();
-            }
-            result[kvp.Key].Add(kvp.Value);
-        }
-
-        return result;
-    }
-
-    static void Main(string[] args)
-    {
-        var dict1 = new Dictionary<string, int> { { "A", 1 }, { "B", 2 } };
-        var dict2 = new Dictionary<string, int> { { "B", 3 }, { "C", 4 } };
-
-        var mergedDict = MergeDictionaries(dict1, dict2);
-
-        foreach (var kvp in mergedDict)
-        {
-            Console.WriteLine($"{kvp.Key}: [{string.Join(", ", kvp.Value)}]");
-        }
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static Dictionary<int, List<string>> GroupWordsByLength(List<string> words)
-    {
-        var groupedDict = new Dictionary<int, List<string>>();
-
-        foreach (var word in words)
-        {
-            int length = word.Length;
-
-            if (!groupedDict.ContainsKey(length))
-            {
-                groupedDict[length] = new List<string>();
-            }
-
-            groupedDict[length].Add(word);
-        }
-
-        return groupedDict;
-    }
-
-    static void Main(string[] args)
-    {
-        var words = new List<string> { "apple", "bat", "cat", "dog", "elephant" };
-        var groupedDict = GroupWordsByLength(words);
-
-        foreach (var kvp in groupedDict)
-        {
-            Console.WriteLine($"Length {kvp.Key}: [{string.Join(", ", kvp.Value)}]");
-        }
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static Dictionary<string, double> CalculateAverageGrades(Dictionary<string, List<int>> grades)
-    {
-        var averages = new Dictionary<string, double>();
-
-        foreach (var student in grades)
-        {
-            int sum = 0;
-            foreach (var grade in student.Value)
-            {
-                sum += grade;
-            }
-            double average = (double)sum / student.Value.Count;
-            averages[student.Key] = average;
-        }
-
-        return averages;
-    }
-
-    static void Main(string[] args)
-    {
-        var studentGrades = new Dictionary<string, List<int>>
-        {
-            { "Alice", new List<int> { 85, 90, 78 } },
-            { "Bob", new List<int> { 88, 92, 79 } },
-            { "Charlie", new List<int> { 80, 70, 85 } }
-        };
-
-        var averages = CalculateAverageGrades(studentGrades);
-
-        foreach (var kvp in averages)
-        {
-            Console.WriteLine($"{kvp.Key}: Average = {kvp.Value:F2}");
-        }
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static List<TKey> FindKeysByCondition<TKey, TValue>(
-        Dictionary<TKey, TValue> dict,
-        Predicate<TValue> condition)
-    {
-        var keys = new List<TKey>();
-
-        foreach (var kvp in dict)
-        {
-            if (condition(kvp.Value))
-            {
-                keys.Add(kvp.Key);
+                Console.WriteLine($"No book exists having ID {bookid}");
             }
         }
 
-        return keys;
-    }
-
-    static void Main(string[] args)
-    {
-        var dictionary = new Dictionary<string, int>
+        public void ViewBorrowingRecords()
         {
-            { "A", 10 },
-            { "B", 20 },
-            { "C", 30 },
-            { "D", 15 }
-        };
-
-        var keys = FindKeysByCondition(dictionary, value => value > 15);
-
-        Console.WriteLine("Keys with values > 15: " + string.Join(", ", keys));
-    }
-}
-
--------------------------------------------------------------------------------------------------------------------------------------------------
-
-Practice 10
-Using Generic Collection Interfaces (ICollection)
-Implement a method using ICollection to remove items from a collection based on a predicate.
-Write a function that accepts an ICollection and returns the second largest element.
-Create a generic method using ICollection to compute the union of two collections.
-Develop a method to clone an ICollection into a new collection of the same type.
-Write a function using ICollection to implement pagination for large data sets.
-
-------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static void RemoveByPredicate<T>(ICollection<T> collection, Predicate<T> predicate)
-    {
-        var itemsToRemove = new List<T>();
-
-        foreach (var item in collection)
-        {
-            if (predicate(item))
+            if (BorrowingRecord.BorrowingRecordStack.Count > 0)
             {
-                itemsToRemove.Add(item);
-            }
-        }
-
-        foreach (var item in itemsToRemove)
-        {
-            collection.Remove(item);
-        }
-    }
-
-    static void Main(string[] args)
-    {
-        var numbers = new List<int> { 1, 2, 3, 4, 5, 6 };
-        RemoveByPredicate(numbers, x => x % 2 == 0); // Remove even numbers
-
-        Console.WriteLine("Remaining items: " + string.Join(", ", numbers));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static T FindSecondLargest<T>(ICollection<T> collection) where T : IComparable<T>
-    {
-        if (collection.Count < 2)
-            throw new InvalidOperationException("Collection must have at least two elements.");
-
-        T largest = default(T);
-        T secondLargest = default(T);
-        bool isInitialized = false;
-
-        foreach (var item in collection)
-        {
-            if (!isInitialized)
-            {
-                largest = item;
-                secondLargest = item;
-                isInitialized = true;
-                continue;
-            }
-
-            if (item.CompareTo(largest) > 0)
-            {
-                secondLargest = largest;
-                largest = item;
-            }
-            else if (item.CompareTo(secondLargest) > 0 && !item.Equals(largest))
-            {
-                secondLargest = item;
-            }
-        }
-
-        return secondLargest;
-    }
-
-    static void Main(string[] args)
-    {
-        var numbers = new List<int> { 10, 20, 30, 40, 50 };
-        Console.WriteLine("Second Largest: " + FindSecondLargest(numbers));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static ICollection<T> ComputeUnion<T>(ICollection<T> collection1, ICollection<T> collection2)
-    {
-        var union = new HashSet<T>();
-
-        foreach (var item in collection1)
-        {
-            union.Add(item);
-        }
-
-        foreach (var item in collection2)
-        {
-            union.Add(item);
-        }
-
-        return union;
-    }
-
-    static void Main(string[] args)
-    {
-        var collection1 = new List<int> { 1, 2, 3 };
-        var collection2 = new List<int> { 3, 4, 5 };
-
-        var union = ComputeUnion(collection1, collection2);
-
-        Console.WriteLine("Union: " + string.Join(", ", union));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static ICollection<T> CloneCollection<T>(ICollection<T> collection)
-    {
-        var clonedCollection = new List<T>();
-
-        foreach (var item in collection)
-        {
-            clonedCollection.Add(item);
-        }
-
-        return clonedCollection;
-    }
-
-    static void Main(string[] args)
-    {
-        var original = new List<string> { "A", "B", "C" };
-        var cloned = CloneCollection(original);
-
-        Console.WriteLine("Original: " + string.Join(", ", original));
-        Console.WriteLine("Cloned: " + string.Join(", ", cloned));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static ICollection<T> Paginate<T>(ICollection<T> collection, int pageNumber, int pageSize)
-    {
-        var result = new List<T>();
-        int skip = (pageNumber - 1) * pageSize;
-        int index = 0;
-
-        foreach (var item in collection)
-        {
-            if (index >= skip && result.Count < pageSize)
-            {
-                result.Add(item);
-            }
-            index++;
-
-            if (result.Count == pageSize)
-            {
-                break;
-            }
-        }
-
-        return result;
-    }
-
-    static void Main(string[] args)
-    {
-        var data = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        int pageNumber = 2;
-        int pageSize = 3;
-
-        var paginated = Paginate(data, pageNumber, pageSize);
-
-        Console.WriteLine($"Page {pageNumber}: " + string.Join(", ", paginated));
-    }
-}
-
-----------------------------------------------------------------------------------------------------------------------------------------------
-
-Practice 11
-Operations on Collection (Sort, Search, Index, Add, Count, Remove)
-Write a method to sort a collection of employees by multiple fields (e.g., age and then name).
-Create a function to search for an element in a sorted collection using binary search.
-Implement a method to insert an item at a specific index in a collection and maintain sorted order.
-Write a solution to count the occurrences of each unique element in a collection.
-Develop a method to remove items from a collection that are not present in another collection.
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Employee
-{
-    public string Name { get; set; }
-    public int Age { get; set; }
-
-    public override string ToString() => $"Name: {Name}, Age: {Age}";
-}
-
-public class Program
-{
-    public static void SortEmployees(List<Employee> employees)
-    {
-        employees.Sort((e1, e2) =>
-        {
-            int ageComparison = e1.Age.CompareTo(e2.Age);
-            if (ageComparison == 0)
-            {
-                return e1.Name.CompareTo(e2.Name);
-            }
-            return ageComparison;
-        });
-    }
-
-    static void Main(string[] args)
-    {
-        var employees = new List<Employee>
-        {
-            new Employee { Name = "Alice", Age = 30 },
-            new Employee { Name = "Bob", Age = 25 },
-            new Employee { Name = "Charlie", Age = 30 },
-            new Employee { Name = "Dave", Age = 25 }
-        };
-
-        SortEmployees(employees);
-        employees.ForEach(e => Console.WriteLine(e));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static int BinarySearch<T>(List<T> sortedCollection, T target) where T : IComparable<T>
-    {
-        int left = 0, right = sortedCollection.Count - 1;
-
-        while (left <= right)
-        {
-            int mid = left + (right - left) / 2;
-            int comparison = sortedCollection[mid].CompareTo(target);
-
-            if (comparison == 0)
-                return mid;
-            else if (comparison < 0)
-                left = mid + 1;
-            else
-                right = mid - 1;
-        }
-
-        return -1; // Not found
-    }
-
-    static void Main(string[] args)
-    {
-        var numbers = new List<int> { 1, 3, 5, 7, 9, 11 };
-        int target = 7;
-
-        int index = BinarySearch(numbers, target);
-        Console.WriteLine(index != -1 ? $"Found at index: {index}" : "Not Found");
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static void InsertAndSort<T>(List<T> collection, T item) where T : IComparable<T>
-    {
-        collection.Add(item);
-
-        // Insertion sort logic to maintain sorted order
-        for (int i = collection.Count - 1; i > 0; i--)
-        {
-            if (collection[i].CompareTo(collection[i - 1]) < 0)
-            {
-                // Swap elements
-                var temp = collection[i];
-                collection[i] = collection[i - 1];
-                collection[i - 1] = temp;
+                foreach (var book in BorrowingRecord.BorrowingRecordStack)
+                {
+                    Console.WriteLine(JsonSerializer.Serialize(book));
+                }
             }
             else
             {
-                break;
-            }
-        }
-    }
-
-    static void Main(string[] args)
-    {
-        var numbers = new List<int> { 1, 3, 5, 7 };
-        InsertAndSort(numbers, 4);
-
-        Console.WriteLine("Sorted Collection: " + string.Join(", ", numbers));
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static Dictionary<T, int> CountOccurrences<T>(ICollection<T> collection)
-    {
-        var counts = new Dictionary<T, int>();
-
-        foreach (var item in collection)
-        {
-            if (counts.ContainsKey(item))
-            {
-                counts[item]++;
-            }
-            else
-            {
-                counts[item] = 1;
+                Console.WriteLine("No borrowing records available");
             }
         }
 
-        return counts;
-    }
-
-    static void Main(string[] args)
-    {
-        var items = new List<string> { "apple", "banana", "apple", "orange", "banana", "apple" };
-        var occurrences = CountOccurrences(items);
-
-        foreach (var kvp in occurrences)
+        public void AddBook()
         {
-            Console.WriteLine($"{kvp.Key}: {kvp.Value}");
-        }
-    }
-}
-
------
-
-using System;
-using System.Collections.Generic;
-
-public class Program
-{
-    public static void RemoveNonMatchingItems<T>(ICollection<T> mainCollection, ICollection<T> referenceCollection)
-    {
-        var itemsToRemove = new List<T>();
-
-        foreach (var item in mainCollection)
-        {
-            if (!referenceCollection.Contains(item))
+            try
             {
-                itemsToRemove.Add(item);
-            }
-        }
-
-        foreach (var item in itemsToRemove)
-        {
-            mainCollection.Remove(item);
-        }
-    }
-
-    static void Main(string[] args)
-    {
-        var mainCollection = new List<int> { 1, 2, 3, 4, 5 };
-        var referenceCollection = new List<int> { 3, 4, 5, 6, 7 };
-
-        RemoveNonMatchingItems(mainCollection, referenceCollection);
-
-        Console.WriteLine("Filtered Collection: " + string.Join(", ", mainCollection));
-    }
-}
-
------------------------------------------------------------------------------------------------------------------------------------------------
-
-Assignment 1
-Rambo Rental Bikes is looking for developing a system to calculate the rentals of the bikes. System should accept the customer details, bike details and calculate the rental charges. DESCRIPTION OF PROJECTS System allows users to add customer details with bike rented. It computes rent for each customer. Systems displays the Bike details with summation of days of hire and rental payment. FUNCTIONALITY AND TASK Define a class called Mobike with the following description: Instance variables/data members: BikeNumber – to store the bike’s number PhoneNumber – to store the phone number of the customer Name – to store the name of the customer Days – to store the number of days the bike is taken on rent o charge – to calculate and store the rental charge Member methods: void Input( ) – to input and store the detail of the customer. void Compute( ) – to compute the rental charge void display( ) – to display the details in the following format: Bike No. PhoneNo No. of days Charge The rent for a mobike is charged on the following basis: First five days Rs 500 per day Next five days Rs 400 per day Rest of the days Rs 200 per day Use collection Framework to store 10 Customer Details. Implement List operation add, delete, edit and search functionality
-
--------------------
-
-using System;
-using System.Collections.Generic;
-
-public class Mobike
-{
-    // Instance variables
-    public string BikeNumber { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Name { get; set; }
-    public int Days { get; set; }
-    public double Charge { get; private set; }
-
-    // Method to input customer details
-    public void Input()
-    {
-        Console.Write("Enter Bike Number: ");
-        BikeNumber = Console.ReadLine();
-
-        Console.Write("Enter Phone Number: ");
-        PhoneNumber = Console.ReadLine();
-
-        Console.Write("Enter Name: ");
-        Name = Console.ReadLine();
-
-        Console.Write("Enter Number of Days: ");
-        Days = int.Parse(Console.ReadLine());
-    }
-
-    // Method to compute rental charge
-    public void Compute()
-    {
-        if (Days <= 5)
-        {
-            Charge = Days * 500;
-        }
-        else if (Days <= 10)
-        {
-            Charge = (5 * 500) + ((Days - 5) * 400);
-        }
-        else
-        {
-            Charge = (5 * 500) + (5 * 400) + ((Days - 10) * 200);
-        }
-    }
-
-    // Method to display details
-    public void Display()
-    {
-        Console.WriteLine($"{BikeNumber}\t{PhoneNumber}\t{Days}\t{Charge}");
-    }
-}
-
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        List<Mobike> customers = new List<Mobike>();
-        int choice;
-
-        do
-        {
-            Console.WriteLine("\nRambo Rental Bikes System");
-            Console.WriteLine("1. Add Customer");
-            Console.WriteLine("2. Delete Customer");
-            Console.WriteLine("3. Edit Customer");
-            Console.WriteLine("4. Search Customer");
-            Console.WriteLine("5. Display All Customers");
-            Console.WriteLine("6. Exit");
-            Console.Write("Enter your choice: ");
-            choice = int.Parse(Console.ReadLine());
-
-            switch (choice)
-            {
-                case 1:
-                    AddCustomer(customers);
-                    break;
-
-                case 2:
-                    DeleteCustomer(customers);
-                    break;
-
-                case 3:
-                    EditCustomer(customers);
-                    break;
-
-                case 4:
-                    SearchCustomer(customers);
-                    break;
-
-                case 5:
-                    DisplayAllCustomers(customers);
-                    break;
-
-                case 6:
-                    Console.WriteLine("Exiting the system...");
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid choice! Please try again.");
-                    break;
-            }
-        } while (choice != 6);
-    }
-
-    // Add Customer
-    public static void AddCustomer(List<Mobike> customers)
-    {
-        var customer = new Mobike();
-        customer.Input();
-        customer.Compute();
-        customers.Add(customer);
-        Console.WriteLine("Customer added successfully!");
-    }
-
-    // Delete Customer
-    public static void DeleteCustomer(List<Mobike> customers)
-    {
-        Console.Write("Enter Bike Number to delete: ");
-        string bikeNumber = Console.ReadLine();
-
-        var customer = customers.Find(c => c.BikeNumber == bikeNumber);
-
-        if (customer != null)
-        {
-            customers.Remove(customer);
-            Console.WriteLine("Customer deleted successfully!");
-        }
-        else
-        {
-            Console.WriteLine("Customer not found!");
-        }
-    }
-
-    // Edit Customer
-    public static void EditCustomer(List<Mobike> customers)
-    {
-        Console.Write("Enter Bike Number to edit: ");
-        string bikeNumber = Console.ReadLine();
-
-        var customer = customers.Find(c => c.BikeNumber == bikeNumber);
-
-        if (customer != null)
-        {
-            Console.WriteLine("Editing details for Bike Number: " + bikeNumber);
-            customer.Input();
-            customer.Compute();
-            Console.WriteLine("Customer details updated successfully!");
-        }
-        else
-        {
-            Console.WriteLine("Customer not found!");
-        }
-    }
-
-    // Search Customer
-    public static void SearchCustomer(List<Mobike> customers)
-    {
-        Console.Write("Enter Bike Number to search: ");
-        string bikeNumber = Console.ReadLine();
-
-        var customer = customers.Find(c => c.BikeNumber == bikeNumber);
-
-        if (customer != null)
-        {
-            Console.WriteLine("Customer Details:");
-            Console.WriteLine("Bike No.\tPhone No.\tNo. of Days\tCharge");
-            customer.Display();
-        }
-        else
-        {
-            Console.WriteLine("Customer not found!");
-        }
-    }
-
-    // Display All Customers
-    public static void DisplayAllCustomers(List<Mobike> customers)
-    {
-        if (customers.Count == 0)
-        {
-            Console.WriteLine("No customers found!");
-            return;
-        }
-
-        Console.WriteLine("Customer Details:");
-        Console.WriteLine("Bike No.\tPhone No.\tNo. of Days\tCharge");
-        foreach (var customer in customers)
-        {
-            customer.Display();
-        }
-    }
-}
-
-------------------------------------------------------------------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-
-public class Book
-{
-    public int BookID { get; set; }
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public bool IsAvailable { get; set; }
-
-    public override string ToString()
-    {
-        return $"ID: {BookID}, Title: {Title}, Author: {Author}, Available: {IsAvailable}";
-    }
-}
-
-public class BorrowingRecord<T>
-{
-    private Dictionary<string, List<T>> records = new Dictionary<string, List<T>>();
-
-    public void RecordBorrowing(string userID, T item)
-    {
-        if (!records.ContainsKey(userID))
-        {
-            records[userID] = new List<T>();
-        }
-        records[userID].Add(item);
-    }
-
-    public List<T> GetRecordsForUser(string userID)
-    {
-        if (records.ContainsKey(userID))
-            return records[userID];
-        return new List<T>();
-    }
-}
-
-public class User
-{
-    public int UserID { get; set; }
-    public string Name { get; set; }
-    public int BorrowCount { get; set; }
-
-    public override string ToString()
-    {
-        return $"UserID: {UserID}, Name: {Name}, BorrowCount: {BorrowCount}";
-    }
-}
-
-public class LibrarySystem
-{
-    private List<Book> books = new List<Book>();
-    private List<int> bookIDs = new List<int>();
-    private List<User> users = new List<User>();
-    private Stack<Book> recentBorrowedBooks = new Stack<Book>();
-    private Stack<Book> recentlyReturnedBooks = new Stack<Book>();
-    private Queue<string> waitingQueue = new Queue<string>();
-    private Dictionary<string, List<string>> keywordBooks = new Dictionary<string, List<string>>();
-    private BorrowingRecord<Book> borrowingRecords = new BorrowingRecord<Book>();
-
-    public void AddBook()
-    {
-        Console.Write("Enter Book ID: ");
-        int id = int.Parse(Console.ReadLine());
-        Console.Write("Enter Title: ");
-        string title = Console.ReadLine();
-        Console.Write("Enter Author: ");
-        string author = Console.ReadLine();
-
-        books.Add(new Book { BookID = id, Title = title, Author = author, IsAvailable = true });
-        bookIDs.Add(id);
-        Console.WriteLine("Book added successfully.");
-    }
-
-    public void FindBooksByAuthor()
-    {
-        Console.Write("Enter Author Name: ");
-        string author = Console.ReadLine();
-
-        var results = books.FindAll(book => book.Author == author);
-        if (results.Count == 0)
-        {
-            Console.WriteLine("No books found for this author.");
-        }
-        else
-        {
-            Console.WriteLine("Books by " + author + ":");
-            results.ForEach(book => Console.WriteLine(book));
-        }
-    }
-
-    public void BorrowBook()
-    {
-        Console.Write("Enter Book ID to borrow: ");
-        int bookID = int.Parse(Console.ReadLine());
-        var book = books.Find(b => b.BookID == bookID);
-
-        if (book != null && book.IsAvailable)
-        {
-            book.IsAvailable = false;
-            recentBorrowedBooks.Push(book);
-            Console.WriteLine($"You borrowed: {book.Title}");
-        }
-        else
-        {
-            Console.WriteLine("Book is not available. Adding you to the waiting queue...");
-            waitingQueue.Enqueue($"BookID: {bookID}");
-        }
-    }
-
-    public void ReturnBook()
-    {
-        Console.Write("Enter Book ID to return: ");
-        int bookID = int.Parse(Console.ReadLine());
-        var book = books.Find(b => b.BookID == bookID);
-
-        if (book != null)
-        {
-            book.IsAvailable = true;
-            recentlyReturnedBooks.Push(book);
-            Console.WriteLine($"You returned: {book.Title}");
-        }
-
-        if (recentlyReturnedBooks.Count >= 10)
-        {
-            TransferReturnedBooks();
-        }
-    }
-
-    public void ViewBorrowingRecords()
-    {
-        Console.Write("Enter User ID: ");
-        string userID = Console.ReadLine();
-
-        var records = borrowingRecords.GetRecordsForUser(userID);
-        if (records.Count > 0)
-        {
-            Console.WriteLine("Borrowing Records:");
-            records.ForEach(record => Console.WriteLine(record));
-        }
-        else
-        {
-            Console.WriteLine("No records found for this user.");
-        }
-    }
-
-    public void ManageUserAccounts()
-    {
-        Console.WriteLine("1. View All Users");
-        Console.WriteLine("2. Remove Users with Zero Borrowings");
-        int choice = int.Parse(Console.ReadLine());
-
-        if (choice == 1)
-        {
-            users.ForEach(user => Console.WriteLine(user));
-        }
-        else if (choice == 2)
-        {
-            users.RemoveAll(user => user.BorrowCount == 0);
-            Console.WriteLine("Removed users with zero borrowings.");
-        }
-    }
-
-    public void ViewWaitingQueue()
-    {
-        Console.WriteLine("Waiting Queue:");
-        foreach (var user in waitingQueue)
-        {
-            Console.WriteLine(user);
-        }
-    }
-
-    public void SearchBooksByKeyword()
-    {
-        Console.Write("Enter Keyword: ");
-        string keyword = Console.ReadLine();
-
-        if (keywordBooks.ContainsKey(keyword))
-        {
-            Console.WriteLine($"Books under keyword '{keyword}':");
-            keywordBooks[keyword].ForEach(title => Console.WriteLine(title));
-        }
-        else
-        {
-            Console.WriteLine("No books found for this keyword.");
-        }
-    }
-
-    public void SortBookCollection()
-    {
-        books.Sort((b1, b2) => b1.Title.CompareTo(b2.Title));
-        Console.WriteLine("Book collection sorted alphabetically.");
-    }
-
-    private void TransferReturnedBooks()
-    {
-        Console.WriteLine("Transferring recently returned books to available books collection...");
-        while (recentlyReturnedBooks.Count > 0)
-        {
-            recentlyReturnedBooks.Pop();
-        }
-        Console.WriteLine("Transfer complete.");
-    }
-
-    public void Run()
-    {
-        int choice;
-        do
-        {
-            Console.WriteLine("\nLibrary Management System");
-            Console.WriteLine("1. Add a Book");
-            Console.WriteLine("2. Search Book by Author");
-            Console.WriteLine("3. Borrow a Book");
-            Console.WriteLine("4. Return a Book");
-            Console.WriteLine("5. View Borrowing Records");
-            Console.WriteLine("6. Manage User Accounts");
-            Console.WriteLine("7. View Waiting Queue");
-            Console.WriteLine("8. Search Books by Keyword");
-            Console.WriteLine("9. Sort Book Collection");
-            Console.WriteLine("10. Exit");
-            Console.Write("Enter your choice: ");
-            choice = int.Parse(Console.ReadLine());
-
-            switch (choice)
-            {
-                case 1:
+                Console.Write("Enter Book ID: ");
+                BookID = Console.ReadLine();
+                Console.Write("Enter Book Title: ");
+                Title = Console.ReadLine();
+                Console.Write("Enter Book Author: ");
+                Author = Console.ReadLine();
+                Console.Write("Enter Book Availability(true/false): ");
+                Availability = Convert.ToBoolean(Console.ReadLine());
+                if (BookID == "" || Title == "" || Author == "")
+                {
+                    Console.WriteLine("All the fields are required, try again");
                     AddBook();
-                    break;
-                case 2:
-                    FindBooksByAuthor();
-                    break;
-                case 3:
-                    BorrowBook();
-                    break;
-                case 4:
-                    ReturnBook();
-                    break;
-                case 5:
-                    ViewBorrowingRecords();
-                    break;
-                case 6:
-                    ManageUserAccounts();
-                    break;
-                case 7:
-                    ViewWaitingQueue();
-                    break;
-                case 8:
-                    SearchBooksByKeyword();
-                    break;
-                case 9:
-                    SortBookCollection();
-                    break;
-                case 10:
-                    Console.WriteLine("Exiting the system...");
-                    break;
-                default:
-                    Console.WriteLine("Invalid choice! Please try again.");
-                    break;
+                }
+                else
+                {
+                    Book book = new Book { BookID = BookID, Title = Title, Author = Author, Availability = Availability };
+                    BookList.Add(book);
+                }
+
+                Console.WriteLine("List of books are: ");
+                foreach (Book book in BookList)
+                {
+                    Console.WriteLine(JsonSerializer.Serialize(book));
+                }
             }
-        } while (choice != 10);
+            catch
+            {
+                Console.WriteLine("Enter again with valid values");
+                AddBook();
+            }
+        }
+
+        public void FindBookByAuthor(string author)
+        {
+            List<Book> authorBookList = new List<Book>();
+            if (author.Trim() == "")
+            {
+                Console.WriteLine("Author name cannot be empty, try again");
+            }
+            else
+            {
+                bool isFound = false;
+                foreach (Book book in BookList)
+                {
+                    if (book.Author.ToLower() == author.ToLower())
+                    {
+                        isFound = true;
+                        authorBookList.Add(book);
+                    }
+                }
+
+                if (!isFound)
+                {
+                    Console.WriteLine($"No books of '{author}' exists");
+                }
+                else
+                {
+                    Console.WriteLine($"The books having author '{author}' are:");
+                    foreach (Book book in authorBookList)
+                    {
+                        Console.WriteLine(JsonSerializer.Serialize(book));
+                    }
+                }
+            }
+        }
+
+        public void RemoveBookByID(string id)
+        {
+            bool isFound = false;
+            foreach (Book book in BookList)
+            {
+                if (book.BookID == id)
+                {
+                    isFound = true;
+                    BookList.Remove(book);
+                    break;
+                }
+            }
+            if (!isFound)
+            {
+                Console.WriteLine($"Book having ID {id} doesn't exist!!");
+            }
+        }
     }
 }
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        LibrarySystem librarySystem = new LibrarySystem();
-        librarySystem.Run();
-    }
-}
-
