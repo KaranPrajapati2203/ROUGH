@@ -325,3 +325,148 @@ namespace Day4_Assignment2
         }
     }
 }
+
+-------------------------------------------------------------------------------------------------------------------------
+
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string filePath = "data.dat";
+
+        if (File.Exists(filePath))
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
+            {
+                int number = reader.ReadInt32();
+                Console.WriteLine($"The integer read from the file is: {number}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"File '{filePath}' does not exist.");
+        }
+    }
+}
+
+-------------
+
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string filePath = "sample.dat";
+
+        if (File.Exists(filePath))
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
+            {
+                string content = reader.ReadString();
+                Console.WriteLine($"The string read from the file is: {content}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"File '{filePath}' does not exist.");
+        }
+    }
+}
+
+-------------
+
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string filePath = "mixedData.dat";
+
+        if (File.Exists(filePath))
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
+            {
+                int intValue = reader.ReadInt32();
+                double doubleValue = reader.ReadDouble();
+                string stringValue = reader.ReadString();
+
+                Console.WriteLine($"Integer: {intValue}");
+                Console.WriteLine($"Double: {doubleValue}");
+                Console.WriteLine($"String: {stringValue}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"File '{filePath}' does not exist.");
+        }
+    }
+}
+
+------------
+
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string filePath = "data.dat";
+
+        if (File.Exists(filePath))
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
+            {
+                try
+                {
+                    while (true)
+                    {
+                        int number = reader.ReadInt32();
+                        Console.WriteLine($"Read number: {number}");
+                    }
+                }
+                catch (EndOfStreamException)
+                {
+                    Console.WriteLine("End of file reached.");
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine($"File '{filePath}' does not exist.");
+        }
+    }
+}
+
+-----------
+
+using System;
+using System.IO;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string filePath = "floatData.dat";
+
+        if (File.Exists(filePath))
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
+            {
+                float floatValue = reader.ReadSingle();
+                Console.WriteLine($"The floating-point number read from the file is: {floatValue}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"File '{filePath}' does not exist.");
+        }
+    }
+}
