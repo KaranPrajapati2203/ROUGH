@@ -1,472 +1,2022 @@
-using System.ComponentModel;
-using System.Net;
-using System.Text.Json;
+Practice 1
+Write a LINQ query to find all even numbers from a list of integers and display them in ascending order.
+Create a LINQ query to calculate the average salary of employees whose job title is "Manager".
+Using LINQ, retrieve the top 3 highest-scoring students from a list of scores.
+Implement a LINQ query to find the distinct departments in a company database.
+Use LINQ to create a new list of objects by projecting fields from an existing list (e.g., extract FirstName and LastName into a FullName property).
 
-namespace Day4_Assignment2
+-----
+
+// Dataset for LINQ Practice
+
+// Question 1: Even numbers
+List<int> numbers = new List<int> { 3, 8, 15, 22, 7, 12, 5, 18, 24, 11, 2, 9 };
+
+// Question 2: Employee salaries and job titles
+List<Employee> employees = new List<Employee>
 {
-    internal class Book
-    {
-        public static List<Book> BookList = new List<Book>();
-        public static Dictionary<string, Queue<string>> WaitingQueue = new Dictionary<string, Queue<string>>();
+    new Employee { Id = 1, Name = "Alice", JobTitle = "Manager", Salary = 80000 },
+    new Employee { Id = 2, Name = "Bob", JobTitle = "Developer", Salary = 60000 },
+    new Employee { Id = 3, Name = "Charlie", JobTitle = "Manager", Salary = 90000 },
+    new Employee { Id = 4, Name = "Diana", JobTitle = "Manager", Salary = 75000 },
+    new Employee { Id = 5, Name = "Edward", JobTitle = "Sales", Salary = 55000 },
+    new Employee { Id = 6, Name = "Fiona", JobTitle = "HR", Salary = 65000 }
+};
 
-        public string BookID { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public bool Availability { get; set; }
+// Question 3: Student scores
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Jack", Score = 85 },
+    new Student { Id = 2, Name = "Emma", Score = 92 },
+    new Student { Id = 3, Name = "Liam", Score = 88 },
+    new Student { Id = 4, Name = "Sophia", Score = 95 },
+    new Student { Id = 5, Name = "Noah", Score = 80 },
+    new Student { Id = 6, Name = "Olivia", Score = 89 }
+};
 
-        public void ViewWaitingQueue()
-        {
-            Console.WriteLine("Books with Waiting Queues:");
-            foreach (var queue in WaitingQueue)
-            {
-                Console.WriteLine(JsonSerializer.Serialize(queue));
-            }
-        }
-        public void SortBook()
-        {
-            var result = BookList.OrderBy(x => x.Title).ToList();
-            Console.WriteLine("Sorted Books are:");
-            foreach (var item in result)
-            {
-                Console.WriteLine(JsonSerializer.Serialize(item));
-            }
-        }
-        public void SearchBook()
-        {
-            Console.Write("Enter name of book to search: ");
-            string name = Console.ReadLine().Trim().ToLower();
-            if (string.IsNullOrEmpty(name))
-            {
-                Console.WriteLine("name cannot be empty");
-                SearchBook();
-            }
-            else
-            {
-                bool isFound = false;
-                foreach (Book book in BookList)
-                {
-                    if (book.Title.ToLower().Contains(name))
-                    {
-                        isFound = true;
-                        Console.WriteLine(JsonSerializer.Serialize(book));
-                    }
-                }
+// Question 4: Company departments
+List<Department> departments = new List<Department>
+{
+    new Department { Id = 1, Name = "HR" },
+    new Department { Id = 2, Name = "Finance" },
+    new Department { Id = 3, Name = "IT" },
+    new Department { Id = 4, Name = "HR" },
+    new Department { Id = 5, Name = "Sales" },
+    new Department { Id = 6, Name = "IT" }
+};
 
-                if (!isFound)
-                {
-                    Console.WriteLine($"Book having name {name} does not exists!!");
-                }
-            }
-        }
+// Question 5: Personal details for projecting FullName
+List<Person> people = new List<Person>
+{
+    new Person { FirstName = "John", LastName = "Doe" },
+    new Person { FirstName = "Jane", LastName = "Smith" },
+    new Person { FirstName = "Emily", LastName = "Brown" },
+    new Person { FirstName = "Michael", LastName = "Johnson" },
+    new Person { FirstName = "Sarah", LastName = "Davis" }
+};
 
-        public void ReturnBook()
-        {
-            Console.Write("Enter your name: ");
-            string name = Console.ReadLine();
-            Console.Write("Enter BookID you want to return: ");
-            string bookID = Console.ReadLine();
-
-            if (string.IsNullOrEmpty(bookID.Trim()) || string.IsNullOrEmpty(name.Trim()))
-            {
-                Console.WriteLine("All the fields are required, try again");
-                ReturnBook();
-                return;
-            }
-
-            bool isFound = false;
-
-            // Check if the borrowing record exists
-            foreach (var record in BorrowingRecord.BorrowingRecordStack)
-            {
-                if (record.BookID == bookID.Trim() && record.BorrowedBy.ToLower() == name.Trim().ToLower())
-                {
-                    isFound = true;
-                    record.HasReturnedBook = true;
-
-                    Console.WriteLine($"'{name}' has returned the book with ID '{bookID}'.");
-
-                    // Update book availability and handle waiting queue
-                    foreach (var book in BookList)
-                    {
-                        if (book.BookID == bookID.Trim())
-                        {
-                            book.Availability = true;
-
-                            // Decrement borrow count for the user
-                            User returningUser = null;
-                            foreach (var user in User.users)
-                            {
-                                if (user.Name.ToLower() == name.Trim().ToLower())
-                                {
-                                    returningUser = user;
-                                    break;
-                                }
-                            }
-
-                            if (returningUser != null)
-                            {
-                                returningUser.BorrowCount--;
-                                if (returningUser.BorrowCount == 0)
-                                {
-                                    User.users.Remove(returningUser); 
-                                }
-                            }
-
-                            // Check if there is a waiting queue for the book
-                            if (WaitingQueue.ContainsKey(bookID) && WaitingQueue[bookID].Count > 0)
-                            {
-                                // Assign the book to the next user in the queue
-                                string nextUserId = WaitingQueue[bookID].Dequeue();
-                                Console.WriteLine($"Book '{bookID}' is now assigned to User ID: {nextUserId}");
-
-                                BorrowingRecord newRecord = new BorrowingRecord
-                                {
-                                    BookID = book.BookID,
-                                    BookTitle = book.Title,
-                                    BorrowedBy = nextUserId
-                                };
-                                newRecord.AddNewBorrowingRecord(newRecord);
-
-                                // Update the book's availability to false
-                                book.Availability = false;
-
-                                // Add or update the next user in the users list
-                                bool userFound = false;
-                                foreach (var user in User.users)
-                                {
-                                    if (user.UserID == nextUserId)
-                                    {
-                                        user.BorrowCount++;
-                                        userFound = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!userFound)
-                                {
-                                    User newUser = new User { UserID = nextUserId, Name = nextUserId, BorrowCount = 1 };
-                                    User.users.Add(newUser);
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine($"No one is waiting for book ID '{bookID}'. The book is now available.");
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-
-            if (!isFound)
-            {
-                Console.WriteLine("Either the name or bookID does not exist.");
-            }
-        }
-
-
-        public void BorrowBook(string bookid)
-        {
-            bool isFound = false;
-            foreach (Book book in BookList)
-            {
-                if (book.BookID == bookid)
-                {
-                    Console.Write("Enter User ID: ");
-                    string userId = Console.ReadLine().Trim();
-                    Console.Write("Enter Your Name: ");
-                    string userName = Console.ReadLine().Trim();
-
-                    if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(userName))
-                    {
-                        isFound = true;
-                        if (book.Availability)
-                        {
-                            book.Availability = false;
-                            User user = new User { UserID = userId, Name = userName, BorrowCount = 1 };
-                            User.users.Add(user);
-
-                            BorrowingRecord record = new BorrowingRecord
-                            {
-                                BookID = book.BookID,
-                                BookTitle = book.Title,
-                                BorrowedBy = userName
-                            };
-                            record.AddNewBorrowingRecord(record);
-
-                            Console.WriteLine($"Book '{book.Title}' borrowed by '{userName}'.");
-                        }
-                        else
-                        {
-                            //adding to queue
-                            if (!WaitingQueue.ContainsKey(bookid))
-                            {
-                                WaitingQueue[bookid] = new Queue<string>();
-                            }
-                            WaitingQueue[bookid].Enqueue(userId);
-                            Console.WriteLine($"Book '{bookid}' is unavailable. You have been added to the waiting queue.");
-
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Fields cannot be empty, try again");
-                    }
-                    break;
-                }
-            }
-            if (!isFound)
-            {
-                Console.WriteLine($"No book exists having ID {bookid}");
-            }
-        }
-
-        public void ViewBorrowingRecords()
-        {
-            if (BorrowingRecord.BorrowingRecordStack.Count > 0)
-            {
-                foreach (var book in BorrowingRecord.BorrowingRecordStack)
-                {
-                    Console.WriteLine(JsonSerializer.Serialize(book));
-                }
-            }
-            else
-            {
-                Console.WriteLine("No borrowing records available");
-            }
-        }
-
-        public void AddBook()
-        {
-            try
-            {
-                Console.Write("Enter Book ID: ");
-                BookID = Console.ReadLine();
-                Console.Write("Enter Book Title: ");
-                Title = Console.ReadLine();
-                Console.Write("Enter Book Author: ");
-                Author = Console.ReadLine();
-                Console.Write("Enter Book Availability(true/false): ");
-                Availability = Convert.ToBoolean(Console.ReadLine());
-                if (BookID == "" || Title == "" || Author == "")
-                {
-                    Console.WriteLine("All the fields are required, try again");
-                    AddBook();
-                }
-                else
-                {
-                    Book book = new Book { BookID = BookID, Title = Title, Author = Author, Availability = Availability };
-                    BookList.Add(book);
-                }
-
-                Console.WriteLine("List of books are: ");
-                foreach (Book book in BookList)
-                {
-                    Console.WriteLine(JsonSerializer.Serialize(book));
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Enter again with valid values");
-                AddBook();
-            }
-        }
-
-        public void FindBookByAuthor(string author)
-        {
-            List<Book> authorBookList = new List<Book>();
-            if (author.Trim() == "")
-            {
-                Console.WriteLine("Author name cannot be empty, try again");
-            }
-            else
-            {
-                bool isFound = false;
-                foreach (Book book in BookList)
-                {
-                    if (book.Author.ToLower() == author.ToLower())
-                    {
-                        isFound = true;
-                        authorBookList.Add(book);
-                    }
-                }
-
-                if (!isFound)
-                {
-                    Console.WriteLine($"No books of '{author}' exists");
-                }
-                else
-                {
-                    Console.WriteLine($"The books having author '{author}' are:");
-                    foreach (Book book in authorBookList)
-                    {
-                        Console.WriteLine(JsonSerializer.Serialize(book));
-                    }
-                }
-            }
-        }
-
-        public void RemoveBookByID(string id)
-        {
-            bool isFound = false;
-            foreach (Book book in BookList)
-            {
-                if (book.BookID == id)
-                {
-                    isFound = true;
-                    BookList.Remove(book);
-                    break;
-                }
-            }
-            if (!isFound)
-            {
-                Console.WriteLine($"Book having ID {id} doesn't exist!!");
-            }
-        }
-    }
+// Supporting classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string JobTitle { get; set; }
+    public decimal Salary { get; set; }
 }
 
--------------------------------------------------------------------------------------------------------------------------
-
-using System;
-using System.IO;
-
-class Program
+public class Student
 {
-    static void Main(string[] args)
-    {
-        string filePath = "data.dat";
-
-        if (File.Exists(filePath))
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
-            {
-                int number = reader.ReadInt32();
-                Console.WriteLine($"The integer read from the file is: {number}");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"File '{filePath}' does not exist.");
-        }
-    }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Score { get; set; }
 }
 
--------------
-
-using System;
-using System.IO;
-
-class Program
+public class Department
 {
-    static void Main(string[] args)
-    {
-        string filePath = "sample.dat";
-
-        if (File.Exists(filePath))
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
-            {
-                string content = reader.ReadString();
-                Console.WriteLine($"The string read from the file is: {content}");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"File '{filePath}' does not exist.");
-        }
-    }
+    public int Id { get; set; }
+    public string Name { get; set; }
 }
 
--------------
-
-using System;
-using System.IO;
-
-class Program
+public class Person
 {
-    static void Main(string[] args)
-    {
-        string filePath = "mixedData.dat";
-
-        if (File.Exists(filePath))
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
-            {
-                int intValue = reader.ReadInt32();
-                double doubleValue = reader.ReadDouble();
-                string stringValue = reader.ReadString();
-
-                Console.WriteLine($"Integer: {intValue}");
-                Console.WriteLine($"Double: {doubleValue}");
-                Console.WriteLine($"String: {stringValue}");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"File '{filePath}' does not exist.");
-        }
-    }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
 }
 
-------------
+-------------------------------------------------------------------------
 
-using System;
-using System.IO;
+Practice 2
+Write a LINQ query to retrieve employees whose age is between 25 and 35, sorted by their names.
+Using LINQ, find all products that are out of stock from a product list.
+Implement a query to group a collection of words by their first letter and count how many words start with each letter.
+Create a LINQ query to find customers who placed orders in the last month, sorted by order date.
+Write a query to calculate the total quantity of each product sold from an order detail collection.
 
-class Program
+----------
+
+// Dataset for LINQ Practice 2
+
+// Question 1: Employees with age between 25 and 35
+List<Employee> employees = new List<Employee>
 {
-    static void Main(string[] args)
-    {
-        string filePath = "data.dat";
+    new Employee { Id = 1, Name = "Alice", Age = 30 },
+    new Employee { Id = 2, Name = "Bob", Age = 27 },
+    new Employee { Id = 3, Name = "Charlie", Age = 35 },
+    new Employee { Id = 4, Name = "Diana", Age = 24 },
+    new Employee { Id = 5, Name = "Edward", Age = 32 },
+    new Employee { Id = 6, Name = "Fiona", Age = 40 }
+};
 
-        if (File.Exists(filePath))
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
-            {
-                try
-                {
-                    while (true)
-                    {
-                        int number = reader.ReadInt32();
-                        Console.WriteLine($"Read number: {number}");
-                    }
-                }
-                catch (EndOfStreamException)
-                {
-                    Console.WriteLine("End of file reached.");
-                }
-            }
-        }
-        else
-        {
-            Console.WriteLine($"File '{filePath}' does not exist.");
-        }
-    }
+// Question 2: Products and stock information
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Laptop", InStock = 10 },
+    new Product { Id = 2, Name = "Mouse", InStock = 0 },
+    new Product { Id = 3, Name = "Keyboard", InStock = 5 },
+    new Product { Id = 4, Name = "Monitor", InStock = 0 },
+    new Product { Id = 5, Name = "Printer", InStock = 3 }
+};
+
+// Question 3: Words for grouping by first letter
+List<string> words = new List<string>
+{
+    "Apple", "Banana", "Apricot", "Blueberry", "Cherry", "Cranberry", "Avocado", "Blackberry"
+};
+
+// Question 4: Customers and their orders
+List<Order> orders = new List<Order>
+{
+    new Order { CustomerName = "John Doe", OrderDate = DateTime.Now.AddDays(-5) },
+    new Order { CustomerName = "Jane Smith", OrderDate = DateTime.Now.AddMonths(-1).AddDays(-1) },
+    new Order { CustomerName = "Emily Brown", OrderDate = DateTime.Now.AddDays(-15) },
+    new Order { CustomerName = "Michael Johnson", OrderDate = DateTime.Now.AddMonths(-2) },
+    new Order { CustomerName = "Sarah Davis", OrderDate = DateTime.Now.AddDays(-20) }
+};
+
+// Question 5: Order details for product quantity calculation
+List<OrderDetail> orderDetails = new List<OrderDetail>
+{
+    new OrderDetail { ProductId = 1, ProductName = "Laptop", Quantity = 2 },
+    new OrderDetail { ProductId = 2, ProductName = "Mouse", Quantity = 5 },
+    new OrderDetail { ProductId = 3, ProductName = "Keyboard", Quantity = 3 },
+    new OrderDetail { ProductId = 1, ProductName = "Laptop", Quantity = 1 },
+    new OrderDetail { ProductId = 3, ProductName = "Keyboard", Quantity = 2 },
+    new OrderDetail { ProductId = 5, ProductName = "Printer", Quantity = 4 }
+};
+
+// Supporting classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
 }
 
------------
-
-using System;
-using System.IO;
-
-class Program
+public class Product
 {
-    static void Main(string[] args)
-    {
-        string filePath = "floatData.dat";
-
-        if (File.Exists(filePath))
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
-            {
-                float floatValue = reader.ReadSingle();
-                Console.WriteLine($"The floating-point number read from the file is: {floatValue}");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"File '{filePath}' does not exist.");
-        }
-    }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int InStock { get; set; }
 }
+
+public class Order
+{
+    public string CustomerName { get; set; }
+    public DateTime OrderDate { get; set; }
+}
+
+public class OrderDetail
+{
+    public int ProductId { get; set; }
+    public string ProductName { get; set; }
+    public int Quantity { get; set; }
+}
+
+-------------------------------------------------------------------------------------------------------
+
+Practice 3
+LINQ Methods
+Use Select to transform a list of employee objects into a list of their email addresses.
+Use FirstOrDefault to find the first student with a grade above 90, or return null if none exist.
+Implement a LINQ chain using Select and Where to find the names of people aged above 30.
+Use Aggregate to find the concatenated string of all book titles in a collection, separated by commas.
+Use Take and Skip to implement pagination for displaying 5 records per page from a large dataset.
+
+----------
+
+// Dataset for LINQ Practice 3
+
+// Question 1: Employee list with email addresses
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Email = "alice@example.com" },
+    new Employee { Id = 2, Name = "Bob", Email = "bob@example.com" },
+    new Employee { Id = 3, Name = "Charlie", Email = "charlie@example.com" },
+    new Employee { Id = 4, Name = "Diana", Email = "diana@example.com" },
+    new Employee { Id = 5, Name = "Edward", Email = "edward@example.com" }
+};
+
+// Question 2: Students with grades
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Jack", Grade = 85 },
+    new Student { Id = 2, Name = "Emma", Grade = 92 },
+    new Student { Id = 3, Name = "Liam", Grade = 78 },
+    new Student { Id = 4, Name = "Sophia", Grade = 95 },
+    new Student { Id = 5, Name = "Noah", Grade = 88 }
+};
+
+// Question 3: People with ages
+List<Person> people = new List<Person>
+{
+    new Person { Id = 1, Name = "John", Age = 25 },
+    new Person { Id = 2, Name = "Jane", Age = 35 },
+    new Person { Id = 3, Name = "Emily", Age = 40 },
+    new Person { Id = 4, Name = "Michael", Age = 29 },
+    new Person { Id = 5, Name = "Sarah", Age = 32 }
+};
+
+// Question 4: Book titles
+List<Book> books = new List<Book>
+{
+    new Book { Id = 1, Title = "The Great Gatsby" },
+    new Book { Id = 2, Title = "1984" },
+    new Book { Id = 3, Title = "To Kill a Mockingbird" },
+    new Book { Id = 4, Title = "Moby-Dick" },
+    new Book { Id = 5, Title = "War and Peace" }
+};
+
+// Question 5: Large dataset for pagination
+List<string> largeDataset = new List<string>();
+for (int i = 1; i <= 50; i++)
+{
+    largeDataset.Add($"Record {i}");
+}
+
+// Supporting classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+public class Person
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+public class Book
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+}
+
+-------------------------------------------------------------------------------------------
+
+Practice 4
+Query Operators
+Where
+Write a query to filter all employees with a salary greater than $50,000.
+Use Where to retrieve all even numbers from a list of integers.
+Write a LINQ query to find all products that are both in stock and cost less than $20.
+Use Where to filter students whose names start with a specific letter provided by the user.
+Retrieve all records from a dataset where a specific field (e.g., age) satisfies a dynamic condition.
+
+----------
+
+// Dataset for LINQ Practice 4
+
+// Question 1: Employees with salaries
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Salary = 60000 },
+    new Employee { Id = 2, Name = "Bob", Salary = 45000 },
+    new Employee { Id = 3, Name = "Charlie", Salary = 70000 },
+    new Employee { Id = 4, Name = "Diana", Salary = 50000 },
+    new Employee { Id = 5, Name = "Edward", Salary = 52000 }
+};
+
+// Question 2: Integer list
+List<int> numbers = new List<int> { 3, 8, 15, 22, 7, 12, 5, 18, 24, 11, 2, 9 };
+
+// Question 3: Products with stock and price
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", Price = 15.50m, InStock = 10 },
+    new Product { Id = 2, Name = "Pen", Price = 1.20m, InStock = 50 },
+    new Product { Id = 3, Name = "Backpack", Price = 45.00m, InStock = 5 },
+    new Product { Id = 4, Name = "Marker", Price = 0.80m, InStock = 100 },
+    new Product { Id = 5, Name = "Eraser", Price = 0.50m, InStock = 0 }
+};
+
+// Question 4: Students with names
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Jack", Grade = 85 },
+    new Student { Id = 2, Name = "Emma", Grade = 92 },
+    new Student { Id = 3, Name = "Liam", Grade = 78 },
+    new Student { Id = 4, Name = "Sophia", Grade = 95 },
+    new Student { Id = 5, Name = "Noah", Grade = 88 },
+    new Student { Id = 6, Name = "Olivia", Grade = 89 }
+};
+
+// Question 5: Dataset with dynamic condition on age
+List<Person> people = new List<Person>
+{
+    new Person { Id = 1, Name = "John", Age = 25 },
+    new Person { Id = 2, Name = "Jane", Age = 35 },
+    new Person { Id = 3, Name = "Emily", Age = 40 },
+    new Person { Id = 4, Name = "Michael", Age = 29 },
+    new Person { Id = 5, Name = "Sarah", Age = 32 }
+};
+
+// Supporting classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Salary { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public int InStock { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+public class Person
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+------------------------------------------------------------------------------
+
+Practice 5
+OfType
+Use OfType<T> to filter only integer elements from a mixed collection.
+Write a query to find all strings from an ArrayList of mixed data types.
+Use OfType to filter all floating-point numbers from a collection and calculate their average.
+Implement a LINQ query to extract all objects of a specific type (e.g., Product) from a collection of objects.
+Retrieve only DateTime elements from a list containing various data types.
+
+----------
+
+// Dataset for LINQ Practice 5
+
+// Question 1: Mixed collection with integers
+List<object> mixedCollection1 = new List<object>
+{
+    10, "Hello", 42, 15.5, 99, DateTime.Now, true, 73
+};
+
+// Question 2: Mixed ArrayList with strings
+List<object> mixedCollection2 = new List<object>
+{
+    "Apple", 25, true, "Banana", 30.7, "Cherry", 'A', DateTime.Now
+};
+
+// Question 3: Mixed collection with floating-point numbers
+List<object> mixedCollection3 = new List<object>
+{
+    12.5, "Text", 34.8, 50, 19.9, 100, 45.6, DateTime.Now, false
+};
+
+// Question 4: Collection with different object types
+List<object> mixedCollection4 = new List<object>
+{
+    new Product { Id = 1, Name = "Notebook", Price = 15.50m },
+    new Product { Id = 2, Name = "Pen", Price = 1.20m },
+    25, "RandomString", 
+    new Student { Id = 1, Name = "Jack", Grade = 85 },
+    new Product { Id = 3, Name = "Backpack", Price = 45.00m },
+    DateTime.Now
+};
+
+// Question 5: Mixed collection with DateTime elements
+List<object> mixedCollection5 = new List<object>
+{
+    "SampleString", 10, DateTime.Now, DateTime.UtcNow.AddDays(-1), true, 3.14, DateTime.UtcNow
+};
+
+// Supporting classes
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+----------------------------------------------------------------------------------------
+
+Practice 6
+OrderBy
+Write a query to sort a list of students by their grades in descending order.
+Use OrderBy to arrange employee names alphabetically.
+Sort a list of products first by category and then by price within each category using OrderBy and ThenBy.
+Implement a LINQ query to sort a collection of strings by their length.
+Write a LINQ query to sort a dataset by multiple fields, dynamically chosen at runtime.
+
+----------
+
+// Dataset for LINQ Practice 6
+
+// Question 1: Students with grades
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Jack", Grade = 85 },
+    new Student { Id = 2, Name = "Emma", Grade = 92 },
+    new Student { Id = 3, Name = "Liam", Grade = 78 },
+    new Student { Id = 4, Name = "Sophia", Grade = 95 },
+    new Student { Id = 5, Name = "Noah", Grade = 88 }
+};
+
+// Question 2: Employees with names
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice" },
+    new Employee { Id = 2, Name = "Bob" },
+    new Employee { Id = 3, Name = "Charlie" },
+    new Employee { Id = 4, Name = "Diana" },
+    new Employee { Id = 5, Name = "Edward" }
+};
+
+// Question 3: Products with categories and prices
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", Price = 15.50m, Category = "Stationery" },
+    new Product { Id = 2, Name = "Pen", Price = 1.20m, Category = "Stationery" },
+    new Product { Id = 3, Name = "Backpack", Price = 45.00m, Category = "Accessories" },
+    new Product { Id = 4, Name = "Marker", Price = 0.80m, Category = "Stationery" },
+    new Product { Id = 5, Name = "Eraser", Price = 0.50m, Category = "Stationery" },
+    new Product { Id = 6, Name = "Sunglasses", Price = 60.00m, Category = "Accessories" }
+};
+
+// Question 4: Collection of strings
+List<string> strings = new List<string>
+{
+    "Banana", "Apple", "Cherry", "Blueberry", "Avocado"
+};
+
+// Question 5: Dataset with dynamic sorting
+List<Person> people = new List<Person>
+{
+    new Person { Id = 1, Name = "John", Age = 25, Salary = 45000 },
+    new Person { Id = 2, Name = "Jane", Age = 35, Salary = 55000 },
+    new Person { Id = 3, Name = "Emily", Age = 40, Salary = 60000 },
+    new Person { Id = 4, Name = "Michael", Age = 29, Salary = 50000 },
+    new Person { Id = 5, Name = "Sarah", Age = 32, Salary = 52000 }
+};
+
+// Supporting classes for Practice 6
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public string Category { get; set; }
+}
+
+public class Person
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public decimal Salary { get; set; }
+}
+
+------------------------------------------------------------------------------------------
+
+Practice 7
+GroupBy, ToLookup
+Use GroupBy to group a list of employees by their department and count the number of employees in each department.
+Write a LINQ query to group a collection of products by their categories and calculate the total stock for each category.
+Implement a query using ToLookup to group customers by their country and retrieve all customers from a specific country.
+Use GroupBy to group a list of words by their length and sort the groups by the length of the words.
+Implement a LINQ query to group orders by their status and find the total revenue for each status.
+
+----------
+
+// Dataset for LINQ Practice 7
+
+// Question 1: Employees grouped by department
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Department = "HR" },
+    new Employee { Id = 2, Name = "Bob", Department = "Finance" },
+    new Employee { Id = 3, Name = "Charlie", Department = "IT" },
+    new Employee { Id = 4, Name = "Diana", Department = "Finance" },
+    new Employee { Id = 5, Name = "Edward", Department = "IT" },
+    new Employee { Id = 6, Name = "Fiona", Department = "HR" }
+};
+
+// Question 2: Products grouped by category with stock
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", Stock = 10, Category = "Stationery" },
+    new Product { Id = 2, Name = "Pen", Stock = 50, Category = "Stationery" },
+    new Product { Id = 3, Name = "Backpack", Stock = 5, Category = "Accessories" },
+    new Product { Id = 4, Name = "Marker", Stock = 100, Category = "Stationery" },
+    new Product { Id = 5, Name = "Eraser", Stock = 0, Category = "Stationery" },
+    new Product { Id = 6, Name = "Sunglasses", Stock = 15, Category = "Accessories" }
+};
+
+// Question 3: Customers grouped by country
+List<Customer> customers = new List<Customer>
+{
+    new Customer { Id = 1, Name = "John", Country = "USA" },
+    new Customer { Id = 2, Name = "Emma", Country = "Canada" },
+    new Customer { Id = 3, Name = "Liam", Country = "USA" },
+    new Customer { Id = 4, Name = "Sophia", Country = "UK" },
+    new Customer { Id = 5, Name = "Noah", Country = "Canada" }
+};
+
+// Question 4: Words grouped by length
+List<string> words = new List<string>
+{
+    "Apple", "Banana", "Apricot", "Blueberry", "Cherry", "Cranberry", "Avocado", "Fig"
+};
+
+// Question 5: Orders grouped by status
+List<Order> orders = new List<Order>
+{
+    new Order { Id = 1, Status = "Pending", Amount = 150.00m },
+    new Order { Id = 2, Status = "Completed", Amount = 200.00m },
+    new Order { Id = 3, Status = "Pending", Amount = 50.00m },
+    new Order { Id = 4, Status = "Completed", Amount = 300.00m },
+    new Order { Id = 5, Status = "Canceled", Amount = 100.00m }
+};
+
+// Supporting classes for Practice 7
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Department { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Stock { get; set; }
+    public string Category { get; set; }
+}
+
+public class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Country { get; set; }
+}
+
+public class Order
+{
+    public int Id { get; set; }
+    public string Status { get; set; }
+    public decimal Amount { get; set; }
+}
+
+-----------------------------------------------------------------------------------------------------------
+
+Practice 8
+Join
+Write a LINQ query to join two lists: employees and departments, and display employee names along with their department names.
+Use Join to combine a list of orders with a list of customers based on customer ID.
+Implement a query to join a list of students with their grades and display the student's name and grade.
+Use Join to create a combined list of products and their suppliers based on a common field.
+Write a LINQ query to join two lists and filter the result by a specific condition (e.g., orders placed after a specific date).
+
+----------
+
+// Dataset for LINQ Practice 8
+
+// Question 1: Employees and departments
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", DepartmentId = 101 },
+    new Employee { Id = 2, Name = "Bob", DepartmentId = 102 },
+    new Employee { Id = 3, Name = "Charlie", DepartmentId = 103 },
+    new Employee { Id = 4, Name = "Diana", DepartmentId = 101 },
+    new Employee { Id = 5, Name = "Edward", DepartmentId = 104 }
+};
+
+List<Department> departments = new List<Department>
+{
+    new Department { Id = 101, Name = "HR" },
+    new Department { Id = 102, Name = "Finance" },
+    new Department { Id = 103, Name = "IT" },
+    new Department { Id = 104, Name = "Marketing" }
+};
+
+// Question 2: Orders and customers
+List<Order> orders = new List<Order>
+{
+    new Order { Id = 1, CustomerId = 201, OrderDate = DateTime.UtcNow.AddDays(-5), Amount = 150.00m },
+    new Order { Id = 2, CustomerId = 202, OrderDate = DateTime.UtcNow.AddDays(-10), Amount = 200.00m },
+    new Order { Id = 3, CustomerId = 201, OrderDate = DateTime.UtcNow.AddDays(-1), Amount = 50.00m },
+    new Order { Id = 4, CustomerId = 203, OrderDate = DateTime.UtcNow.AddDays(-7), Amount = 300.00m }
+};
+
+List<Customer> customers = new List<Customer>
+{
+    new Customer { Id = 201, Name = "John" },
+    new Customer { Id = 202, Name = "Emma" },
+    new Customer { Id = 203, Name = "Liam" }
+};
+
+// Question 3: Students and grades
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Jack" },
+    new Student { Id = 2, Name = "Emma" },
+    new Student { Id = 3, Name = "Liam" }
+};
+
+List<Grade> grades = new List<Grade>
+{
+    new Grade { StudentId = 1, Score = 85 },
+    new Grade { StudentId = 2, Score = 92 },
+    new Grade { StudentId = 3, Score = 78 }
+};
+
+// Question 4: Products and suppliers
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", SupplierId = 301 },
+    new Product { Id = 2, Name = "Pen", SupplierId = 302 },
+    new Product { Id = 3, Name = "Backpack", SupplierId = 303 }
+};
+
+List<Supplier> suppliers = new List<Supplier>
+{
+    new Supplier { Id = 301, Name = "Stationery World" },
+    new Supplier { Id = 302, Name = "Pen Pro" },
+    new Supplier { Id = 303, Name = "Backpack Co." }
+};
+
+// Supporting classes for Practice 8
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int DepartmentId { get; set; }
+}
+
+public class Department
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Order
+{
+    public int Id { get; set; }
+    public int CustomerId { get; set; }
+    public DateTime OrderDate { get; set; }
+    public decimal Amount { get; set; }
+}
+
+public class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Grade
+{
+    public int StudentId { get; set; }
+    public int Score { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int SupplierId { get; set; }
+}
+
+public class Supplier
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+---------------------------------------------------------------------------------------
+
+Practice 9
+GroupJoin
+Use GroupJoin to group products by their categories and display the category name along with its products.
+Write a query to group customers with their orders using GroupJoin, displaying the customer name and their orders.
+Implement a LINQ query to group a list of teachers with their students based on a TeacherId.
+Use GroupJoin to combine employees with their projects and calculate the number of projects each employee is handling.
+Write a LINQ query to group departments with their employees and sort the departments by the number of employees.
+
+----------
+
+// Dataset for LINQ Practice 9
+
+// Question 1: Products and categories
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", CategoryId = 1 },
+    new Product { Id = 2, Name = "Pen", CategoryId = 1 },
+    new Product { Id = 3, Name = "Backpack", CategoryId = 2 },
+    new Product { Id = 4, Name = "Sunglasses", CategoryId = 2 }
+};
+
+List<Category> categories = new List<Category>
+{
+    new Category { Id = 1, Name = "Stationery" },
+    new Category { Id = 2, Name = "Accessories" }
+};
+
+// Question 2: Customers and their orders
+List<Customer> customers = new List<Customer>
+{
+    new Customer { Id = 201, Name = "John" },
+    new Customer { Id = 202, Name = "Emma" },
+    new Customer { Id = 203, Name = "Liam" }
+};
+
+List<Order> orders = new List<Order>
+{
+    new Order { Id = 1, CustomerId = 201, Amount = 150.00m },
+    new Order { Id = 2, CustomerId = 202, Amount = 200.00m },
+    new Order { Id = 3, CustomerId = 201, Amount = 50.00m },
+    new Order { Id = 4, CustomerId = 203, Amount = 300.00m }
+};
+
+// Question 3: Teachers and students
+List<Teacher> teachers = new List<Teacher>
+{
+    new Teacher { Id = 101, Name = "Mr. Smith" },
+    new Teacher { Id = 102, Name = "Mrs. Johnson" }
+};
+
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Jack", TeacherId = 101 },
+    new Student { Id = 2, Name = "Emma", TeacherId = 102 },
+    new Student { Id = 3, Name = "Liam", TeacherId = 101 }
+};
+
+// Question 4: Employees and their projects
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice" },
+    new Employee { Id = 2, Name = "Bob" }
+};
+
+List<Project> projects = new List<Project>
+{
+    new Project { Id = 1, Name = "Project A", EmployeeId = 1 },
+    new Project { Id = 2, Name = "Project B", EmployeeId = 2 },
+    new Project { Id = 3, Name = "Project C", EmployeeId = 1 }
+};
+
+// Question 5: Departments and employees
+List<Department> departments = new List<Department>
+{
+    new Department { Id = 1, Name = "HR" },
+    new Department { Id = 2, Name = "IT" }
+};
+
+List<Employee> employeesForDepartments = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", DepartmentId = 1 },
+    new Employee { Id = 2, Name = "Bob", DepartmentId = 2 },
+    new Employee { Id = 3, Name = "Charlie", DepartmentId = 2 }
+};
+
+// Supporting classes for Practice 9
+public class Category
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Teacher
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Project
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int EmployeeId { get; set; }
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 1
+Select
+Use Select to extract only the names of employees from a list of Employee objects and display them.
+Write a LINQ query to create a new list of Student objects with only Name and Age properties from the original collection.
+Use Select to convert a list of product prices from USD to EUR using a conversion rate.
+Write a LINQ query to transform a list of dates into their corresponding day names (e.g., "Monday", "Tuesday").
+Use Select to create a list of email addresses from a collection of user objects.
+
+----------
+
+// Employees
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Age = 30, Department = "HR" },
+    new Employee { Id = 2, Name = "Bob", Age = 28, Department = "Finance" },
+    new Employee { Id = 3, Name = "Charlie", Age = 35, Department = "IT" },
+    new Employee { Id = 4, Name = "Diana", Age = 26, Department = "HR" },
+    new Employee { Id = 5, Name = "Edward", Age = 40, Department = "Finance" },
+    new Employee { Id = 6, Name = "Fiona", Age = 32, Department = "IT" },
+    new Employee { Id = 7, Name = "George", Age = 29, Department = "Marketing" },
+    new Employee { Id = 8, Name = "Helen", Age = 31, Department = "Marketing" },
+    new Employee { Id = 9, Name = "Irene", Age = 33, Department = "Sales" },
+    new Employee { Id = 10, Name = "Jack", Age = 27, Department = "Sales" }
+};
+
+// Students
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Emma", Age = 20, Grade = 85 },
+    new Student { Id = 2, Name = "Liam", Age = 22, Grade = 92 },
+    new Student { Id = 3, Name = "Olivia", Age = 19, Grade = 78 },
+    new Student { Id = 4, Name = "Noah", Age = 21, Grade = 88 },
+    new Student { Id = 5, Name = "Sophia", Age = 23, Grade = 95 },
+    new Student { Id = 6, Name = "Mason", Age = 20, Grade = 65 },
+    new Student { Id = 7, Name = "Isabella", Age = 22, Grade = 90 },
+    new Student { Id = 8, Name = "James", Age = 24, Grade = 80 },
+    new Student { Id = 9, Name = "Ava", Age = 18, Grade = 89 },
+    new Student { Id = 10, Name = "Elijah", Age = 21, Grade = 76 }
+};
+
+// Product Prices in USD
+List<decimal> productPricesUSD = new List<decimal> { 10.5m, 20.0m, 15.99m, 5.49m, 25.0m, 12.0m, 30.99m, 18.75m, 22.0m, 50.0m };
+
+// Dates
+List<DateTime> dates = new List<DateTime>
+{
+    DateTime.Parse("2025-01-01"),
+    DateTime.Parse("2025-01-02"),
+    DateTime.Parse("2025-01-03"),
+    DateTime.Parse("2025-01-04"),
+    DateTime.Parse("2025-01-05"),
+    DateTime.Parse("2025-01-06"),
+    DateTime.Parse("2025-01-07"),
+    DateTime.Parse("2025-01-08"),
+    DateTime.Parse("2025-01-09"),
+    DateTime.Parse("2025-01-10")
+};
+
+// Users
+List<User> users = new List<User>
+{
+    new User { Id = 1, Email = "alice@example.com" },
+    new User { Id = 2, Email = "bob@example.com" },
+    new User { Id = 3, Email = "charlie@example.com" },
+    new User { Id = 4, Email = "diana@example.com" },
+    new User { Id = 5, Email = "edward@example.com" },
+    new User { Id = 6, Email = "fiona@example.com" },
+    new User { Id = 7, Email = "george@example.com" },
+    new User { Id = 8, Email = "helen@example.com" },
+    new User { Id = 9, Email = "irene@example.com" },
+    new User { Id = 10, Email = "jack@example.com" }
+};
+
+// Supporting Classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Department { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public int Grade { get; set; }
+}
+
+public class User
+{
+    public int Id { get; set; }
+    public string Email { get; set; }
+}
+
+
+----------------------------------------------------------------------------
+
+Practice 2
+All/Any
+Use All to check if all products in a list are in stock.
+Use Any to verify if there is at least one student with a grade above 90 in a list of scores.
+Write a LINQ query to check if all employees in a department have salaries above a certain threshold.
+Use Any to determine if there are pending orders in an order list with a status of "Pending".
+Write a query to check if all courses have at least one student enrolled.
+
+----------
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", InStock = true },
+    new Product { Id = 2, Name = "Pen", InStock = true },
+    new Product { Id = 3, Name = "Backpack", InStock = false },
+    new Product { Id = 4, Name = "Ruler", InStock = true },
+    new Product { Id = 5, Name = "Marker", InStock = true },
+    new Product { Id = 6, Name = "Stapler", InStock = false },
+    new Product { Id = 7, Name = "Eraser", InStock = true },
+    new Product { Id = 8, Name = "Glue", InStock = false },
+    new Product { Id = 9, Name = "Scissors", InStock = true },
+    new Product { Id = 10, Name = "Highlighter", InStock = true }
+};
+
+// Student Scores
+List<int> studentScores = new List<int> { 85, 90, 78, 95, 88, 76, 92, 81, 70, 89 };
+
+// Employees in Departments
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Department = "HR", Salary = 60000 },
+    new Employee { Id = 2, Name = "Bob", Department = "HR", Salary = 55000 },
+    new Employee { Id = 3, Name = "Charlie", Department = "Finance", Salary = 70000 },
+    new Employee { Id = 4, Name = "Diana", Department = "Finance", Salary = 80000 },
+    new Employee { Id = 5, Name = "Edward", Department = "IT", Salary = 75000 },
+    new Employee { Id = 6, Name = "Fiona", Department = "IT", Salary = 72000 },
+    new Employee { Id = 7, Name = "George", Department = "Marketing", Salary = 65000 },
+    new Employee { Id = 8, Name = "Helen", Department = "Marketing", Salary = 68000 },
+    new Employee { Id = 9, Name = "Irene", Department = "Sales", Salary = 50000 },
+    new Employee { Id = 10, Name = "Jack", Department = "Sales", Salary = 55000 }
+};
+
+// Orders
+List<Order> orders = new List<Order>
+{
+    new Order { Id = 1, Status = "Completed" },
+    new Order { Id = 2, Status = "Pending" },
+    new Order { Id = 3, Status = "Completed" },
+    new Order { Id = 4, Status = "Pending" },
+    new Order { Id = 5, Status = "Shipped" },
+    new Order { Id = 6, Status = "Pending" },
+    new Order { Id = 7, Status = "Completed" },
+    new Order { Id = 8, Status = "Pending" },
+    new Order { Id = 9, Status = "Shipped" },
+    new Order { Id = 10, Status = "Completed" }
+};
+
+// Courses and Students
+List<Course> courses = new List<Course>
+{
+    new Course { Id = 1, Name = "Math", StudentsEnrolled = 5 },
+    new Course { Id = 2, Name = "Science", StudentsEnrolled = 8 },
+    new Course { Id = 3, Name = "History", StudentsEnrolled = 3 },
+    new Course { Id = 4, Name = "English", StudentsEnrolled = 7 },
+    new Course { Id = 5, Name = "Art", StudentsEnrolled = 0 },
+    new Course { Id = 6, Name = "Music", StudentsEnrolled = 4 },
+    new Course { Id = 7, Name = "PE", StudentsEnrolled = 6 },
+    new Course { Id = 8, Name = "Biology", StudentsEnrolled = 9 },
+    new Course { Id = 9, Name = "Chemistry", StudentsEnrolled = 2 },
+    new Course { Id = 10, Name = "Physics", StudentsEnrolled = 5 }
+};
+
+// Supporting Classes
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public bool InStock { get; set; }
+}
+
+public class Order
+{
+    public int Id { get; set; }
+    public string Status { get; set; }
+}
+
+public class Course
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int StudentsEnrolled { get; set; }
+}
+
+----------------------------------------------------------------------------------------------
+
+Practice 3
+Contains
+Use Contains to check if a specific product ID exists in a list of product IDs.
+Write a LINQ query to determine if a list of names contains a specific name entered by the user.
+Use Contains to filter orders that match specific order IDs from a predefined list.
+Write a query to check if a list of books includes a specific title using Contains.
+Use Contains to find if a list of countries includes a specific country entered by the user
+
+----------
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook" },
+    new Product { Id = 2, Name = "Pen" },
+    new Product { Id = 3, Name = "Backpack" },
+    new Product { Id = 4, Name = "Ruler" },
+    new Product { Id = 5, Name = "Marker" },
+    new Product { Id = 6, Name = "Stapler" },
+    new Product { Id = 7, Name = "Eraser" },
+    new Product { Id = 8, Name = "Glue" },
+    new Product { Id = 9, Name = "Scissors" },
+    new Product { Id = 10, Name = "Highlighter" }
+};
+
+// Product IDs
+List<int> productIds = new List<int> { 1, 3, 5, 7, 9 };
+
+// Names
+List<string> names = new List<string> { "Alice", "Bob", "Charlie", "Diana", "Edward", "Fiona", "George", "Helen", "Irene", "Jack" };
+
+// Orders
+List<Order> orders = new List<Order>
+{
+    new Order { Id = 1, Status = "Completed" },
+    new Order { Id = 2, Status = "Pending" },
+    new Order { Id = 3, Status = "Shipped" },
+    new Order { Id = 4, Status = "Completed" },
+    new Order { Id = 5, Status = "Pending" },
+    new Order { Id = 6, Status = "Shipped" },
+    new Order { Id = 7, Status = "Completed" },
+    new Order { Id = 8, Status = "Shipped" },
+    new Order { Id = 9, Status = "Pending" },
+    new Order { Id = 10, Status = "Completed" }
+};
+
+// Order IDs
+List<int> orderIds = new List<int> { 1, 3, 5, 7, 9 };
+
+// Books
+List<string> books = new List<string>
+{
+    "The Great Gatsby",
+    "1984",
+    "To Kill a Mockingbird",
+    "Pride and Prejudice",
+    "Moby-Dick",
+    "War and Peace",
+    "The Catcher in the Rye",
+    "Ulysses",
+    "The Odyssey",
+    "Crime and Punishment"
+};
+
+// Countries
+List<string> countries = new List<string> { "USA", "Canada", "Germany", "France", "Italy", "Spain", "UK", "Australia", "India", "Japan" };
+
+// Supporting Classes
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Order
+{
+    public int Id { get; set; }
+    public string Status { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 4
+Aggregate
+Use Aggregate to concatenate all product names from a list into a single comma-separated string.
+Write a query to calculate the product of all numbers in a list using Aggregate.
+Use Aggregate to find the longest word in a list of strings.
+Implement a LINQ query to compute the cumulative total of sales from a list of transactions using Aggregate.
+Use Aggregate to reverse a string by iterating through its characters.
+
+----------
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook" },
+    new Product { Id = 2, Name = "Pen" },
+    new Product { Id = 3, Name = "Backpack" },
+    new Product { Id = 4, Name = "Ruler" },
+    new Product { Id = 5, Name = "Marker" },
+    new Product { Id = 6, Name = "Stapler" },
+    new Product { Id = 7, Name = "Eraser" },
+    new Product { Id = 8, Name = "Glue" },
+    new Product { Id = 9, Name = "Scissors" },
+    new Product { Id = 10, Name = "Highlighter" }
+};
+
+// Numbers
+List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+// Words
+List<string> words = new List<string> { "apple", "banana", "cherry", "date", "elderberry", "fig", "grape", "honeydew", "kiwi", "lemon" };
+
+// Transactions (Sales)
+List<Transaction> transactions = new List<Transaction>
+{
+    new Transaction { Id = 1, Amount = 100.50m },
+    new Transaction { Id = 2, Amount = 200.75m },
+    new Transaction { Id = 3, Amount = 50.25m },
+    new Transaction { Id = 4, Amount = 300.10m },
+    new Transaction { Id = 5, Amount = 150.00m },
+    new Transaction { Id = 6, Amount = 120.75m },
+    new Transaction { Id = 7, Amount = 60.30m },
+    new Transaction { Id = 8, Amount = 90.50m },
+    new Transaction { Id = 9, Amount = 180.60m },
+    new Transaction { Id = 10, Amount = 70.40m }
+};
+
+// String for Reversal
+string inputString = "LINQ";
+
+// Supporting Classes
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class Transaction
+{
+    public int Id { get; set; }
+    public decimal Amount { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 5
+Average
+Use Average to calculate the average age of employees in a department.
+Write a LINQ query to find the average grade of students in a class.
+Calculate the average price of all products in a catalog using LINQ.
+Write a query to compute the average transaction amount from a list of sales.
+Use LINQ to find the average word length in a collection of sentences.
+
+----------
+
+// Employees
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Age = 30, Department = "HR", Salary = 50000 },
+    new Employee { Id = 2, Name = "Bob", Age = 40, Department = "IT", Salary = 75000 },
+    new Employee { Id = 3, Name = "Charlie", Age = 35, Department = "IT", Salary = 80000 },
+    new Employee { Id = 4, Name = "Diana", Age = 28, Department = "HR", Salary = 45000 },
+    new Employee { Id = 5, Name = "Edward", Age = 45, Department = "Finance", Salary = 95000 },
+    new Employee { Id = 6, Name = "Fiona", Age = 38, Department = "Finance", Salary = 60000 },
+    new Employee { Id = 7, Name = "George", Age = 32, Department = "IT", Salary = 85000 },
+    new Employee { Id = 8, Name = "Helen", Age = 26, Department = "HR", Salary = 55000 },
+    new Employee { Id = 9, Name = "Irene", Age = 50, Department = "Finance", Salary = 100000 },
+    new Employee { Id = 10, Name = "Jack", Age = 37, Department = "HR", Salary = 50000 }
+};
+
+// Students
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Alice", Grade = 88 },
+    new Student { Id = 2, Name = "Bob", Grade = 92 },
+    new Student { Id = 3, Name = "Charlie", Grade = 85 },
+    new Student { Id = 4, Name = "Diana", Grade = 95 },
+    new Student { Id = 5, Name = "Edward", Grade = 78 },
+    new Student { Id = 6, Name = "Fiona", Grade = 89 },
+    new Student { Id = 7, Name = "George", Grade = 91 },
+    new Student { Id = 8, Name = "Helen", Grade = 84 },
+    new Student { Id = 9, Name = "Irene", Grade = 87 },
+    new Student { Id = 10, Name = "Jack", Grade = 90 }
+};
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", Price = 15.99m },
+    new Product { Id = 2, Name = "Pen", Price = 2.49m },
+    new Product { Id = 3, Name = "Backpack", Price = 45.99m },
+    new Product { Id = 4, Name = "Ruler", Price = 1.29m },
+    new Product { Id = 5, Name = "Marker", Price = 3.49m },
+    new Product { Id = 6, Name = "Stapler", Price = 5.99m },
+    new Product { Id = 7, Name = "Eraser", Price = 0.99m },
+    new Product { Id = 8, Name = "Glue", Price = 2.29m },
+    new Product { Id = 9, Name = "Scissors", Price = 6.99m },
+    new Product { Id = 10, Name = "Highlighter", Price = 4.49m }
+};
+
+// Transactions
+List<Transaction> transactions = new List<Transaction>
+{
+    new Transaction { Id = 1, Amount = 100.50m },
+    new Transaction { Id = 2, Amount = 200.75m },
+    new Transaction { Id = 3, Amount = 50.25m },
+    new Transaction { Id = 4, Amount = 300.10m },
+    new Transaction { Id = 5, Amount = 150.00m },
+    new Transaction { Id = 6, Amount = 120.75m },
+    new Transaction { Id = 7, Amount = 60.30m },
+    new Transaction { Id = 8, Amount = 90.50m },
+    new Transaction { Id = 9, Amount = 180.60m },
+    new Transaction { Id = 10, Amount = 70.40m }
+};
+
+// Sentences
+List<string> sentences = new List<string>
+{
+    "This is a sentence.",
+    "LINQ queries are powerful.",
+    "C# makes programming easy.",
+    "The quick brown fox jumps over the lazy dog.",
+    "Practice makes perfect.",
+    "I love learning new things.",
+    "The sun is shining.",
+    "She is a great programmer.",
+    "I enjoy solving problems.",
+    "Coding is fun and rewarding."
+};
+
+// Supporting Classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string Department { get; set; }
+    public decimal Salary { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+public class Transaction
+{
+    public int Id { get; set; }
+    public decimal Amount { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 6
+Count
+Use Count to find the number of products in a list with a price greater than $50.
+Write a LINQ query to count the number of students enrolled in a specific course.
+Use Count to find how many numbers in a list are divisible by 3.
+Implement a query to count the number of orders placed in the last 7 days.
+Use Count to determine how many employees in a company belong to a specific department.
+
+----------
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", Price = 15.99m },
+    new Product { Id = 2, Name = "Pen", Price = 2.49m },
+    new Product { Id = 3, Name = "Backpack", Price = 45.99m },
+    new Product { Id = 4, Name = "Ruler", Price = 1.29m },
+    new Product { Id = 5, Name = "Marker", Price = 3.49m },
+    new Product { Id = 6, Name = "Stapler", Price = 5.99m },
+    new Product { Id = 7, Name = "Eraser", Price = 0.99m },
+    new Product { Id = 8, Name = "Glue", Price = 2.29m },
+    new Product { Id = 9, Name = "Scissors", Price = 6.99m },
+    new Product { Id = 10, Name = "Highlighter", Price = 4.49m }
+};
+
+// Students
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Alice", Course = "Math" },
+    new Student { Id = 2, Name = "Bob", Course = "English" },
+    new Student { Id = 3, Name = "Charlie", Course = "Math" },
+    new Student { Id = 4, Name = "Diana", Course = "History" },
+    new Student { Id = 5, Name = "Edward", Course = "Math" },
+    new Student { Id = 6, Name = "Fiona", Course = "Science" },
+    new Student { Id = 7, Name = "George", Course = "English" },
+    new Student { Id = 8, Name = "Helen", Course = "Math" },
+    new Student { Id = 9, Name = "Irene", Course = "History" },
+    new Student { Id = 10, Name = "Jack", Course = "Science" }
+};
+
+// Numbers
+List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+// Orders
+List<Order> orders = new List<Order>
+{
+    new Order { Id = 1, OrderDate = DateTime.Now.AddDays(-1) },
+    new Order { Id = 2, OrderDate = DateTime.Now.AddDays(-2) },
+    new Order { Id = 3, OrderDate = DateTime.Now.AddDays(-3) },
+    new Order { Id = 4, OrderDate = DateTime.Now.AddDays(-4) },
+    new Order { Id = 5, OrderDate = DateTime.Now.AddDays(-5) },
+    new Order { Id = 6, OrderDate = DateTime.Now.AddDays(-6) },
+    new Order { Id = 7, OrderDate = DateTime.Now.AddDays(-7) },
+    new Order { Id = 8, OrderDate = DateTime.Now.AddDays(-8) },
+    new Order { Id = 9, OrderDate = DateTime.Now.AddDays(-9) },
+    new Order { Id = 10, OrderDate = DateTime.Now.AddDays(-10) }
+};
+
+// Employees
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Department = "HR" },
+    new Employee { Id = 2, Name = "Bob", Department = "IT" },
+    new Employee { Id = 3, Name = "Charlie", Department = "HR" },
+    new Employee { Id = 4, Name = "Diana", Department = "IT" },
+    new Employee { Id = 5, Name = "Edward", Department = "Finance" },
+    new Employee { Id = 6, Name = "Fiona", Department = "Finance" },
+    new Employee { Id = 7, Name = "George", Department = "IT" },
+    new Employee { Id = 8, Name = "Helen", Department = "HR" },
+    new Employee { Id = 9, Name = "Irene", Department = "Finance" },
+    new Employee { Id = 10, Name = "Jack", Department = "HR" }
+};
+
+// Supporting Classes
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Course { get; set; }
+}
+
+public class Order
+{
+    public int Id { get; set; }
+    public DateTime OrderDate { get; set; }
+}
+
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Department { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 7
+Single/SingleOrDefault
+Use Single to find the product with a unique ID from a product list. Throw an exception if not found.
+Use SingleOrDefault to retrieve a user from a list by their unique username. Return null if no match is found.
+Write a query to find the student with a unique roll number from a list of students.
+Use SingleOrDefault to retrieve a transaction from a list with a specific transaction ID. Ensure the code handles cases with no match.
+Use Single to find the book with a unique ISBN from a catalog.
+
+----------
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Notebook", Price = 15.99m },
+    new Product { Id = 2, Name = "Pen", Price = 2.49m },
+    new Product { Id = 3, Name = "Backpack", Price = 45.99m },
+    new Product { Id = 4, Name = "Ruler", Price = 1.29m },
+    new Product { Id = 5, Name = "Marker", Price = 3.49m },
+    new Product { Id = 6, Name = "Stapler", Price = 5.99m },
+    new Product { Id = 7, Name = "Eraser", Price = 0.99m },
+    new Product { Id = 8, Name = "Glue", Price = 2.29m },
+    new Product { Id = 9, Name = "Scissors", Price = 6.99m },
+    new Product { Id = 10, Name = "Highlighter", Price = 4.49m }
+};
+
+// Users
+List<User> users = new List<User>
+{
+    new User { Id = 1, Username = "alice123", Email = "alice@example.com" },
+    new User { Id = 2, Username = "bob456", Email = "bob@example.com" },
+    new User { Id = 3, Username = "charlie789", Email = "charlie@example.com" },
+    new User { Id = 4, Username = "diana012", Email = "diana@example.com" },
+    new User { Id = 5, Username = "edward345", Email = "edward@example.com" },
+    new User { Id = 6, Username = "fiona678", Email = "fiona@example.com" },
+    new User { Id = 7, Username = "george901", Email = "george@example.com" },
+    new User { Id = 8, Username = "helen234", Email = "helen@example.com" },
+    new User { Id = 9, Username = "irene567", Email = "irene@example.com" },
+    new User { Id = 10, Username = "jack890", Email = "jack@example.com" }
+};
+
+// Students
+List<Student> students = new List<Student>
+{
+    new Student { RollNumber = "A123", Name = "Alice", Grade = 88 },
+    new Student { RollNumber = "B456", Name = "Bob", Grade = 92 },
+    new Student { RollNumber = "C789", Name = "Charlie", Grade = 85 },
+    new Student { RollNumber = "D012", Name = "Diana", Grade = 95 },
+    new Student { RollNumber = "E345", Name = "Edward", Grade = 78 },
+    new Student { RollNumber = "F678", Name = "Fiona", Grade = 89 },
+    new Student { RollNumber = "G901", Name = "George", Grade = 91 },
+    new Student { RollNumber = "H234", Name = "Helen", Grade = 84 },
+    new Student { RollNumber = "I567", Name = "Irene", Grade = 87 },
+    new Student { RollNumber = "J890", Name = "Jack", Grade = 90 }
+};
+
+// Transactions
+List<Transaction> transactions = new List<Transaction>
+{
+    new Transaction { TransactionId = "T001", Amount = 100.50m },
+    new Transaction { TransactionId = "T002", Amount = 200.75m },
+    new Transaction { TransactionId = "T003", Amount = 50.25m },
+    new Transaction { TransactionId = "T004", Amount = 300.10m },
+    new Transaction { TransactionId = "T005", Amount = 150.00m },
+    new Transaction { TransactionId = "T006", Amount = 120.75m },
+    new Transaction { TransactionId = "T007", Amount = 60.30m },
+    new Transaction { TransactionId = "T008", Amount = 90.50m },
+    new Transaction { TransactionId = "T009", Amount = 180.60m },
+    new Transaction { TransactionId = "T010", Amount = 70.40m }
+};
+
+// Books
+List<Book> books = new List<Book>
+{
+    new Book { ISBN = "978-3-16-148410-0", Title = "The Great Book" },
+    new Book { ISBN = "978-0-06-112241-5", Title = "Learning C#" },
+    new Book { ISBN = "978-1-4028-9462-6", Title = "The Art of Programming" },
+    new Book { ISBN = "978-0-201-63361-0", Title = "Introduction to Algorithms" },
+    new Book { ISBN = "978-1-56619-909-4", Title = "Clean Code" },
+    new Book { ISBN = "978-0-262-13472-9", Title = "Design Patterns" },
+    new Book { ISBN = "978-0-13-235088-4", Title = "Code Complete" },
+    new Book { ISBN = "978-1-59327-592-9", Title = "The Pragmatic Programmer" },
+    new Book { ISBN = "978-0-321-63550-2", Title = "Effective Java" },
+    new Book { ISBN = "978-0-596-52068-7", Title = "Head First Design Patterns" }
+};
+
+// Supporting Classes
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+public class User
+{
+    public int Id { get; set; }
+    public string Username { get; set; }
+    public string Email { get; set; }
+}
+
+public class Student
+{
+    public string RollNumber { get; set; }
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+public class Transaction
+{
+    public string TransactionId { get; set; }
+    public decimal Amount { get; set; }
+}
+
+public class Book
+{
+    public string ISBN { get; set; }
+    public string Title { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 8
+DefaultIfEmpty
+Use DefaultIfEmpty to handle cases where a query to find high-priority tasks returns no results.
+Write a LINQ query to find products in a specific category. Return a default message if the category is empty.
+Use DefaultIfEmpty to ensure a collection of employees in a department always returns at least one placeholder.
+Write a LINQ query to retrieve all orders for a specific date and return "No Orders Found" if none exist.
+Use DefaultIfEmpty to provide a default value when filtering a list of customers.
+
+----------
+
+// Tasks
+List<Task> tasks = new List<Task>
+{
+    new Task { Id = 1, Name = "Design Website", Priority = "High" },
+    new Task { Id = 2, Name = "Write Documentation", Priority = "Low" },
+    new Task { Id = 3, Name = "Fix Bugs", Priority = "Medium" },
+    new Task { Id = 4, Name = "Test Features", Priority = "High" },
+    new Task { Id = 5, Name = "Develop Backend", Priority = "Medium" },
+    new Task { Id = 6, Name = "Refactor Code", Priority = "High" },
+    new Task { Id = 7, Name = "Implement Authentication", Priority = "High" },
+    new Task { Id = 8, Name = "Deploy to Server", Priority = "Low" },
+    new Task { Id = 9, Name = "Write Unit Tests", Priority = "Medium" },
+    new Task { Id = 10, Name = "Optimize Performance", Priority = "High" }
+};
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Laptop", Category = "Electronics", Price = 1000m },
+    new Product { Id = 2, Name = "Smartphone", Category = "Electronics", Price = 800m },
+    new Product { Id = 3, Name = "Headphones", Category = "Electronics", Price = 150m },
+    new Product { Id = 4, Name = "Sofa", Category = "Furniture", Price = 500m },
+    new Product { Id = 5, Name = "Coffee Table", Category = "Furniture", Price = 100m },
+    new Product { Id = 6, Name = "Dining Set", Category = "Furniture", Price = 300m },
+    new Product { Id = 7, Name = "T-Shirt", Category = "Clothing", Price = 25m },
+    new Product { Id = 8, Name = "Jeans", Category = "Clothing", Price = 50m },
+    new Product { Id = 9, Name = "Sneakers", Category = "Clothing", Price = 80m },
+    new Product { Id = 10, Name = "Jacket", Category = "Clothing", Price = 120m }
+};
+
+// Employees
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Department = "HR" },
+    new Employee { Id = 2, Name = "Bob", Department = "IT" },
+    new Employee { Id = 3, Name = "Charlie", Department = "HR" },
+    new Employee { Id = 4, Name = "Diana", Department = "IT" },
+    new Employee { Id = 5, Name = "Edward", Department = "Finance" },
+    new Employee { Id = 6, Name = "Fiona", Department = "Finance" },
+    new Employee { Id = 7, Name = "George", Department = "IT" },
+    new Employee { Id = 8, Name = "Helen", Department = "HR" },
+    new Employee { Id = 9, Name = "Irene", Department = "Finance" },
+    new Employee { Id = 10, Name = "Jack", Department = "HR" }
+};
+
+// Orders
+List<Order> orders = new List<Order>
+{
+    new Order { Id = 1, OrderDate = DateTime.Now.AddDays(-1) },
+    new Order { Id = 2, OrderDate = DateTime.Now.AddDays(-2) },
+    new Order { Id = 3, OrderDate = DateTime.Now.AddDays(-3) },
+    new Order { Id = 4, OrderDate = DateTime.Now.AddDays(-4) },
+    new Order { Id = 5, OrderDate = DateTime.Now.AddDays(-5) },
+    new Order { Id = 6, OrderDate = DateTime.Now.AddDays(-6) },
+    new Order { Id = 7, OrderDate = DateTime.Now.AddDays(-7) },
+    new Order { Id = 8, OrderDate = DateTime.Now.AddDays(-8) },
+    new Order { Id = 9, OrderDate = DateTime.Now.AddDays(-9) },
+    new Order { Id = 10, OrderDate = DateTime.Now.AddDays(-10) }
+};
+
+// Customers
+List<Customer> customers = new List<Customer>
+{
+    new Customer { Id = 1, Name = "Alice", City = "New York" },
+    new Customer { Id = 2, Name = "Bob", City = "Los Angeles" },
+    new Customer { Id = 3, Name = "Charlie", City = "Chicago" },
+    new Customer { Id = 4, Name = "Diana", City = "Miami" },
+    new Customer { Id = 5, Name = "Edward", City = "Dallas" },
+    new Customer { Id = 6, Name = "Fiona", City = "Boston" },
+    new Customer { Id = 7, Name = "George", City = "San Francisco" },
+    new Customer { Id = 8, Name = "Helen", City = "Chicago" },
+    new Customer { Id = 9, Name = "Irene", City = "Los Angeles" },
+    new Customer { Id = 10, Name = "Jack", City = "New York" }
+};
+
+// Supporting Classes
+public class Task
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Priority { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Category { get; set; }
+    public decimal Price { get; set; }
+}
+
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Department { get; set; }
+}
+
+public class Order
+{
+    public int Id { get; set; }
+    public DateTime OrderDate { get; set; }
+}
+
+public class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string City { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 9
+Intersect/Union/Take/TakeWhile
+Use Union to combine two lists of integers, removing duplicates.
+Use Intersect to find common employees between two departments.
+Write a query using Take to retrieve the first 5 students from a list of grades.
+Use TakeWhile to retrieve scores from a list until a score below 50 is encountered.
+Use Union to merge two lists of courses and eliminate duplicates.
+
+----------
+
+// Employees
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Department = "HR" },
+    new Employee { Id = 2, Name = "Bob", Department = "IT" },
+    new Employee { Id = 3, Name = "Charlie", Department = "HR" },
+    new Employee { Id = 4, Name = "Diana", Department = "IT" },
+    new Employee { Id = 5, Name = "Edward", Department = "Finance" },
+    new Employee { Id = 6, Name = "Fiona", Department = "Finance" },
+    new Employee { Id = 7, Name = "George", Department = "IT" },
+    new Employee { Id = 8, Name = "Helen", Department = "HR" },
+    new Employee { Id = 9, Name = "Irene", Department = "Finance" },
+    new Employee { Id = 10, Name = "Jack", Department = "HR" }
+};
+
+// Courses
+List<string> coursesList1 = new List<string>
+{
+    "Mathematics", "Physics", "Chemistry", "Biology", "English",
+    "History", "Geography", "Art", "Computer Science", "Philosophy"
+};
+
+List<string> coursesList2 = new List<string>
+{
+    "Music", "Art", "Computer Science", "History", "Psychology",
+    "Economics", "Mathematics", "Philosophy", "Sociology", "Physics"
+};
+
+// Students
+List<Student> students = new List<Student>
+{
+    new Student { Name = "Alice", Grade = 85 },
+    new Student { Name = "Bob", Grade = 90 },
+    new Student { Name = "Charlie", Grade = 75 },
+    new Student { Name = "Diana", Grade = 60 },
+    new Student { Name = "Edward", Grade = 95 },
+    new Student { Name = "Fiona", Grade = 50 },
+    new Student { Name = "George", Grade = 88 },
+    new Student { Name = "Helen", Grade = 45 },
+    new Student { Name = "Irene", Grade = 72 },
+    new Student { Name = "Jack", Grade = 62 }
+};
+
+// Grades (List of individual scores for TakeWhile example)
+List<int> grades = new List<int> { 85, 90, 76, 88, 47, 93, 55, 60, 48, 44 };
+
+// Supporting Classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Department { get; set; }
+}
+
+public class Student
+{
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 10
+Deferred Execution
+Write a LINQ query to demonstrate deferred execution by creating a query and executing it only after modifying the source collection.
+Implement a program that demonstrates deferred execution using a list of integers and a Where clause.
+Show how deferred execution works by iterating through a collection after adding new elements to it.
+Write a query that retrieves all even numbers from a list and demonstrate deferred execution by modifying the list after the query is defined.
+Use deferred execution to filter a collection and only execute the filter when iterated.
+
+----------
+
+// Employees
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "Alice", Department = "HR", Age = 28 },
+    new Employee { Id = 2, Name = "Bob", Department = "IT", Age = 35 },
+    new Employee { Id = 3, Name = "Charlie", Department = "HR", Age = 42 },
+    new Employee { Id = 4, Name = "Diana", Department = "IT", Age = 29 },
+    new Employee { Id = 5, Name = "Edward", Department = "Finance", Age = 39 },
+    new Employee { Id = 6, Name = "Fiona", Department = "Finance", Age = 31 },
+    new Employee { Id = 7, Name = "George", Department = "IT", Age = 45 },
+    new Employee { Id = 8, Name = "Helen", Department = "HR", Age = 25 },
+    new Employee { Id = 9, Name = "Irene", Department = "Finance", Age = 38 },
+    new Employee { Id = 10, Name = "Jack", Department = "HR", Age = 50 }
+};
+
+// Integers (For deferred execution with Where and modification)
+List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+// Supporting Classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Department { get; set; }
+    public int Age { get; set; }
+}
+
+-----
+
+var query = from e in employees
+            where e.Age > 30
+            select e;
+
+// Modify the source collection before executing the query
+employees.Add(new Employee { Id = 11, Name = "Kelly", Department = "IT", Age = 32 });
+
+// Now, execute the query (deferred execution)
+foreach (var employee in query)
+{
+    Console.WriteLine($"{employee.Name}, {employee.Age}");
+}
+
+-----
+
+var evenNumbersQuery = numbers.Where(n => n % 2 == 0);
+
+// Add new elements to the list before executing the query
+numbers.Add(12);
+numbers.Add(14);
+
+// Execute the query and iterate
+foreach (var number in evenNumbersQuery)
+{
+    Console.WriteLine(number);
+}
+
+-----
+
+var highAgedEmployeesQuery = employees.Where(e => e.Age > 40);
+
+// Modify the list of employees
+employees.Add(new Employee { Id = 12, Name = "John", Department = "Sales", Age = 45 });
+
+// Execute query and iterate over the modified list
+foreach (var employee in highAgedEmployeesQuery)
+{
+    Console.WriteLine($"{employee.Name}, {employee.Age}");
+}
+
+-----
+
+var evenNumbersQuery = numbers.Where(n => n % 2 == 0);
+
+// Modify the list after defining the query
+numbers.Add(16);
+
+// Execute query and display filtered even numbers
+foreach (var number in evenNumbersQuery)
+{
+    Console.WriteLine(number);
+}
+
+-----
+
+var employeesInIT = employees.Where(e => e.Department == "IT");
+
+// Modify collection (adding a new IT employee)
+employees.Add(new Employee { Id = 13, Name = "Laura", Department = "IT", Age = 28 });
+
+// Deferred execution: Execute query and print employees in IT
+foreach (var employee in employeesInIT)
+{
+    Console.WriteLine($"{employee.Name}, {employee.Department}");
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 11
+Immediate Execution
+Use ToList to force immediate execution of a query that filters products by price.
+Write a LINQ query that calculates the sum of a list of numbers using immediate execution.
+Demonstrate immediate execution by converting a query result to an array using ToArray.
+Use ToDictionary to immediately execute a query and store the result as a dictionary.
+Compare deferred and immediate execution using a query that uses ToList.
+
+----------
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Laptop", Price = 999.99 },
+    new Product { Id = 2, Name = "Smartphone", Price = 499.99 },
+    new Product { Id = 3, Name = "Tablet", Price = 299.99 },
+    new Product { Id = 4, Name = "Monitor", Price = 199.99 },
+    new Product { Id = 5, Name = "Keyboard", Price = 49.99 },
+    new Product { Id = 6, Name = "Mouse", Price = 29.99 },
+    new Product { Id = 7, Name = "Headphones", Price = 79.99 },
+    new Product { Id = 8, Name = "Charger", Price = 19.99 },
+    new Product { Id = 9, Name = "Webcam", Price = 69.99 },
+    new Product { Id = 10, Name = "Smartwatch", Price = 199.99 }
+};
+
+// Numbers
+List<int> numbers = new List<int> { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 };
+
+// Supporting Class
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public double Price { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 12
+Let Keyword
+Use the let keyword to store the result of a calculation (e.g., square of a number) in a LINQ query.
+Write a query that uses let to define an intermediate variable for the length of strings and filter strings by their lengths.
+Use let to calculate the discounted price of products in a catalog and filter products with discounts above $10.
+Write a LINQ query to split names into first and last names using let and filter by last name length.
+Use let to simplify a LINQ query that filters a collection based on a complex condition.
+
+----------
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Laptop", Price = 999.99 },
+    new Product { Id = 2, Name = "Smartphone", Price = 499.99 },
+    new Product { Id = 3, Name = "Tablet", Price = 299.99 },
+    new Product { Id = 4, Name = "Monitor", Price = 199.99 },
+    new Product { Id = 5, Name = "Keyboard", Price = 49.99 },
+    new Product { Id = 6, Name = "Mouse", Price = 29.99 },
+    new Product { Id = 7, Name = "Headphones", Price = 79.99 },
+    new Product { Id = 8, Name = "Charger", Price = 19.99 },
+    new Product { Id = 9, Name = "Webcam", Price = 69.99 },
+    new Product { Id = 10, Name = "Smartwatch", Price = 199.99 }
+};
+
+// Names
+List<string> names = new List<string>
+{
+    "Alice Johnson", "Bob Smith", "Charlie Brown", "David White", 
+    "Emily Davis", "Frank Clark", "Grace Lee", "Helen Moore", 
+    "Irene Miller", "Jack Taylor"
+};
+
+// Supporting Class
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public double Price { get; set; }
+}
+
+
+----------------------------------------------------------------------------------------------
+
+Practice 13
+Into Keyword
+Use the into keyword to create a continuation query that filters employees by department and then sorts them by age.
+Write a query that groups students by their grades and continues with an additional filter using into.
+Use into to chain queries that first select products by category and then sort them by price.
+Write a LINQ query that uses into to filter words by length and then group them by their first letter.
+Implement a program that uses into to refine a group of customers by country and filter those with more than 5 orders.
+
+----------
+
+// Employees
+List<Employee> employees = new List<Employee>
+{
+    new Employee { Id = 1, Name = "John Doe", Department = "HR", Age = 35 },
+    new Employee { Id = 2, Name = "Jane Smith", Department = "IT", Age = 28 },
+    new Employee { Id = 3, Name = "Sara Wilson", Department = "IT", Age = 45 },
+    new Employee { Id = 4, Name = "Mike Brown", Department = "HR", Age = 40 },
+    new Employee { Id = 5, Name = "Steve Harris", Department = "Marketing", Age = 33 },
+    new Employee { Id = 6, Name = "Rachel Green", Department = "IT", Age = 30 },
+    new Employee { Id = 7, Name = "Chris Evans", Department = "HR", Age = 50 },
+    new Employee { Id = 8, Name = "Anna White", Department = "Marketing", Age = 27 },
+    new Employee { Id = 9, Name = "David Black", Department = "HR", Age = 60 },
+    new Employee { Id = 10, Name = "Emma Blue", Department = "IT", Age = 22 }
+};
+
+// Students
+List<Student> students = new List<Student>
+{
+    new Student { Id = 1, Name = "Alice", Grade = 85 },
+    new Student { Id = 2, Name = "Bob", Grade = 90 },
+    new Student { Id = 3, Name = "Charlie", Grade = 72 },
+    new Student { Id = 4, Name = "David", Grade = 88 },
+    new Student { Id = 5, Name = "Emily", Grade = 92 },
+    new Student { Id = 6, Name = "Frank", Grade = 78 },
+    new Student { Id = 7, Name = "Grace", Grade = 85 },
+    new Student { Id = 8, Name = "Hannah", Grade = 90 },
+    new Student { Id = 9, Name = "Irene", Grade = 95 },
+    new Student { Id = 10, Name = "Jack", Grade = 76 }
+};
+
+// Products
+List<Product> products = new List<Product>
+{
+    new Product { Id = 1, Name = "Laptop", Category = "Electronics", Price = 999.99 },
+    new Product { Id = 2, Name = "Smartphone", Category = "Electronics", Price = 499.99 },
+    new Product { Id = 3, Name = "Tablet", Category = "Electronics", Price = 299.99 },
+    new Product { Id = 4, Name = "Shirt", Category = "Clothing", Price = 29.99 },
+    new Product { Id = 5, Name = "Jeans", Category = "Clothing", Price = 49.99 },
+    new Product { Id = 6, Name = "Sneakers", Category = "Clothing", Price = 79.99 },
+    new Product { Id = 7, Name = "Headphones", Category = "Electronics", Price = 99.99 },
+    new Product { Id = 8, Name = "Jacket", Category = "Clothing", Price = 89.99 },
+    new Product { Id = 9, Name = "Webcam", Category = "Electronics", Price = 69.99 },
+    new Product { Id = 10, Name = "Smartwatch", Category = "Electronics", Price = 199.99 }
+};
+
+// Words
+List<string> words = new List<string>
+{
+    "apple", "banana", "grape", "orange", "kiwi", "mango", "pear", "plum", "peach", "apricot"
+};
+
+// Customers and Orders
+List<Customer> customers = new List<Customer>
+{
+    new Customer { Id = 1, Name = "John", Country = "USA", OrderCount = 10 },
+    new Customer { Id = 2, Name = "Jane", Country = "Canada", OrderCount = 3 },
+    new Customer { Id = 3, Name = "Alice", Country = "USA", OrderCount = 5 },
+    new Customer { Id = 4, Name = "Bob", Country = "UK", OrderCount = 8 },
+    new Customer { Id = 5, Name = "Charlie", Country = "Canada", OrderCount = 12 },
+    new Customer { Id = 6, Name = "David", Country = "USA", OrderCount = 7 },
+    new Customer { Id = 7, Name = "Emma", Country = "UK", OrderCount = 9 },
+    new Customer { Id = 8, Name = "Frank", Country = "USA", OrderCount = 11 },
+    new Customer { Id = 9, Name = "Grace", Country = "Canada", OrderCount = 4 },
+    new Customer { Id = 10, Name = "Hannah", Country = "UK", OrderCount = 2 }
+};
+
+// Supporting Classes
+public class Employee
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Department { get; set; }
+    public int Age { get; set; }
+}
+
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Grade { get; set; }
+}
+
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Category { get; set; }
+    public double Price { get; set; }
+}
+
+public class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Country { get; set; }
+    public int OrderCount { get; set; }
+}
+
