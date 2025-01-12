@@ -1,558 +1,610 @@
-Practice 5
-
- internal class Program
- {
-     static void Main(string[] args)
-     {
-         //Use Average to calculate the average age of employees in a department.
-         List<Employee> employees = new List<Employee>
-         {
-             new Employee { Id = 1, Name = "Alice", Age = 30, Department = "HR", Salary = 50000 },
-             new Employee { Id = 2, Name = "Bob", Age = 40, Department = "IT", Salary = 75000 },
-             new Employee { Id = 3, Name = "Charlie", Age = 35, Department = "IT", Salary = 80000 },
-             new Employee { Id = 4, Name = "Diana", Age = 28, Department = "HR", Salary = 45000 },
-             new Employee { Id = 5, Name = "Edward", Age = 45, Department = "Finance", Salary = 95000 },
-             new Employee { Id = 6, Name = "Fiona", Age = 38, Department = "Finance", Salary = 60000 },
-             new Employee { Id = 7, Name = "George", Age = 32, Department = "IT", Salary = 85000 },
-             new Employee { Id = 8, Name = "Helen", Age = 26, Department = "HR", Salary = 55000 },
-             new Employee { Id = 9, Name = "Irene", Age = 50, Department = "Finance", Salary = 100000 },
-             new Employee { Id = 10, Name = "Jack", Age = 37, Department = "HR", Salary = 50000 }
-         };
-         var averageAgeOfEmployees=employees.Average(e => e.Age);
-         Console.WriteLine(averageAgeOfEmployees);
-         Console.WriteLine("--------------------");
-
-         //Write a LINQ query to find the average grade of students in a class.
-         List<Student> students = new List<Student>
-         {
-             new Student { Id = 1, Name = "Alice", Grade = 88 },
-             new Student { Id = 2, Name = "Bob", Grade = 92 },
-             new Student { Id = 3, Name = "Charlie", Grade = 85 },
-             new Student { Id = 4, Name = "Diana", Grade = 95 },
-             new Student { Id = 5, Name = "Edward", Grade = 78 },
-             new Student { Id = 6, Name = "Fiona", Grade = 89 },
-             new Student { Id = 7, Name = "George", Grade = 91 },
-             new Student { Id = 8, Name = "Helen", Grade = 84 },
-             new Student { Id = 9, Name = "Irene", Grade = 87 },
-             new Student { Id = 10, Name = "Jack", Grade = 90 }
-         };
-         var averageGradeOfStudents = students.Average(e => e.Grade);
-         Console.WriteLine(averageGradeOfStudents);
-         Console.WriteLine("--------------------");
-
-         //Calculate the average price of all products in a catalog using LINQ.
-         List<Product> products = new List<Product>
-         {
-             new Product { Id = 1, Name = "Notebook", Price = 15.99m },
-             new Product { Id = 2, Name = "Pen", Price = 2.49m },
-             new Product { Id = 3, Name = "Backpack", Price = 45.99m },
-             new Product { Id = 4, Name = "Ruler", Price = 1.29m },
-             new Product { Id = 5, Name = "Marker", Price = 3.49m },
-             new Product { Id = 6, Name = "Stapler", Price = 5.99m },
-             new Product { Id = 7, Name = "Eraser", Price = 0.99m },
-             new Product { Id = 8, Name = "Glue", Price = 2.29m },
-             new Product { Id = 9, Name = "Scissors", Price = 6.99m },
-             new Product { Id = 10, Name = "Highlighter", Price = 4.49m }
-         };
-         var averagePriceOfProducts = products.Average(e => e.Price);
-         Console.WriteLine(averagePriceOfProducts);
-         Console.WriteLine("--------------------");
-
-         //Write a query to compute the average transaction amount from a list of sales.
-         List<Transaction> transactions = new List<Transaction>
-         {
-             new Transaction { Id = 1, Amount = 100.50m },
-             new Transaction { Id = 2, Amount = 200.75m },
-             new Transaction { Id = 3, Amount = 50.25m },
-             new Transaction { Id = 4, Amount = 300.10m },
-             new Transaction { Id = 5, Amount = 150.00m },
-             new Transaction { Id = 6, Amount = 120.75m },
-             new Transaction { Id = 7, Amount = 60.30m },
-             new Transaction { Id = 8, Amount = 90.50m },
-             new Transaction { Id = 9, Amount = 180.60m },
-             new Transaction { Id = 10, Amount = 70.40m }
-         };
-         var averageTransaction = transactions.Average(e => e.Amount);
-         Console.WriteLine(averageTransaction);
-         Console.WriteLine("--------------------");
-
-         //Use LINQ to find the average word length in a collection of sentences.
-         List<string> sentences = new List<string>
-         {
-             "This is a sentence.",
-             "LINQ queries are powerful.",
-             "C# makes programming easy.",
-             "The quick brown fox jumps over the lazy dog.",
-             "Practice makes perfect.",
-             "I love learning new things.",
-             "The sun is shining.",
-             "She is a great programmer.",
-             "I enjoy solving problems.",
-             "Coding is fun and rewarding."
-         };
-         var averageWordLength = sentences.Average(e => e.Split(" ").Length);
-         Console.WriteLine(averageWordLength);
-         Console.WriteLine("--------------------");
-     }
- }
-
- public class Employee
- {
-     public int Id { get; set; }
-     public string Name { get; set; }
-     public int Age { get; set; }
-     public string Department { get; set; }
-     public decimal Salary { get; set; }
- }
-
- public class Student
- {
-     public int Id { get; set; }
-     public string Name { get; set; }
-     public int Grade { get; set; }
- }
-
- public class Product
- {
-     public int Id { get; set; }
-     public string Name { get; set; }
-     public decimal Price { get; set; }
- }
-
- public class Transaction
- {
-     public int Id { get; set; }
-     public decimal Amount { get; set; }
- }
-
--------------------------------------------------------------------------------------------------
-
-Practice 6
-
 internal class Program
 {
+    public List<Student> StudentList = new List<Student>();
+
+    public List<Course> CourseList = new List<Course>();
+
+    public List<Enrollment> EnrollmentList = new List<Enrollment>();
+
     static void Main(string[] args)
     {
-        //Use Count to find the number of products in a list with a price greater than $50.
-        List<Product> products = new List<Product>
+        Program program = new Program();
+
+        program.FillListWithData();
+        program.LoadMenu();
+        program.PerformAdditionalTasks1();
+        program.PerformAdditionalTasks2();
+        program.PerformAdditionalTasks3();
+        program.PerformAdditionalTasks4();
+    }
+
+    public void LoadMenu()
+    {
+        bool isDone = false;
+
+        while (!isDone)
         {
-            new Product { Id = 1, Name = "Notebook", Price = 15.99m },
-            new Product { Id = 2, Name = "Pen", Price = 2.49m },
-            new Product { Id = 3, Name = "Backpack", Price = 45.99m },
-            new Product { Id = 4, Name = "Ruler", Price = 1.29m },
-            new Product { Id = 5, Name = "Marker", Price = 3.49m },
-            new Product { Id = 6, Name = "Stapler", Price = 5.99m },
-            new Product { Id = 7, Name = "Eraser", Price = 0.99m },
-            new Product { Id = 8, Name = "Glue", Price = 2.29m },
-            new Product { Id = 9, Name = "Scissors", Price = 6.99m },
-            new Product { Id = 10, Name = "Highlighter", Price = 400.49m }
-        };
-        var priceCount = products.Count(x => x.Price > 50);
-        Console.WriteLine(priceCount);
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("Student Management System");
+            Console.WriteLine("-------------------------");
+            Console.WriteLine("1. View Students in a Department");
+            Console.WriteLine("2. View Courses by Department");
+            Console.WriteLine("3. View Enrollments (Student and Course)");
+            Console.WriteLine("4. Find Students with Maximum Enrollments");
+            Console.WriteLine("5. View Courses with No Enrollments");
+            Console.WriteLine("6. Exit");
+            Console.Write("Enter choice from menu: ");
+            string choice = Console.ReadLine().Trim();
+
+            switch (choice)
+            {
+                case "1":
+                    ViewStudentByDepartment();
+                    break;
+                case "2":
+                    ViewCourseInDepartment();
+                    break;
+                case "3":
+                    ViewEnrollments();
+                    break;
+                case "4":
+                    ViewStudentsWithMaxEnrollments();
+                    break;
+                case "5":
+                    GetCourseWithNoEnrollMents();
+                    break;
+                case "6":
+                    isDone = true;
+                    break;
+                default:
+                    Console.WriteLine("Enter valid choice!!");
+                    isDone = true;
+                    LoadMenu();
+                    break;
+            }
+        }
+    }
+
+    public void PerformAdditionalTasks4()
+    {
+        //Calculate the total number of enrollments in each department and
+        //display the department name along with the count.
+        var query1 = StudentList.GroupJoin(
+            EnrollmentList,
+            s => s.StudentId, e => e.StudentId,
+            (s, e) => new { Department = s.Department, EnrollmentCount = e.Count() })
+            .GroupBy(x => x.Department)
+            .Select(x => new { Department = x.Key, TotalEnrollments = x.Sum(y => y.EnrollmentCount) })
+            ;
+        foreach (var data in query1)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
+        Console.WriteLine("--------------------");
+    }
+    public void PerformAdditionalTasks3()
+    {
+        //Write a LINQ query to join students with their enrollments and display the 
+        //student name along with the course name they are enrolled in.
+        ViewEnrollments();
         Console.WriteLine("--------------------");
 
-        //Write a LINQ query to count the number of students enrolled in a specific course.
-        List<Student> students = new List<Student>
+        //Use GroupJoin to group students with the courses they are enrolled in and
+        //display the student name along with the list of course names.
+        var query2 = StudentList.GroupJoin(EnrollmentList, s => s.StudentId, e => e.StudentId,
+                                          (s, e) => new
+                                          {
+                                              Name = s.Name,
+                                              Course = e.Join(
+                                                  CourseList, en => en.CourseId, c => c.CourseId,
+                                                  (en, c) => c.CourseName)
+                                          });
+        foreach (var data in query2)
         {
-            new Student { Id = 1, Name = "Alice", Course = "Math" },
-            new Student { Id = 2, Name = "Bob", Course = "English" },
-            new Student { Id = 3, Name = "Charlie", Course = "Math" },
-            new Student { Id = 4, Name = "Diana", Course = "History" },
-            new Student { Id = 5, Name = "Edward", Course = "Math" },
-            new Student { Id = 6, Name = "Fiona", Course = "Science" },
-            new Student { Id = 7, Name = "George", Course = "English" },
-            new Student { Id = 8, Name = "Helen", Course = "Math" },
-            new Student { Id = 9, Name = "Irene", Course = "History" },
-            new Student { Id = 10, Name = "Jack", Course = "Science" }
-        };
-        string courseName = "Math";
-        var studentCount = students.Count(x => x.Course == courseName);
-        Console.WriteLine(studentCount);
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
+        Console.WriteLine("--------------------");
+    }
+    public void PerformAdditionalTasks2()
+    {
+        //Sort all students by their name in ascending order. Then, sort them by age in descending order.
+        var query1 = StudentList.OrderBy(s => s.Name).ThenByDescending(s => s.Age);
+        foreach (var data in query1)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
         Console.WriteLine("--------------------");
 
-        //Use Count to find how many numbers in a list are divisible by 3.
-        List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        var numDivisibleBy3 = numbers.Count(x => x % 3 == 0);
-        Console.WriteLine(numDivisibleBy3);
+        //Group all students by their department and display the total count of students in each department.
+        var query2 = StudentList.GroupBy(s => s.Department).Select(x => new { Department = x.Key, Count = x.Count() });
+        foreach (var data in query2)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
         Console.WriteLine("--------------------");
 
-        //Implement a query to count the number of orders placed in the last 7 days.
-        List<Order> orders = new List<Order>
+        //Use ToLookup to group courses by department and retrieve all courses belonging to a specific department(e.g., "Mathematics").
+        var query3 = CourseList.ToLookup(c => c.Department).Where(x => x.Key == "Mathematics");
+        foreach (var data in query3)
         {
-            new Order { Id = 1, OrderDate = DateTime.Now.AddDays(-1) },
-            new Order { Id = 2, OrderDate = DateTime.Now.AddDays(-2) },
-            new Order { Id = 3, OrderDate = DateTime.Now.AddDays(-3) },
-            new Order { Id = 4, OrderDate = DateTime.Now.AddDays(-4) },
-            new Order { Id = 5, OrderDate = DateTime.Now.AddDays(-5) },
-            new Order { Id = 6, OrderDate = DateTime.Now.AddDays(-6) },
-            new Order { Id = 7, OrderDate = DateTime.Now.AddDays(-7) },
-            new Order { Id = 8, OrderDate = DateTime.Now.AddDays(-8) },
-            new Order { Id = 9, OrderDate = DateTime.Now.AddDays(-9) },
-            new Order { Id = 10, OrderDate = DateTime.Now.AddDays(-10) }
-        };
-        var last7DaysOrders = orders.Count(x => x.OrderDate >= DateTime.Now.AddDays(-7));
-        Console.WriteLine(last7DaysOrders);
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
+        Console.WriteLine("--------------------");
+    }
+
+    public void PerformAdditionalTasks1()
+    {
+        //Retrieve all students who belong to the "Computer Science" department and are older than 20 years.
+        var query1 = StudentList.Where(s => s.Department == "Computer Science" && s.Age > 20);
+        foreach (var data in query1)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
         Console.WriteLine("--------------------");
 
-        //Use Count to determine how many employees in a company belong to a specific department.
-        List<Employee> employees = new List<Employee>
-        {
-            new Employee { Id = 1, Name = "Alice", Department = "HR" },
-            new Employee { Id = 2, Name = "Bob", Department = "IT" },
-            new Employee { Id = 3, Name = "Charlie", Department = "HR" },
-            new Employee { Id = 4, Name = "Diana", Department = "IT" },
-            new Employee { Id = 5, Name = "Edward", Department = "Finance" },
-            new Employee { Id = 6, Name = "Fiona", Department = "Finance" },
-            new Employee { Id = 7, Name = "George", Department = "IT" },
-            new Employee { Id = 8, Name = "Helen", Department = "HR" },
-            new Employee { Id = 9, Name = "Irene", Department = "Finance" },
-            new Employee { Id = 10, Name = "Jack", Department = "HR" }
-        };
-        string department = "IT";
-        var countSpecificDepartment = employees.Count(x => x.Department == department);
-        Console.WriteLine(countSpecificDepartment);
+        //Filter and display all course names from a mixed collection of objects using OfType<string>.
+        ArrayList mixed = new ArrayList() { 1, "CS", "MBA", 45, "Data Science", true };
+        var query2 = mixed.OfType<string>();
+        Console.WriteLine(JsonSerializer.Serialize(query2));
         Console.WriteLine("--------------------");
+
+    }
+
+    public void GetCourseWithNoEnrollMents()
+    {
+        var zeroEnrollmentList = CourseList.Where(x => !EnrollmentList.Select(x => x.CourseId).Contains(x.CourseId));
+
+        Console.WriteLine("----------------");
+        Console.WriteLine("Courses With Zero(0) Enrollments are:");
+        Console.WriteLine("----------------");
+        foreach (var data in zeroEnrollmentList)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(data.CourseName));
+        }
+    }
+
+    public void ViewStudentsWithMaxEnrollments()
+    {
+        var enrollments = (from student in StudentList
+                           join enrollment in EnrollmentList on student.StudentId equals enrollment.StudentId
+                           join course in CourseList on enrollment.CourseId equals course.CourseId
+                           select new { Name = student.Name, Course = course.CourseName }
+                           into enrollgroup
+                           group enrollgroup by enrollgroup.Name into tempgroup
+                           let coursecount = tempgroup.Count()
+                           orderby coursecount descending
+                           select new { Name = tempgroup.Key, CourseCount = coursecount, Courses = tempgroup.Select(x => x.Course) })
+                          ;
+
+        var maxenrollments = enrollments.Where(x => x.CourseCount == enrollments.FirstOrDefault().CourseCount);
+
+        Console.WriteLine("----------------");
+        Console.WriteLine("Student With Maximum Enrollments are:");
+        Console.WriteLine("----------------");
+        foreach (var data in maxenrollments)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
+    }
+
+    public void ViewEnrollments()
+    {
+        var enrollments = from student in StudentList
+                          join enrollment in EnrollmentList on student.StudentId equals enrollment.StudentId
+                          join course in CourseList on enrollment.CourseId equals course.CourseId
+                          select new { Name = student.Name, Course = course.CourseName } into enrollgroup
+                          group enrollgroup by enrollgroup.Name into tempgroup
+                          select new { Name = tempgroup.Key, CourseCount = tempgroup.Count(), Courses = tempgroup.Select(x => x.Course) }
+                          ;
+
+        Console.WriteLine("----------------");
+        Console.WriteLine("Enrollments are:");
+        Console.WriteLine("----------------");
+        foreach (var data in enrollments)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(data));
+        }
+    }
+
+    public void ViewCourseInDepartment()
+    {
+        Console.Write("Enter Department Name: ");
+        string departmentname = Console.ReadLine().Trim();
+
+        var departmentWiseCourse = CourseList.Where(c => c.Department.ToLower() == departmentname.ToLower())
+                                             .Select(c => c.CourseName)
+                                             .DefaultIfEmpty($"No course exists in '{departmentname}'");
+
+        Console.WriteLine("--------------------------------------------");
+        Console.WriteLine($"Courses in Department {departmentname} are:");
+        Console.WriteLine("--------------------------------------------");
+        foreach (var course in departmentWiseCourse)
+        {
+            Console.WriteLine(course);
+        }
+    }
+
+    public void ViewStudentByDepartment()
+    {
+        Console.Write("Enter Department Name: ");
+        string departmentname = Console.ReadLine().Trim();
+
+        var specificDepartmentStudents = StudentList
+                                            .Where(s => s.Department.ToLower() == departmentname.ToLower())
+                                            .DefaultIfEmpty(new Student { StudentId = 0, Name = $"No Student Exist in Department '{departmentname}'", Age = 0, Gender = "N/A", Department = "N/A" });
+        Console.WriteLine("---------------------------------------------");
+        Console.WriteLine($"Students in Department {departmentname} are:");
+        Console.WriteLine("---------------------------------------------");
+        foreach (var data in specificDepartmentStudents)
+        {
+            Console.WriteLine($"ID: {data.StudentId}, Name: {data.Name}, Age: {data.Age}, Gender: {data.Gender}, Department: {data.Department}");
+        }
+    }
+
+    public void FillListWithData()
+    {
+        StudentList = new List<Student>(){
+        new Student { StudentId = 1, Name = "Alice", Age = 22, Gender = "Female", Department = "Computer Science" },
+        new Student { StudentId = 2, Name = "Bob", Age = 19, Gender = "Male", Department = "Mathematics" },
+        new Student { StudentId = 3, Name = "Charlie", Age = 21, Gender = "Male", Department = "Physics" },
+        new Student { StudentId = 4, Name = "Diana", Age = 23, Gender = "Female", Department = "Computer Science" },
+        new Student { StudentId = 5, Name = "Edward", Age = 20, Gender = "Male", Department = "Mathematics" },
+        new Student { StudentId = 6, Name = "Fiona", Age = 22, Gender = "Female", Department = "Biology" },
+        new Student { StudentId = 7, Name = "George", Age = 24, Gender = "Male", Department = "Physics" },
+        new Student { StudentId = 8, Name = "Helen", Age = 25, Gender = "Female", Department = "Mathematics" },
+        new Student { StudentId = 9, Name = "Irene", Age = 20, Gender = "Female", Department = "Biology" },
+        new Student { StudentId = 10, Name = "Jack", Age = 18, Gender = "Male", Department = "Computer Science" }
+        };
+
+        CourseList = new List<Course>()
+        {
+            new Course { CourseId = 1, CourseName = "Data Structures", Department = "Computer Science" },
+            new Course { CourseId = 2, CourseName = "Calculus", Department = "Mathematics" },
+            new Course { CourseId = 3, CourseName = "Linear Algebra", Department = "Mathematics" },
+            new Course { CourseId = 4, CourseName = "Quantum Mechanics", Department = "Physics" },
+            new Course { CourseId = 5, CourseName = "Thermodynamics", Department = "Physics" },
+            new Course { CourseId = 6, CourseName = "Genetics", Department = "Biology" },
+            new Course { CourseId = 7, CourseName = "Biochemistry", Department = "Biology" },
+            new Course { CourseId = 8, CourseName = "Artificial Intelligence", Department = "Computer Science" },
+            new Course { CourseId = 9, CourseName = "Machine Learning", Department = "Computer Science" },
+            new Course { CourseId = 10, CourseName = "Statistics", Department = "Mathematics" }
+        };
+
+        EnrollmentList = new List<Enrollment>
+        {
+            new Enrollment { EnrollmentId = 1, StudentId = 10, CourseId = 1, EnrollmentDate = DateTime.Now.AddMonths(-2) },
+            new Enrollment { EnrollmentId = 2, StudentId = 10, CourseId = 8, EnrollmentDate = DateTime.Now.AddMonths(-1) },
+            new Enrollment { EnrollmentId = 3, StudentId = 2, CourseId = 2, EnrollmentDate = DateTime.Now.AddMonths(-3) },
+            new Enrollment { EnrollmentId = 4, StudentId = 3, CourseId = 4, EnrollmentDate = DateTime.Now.AddMonths(-1) },
+            new Enrollment { EnrollmentId = 5, StudentId = 4, CourseId = 9, EnrollmentDate = DateTime.Now.AddMonths(-2) },
+            new Enrollment { EnrollmentId = 6, StudentId = 5, CourseId = 3, EnrollmentDate = DateTime.Now.AddMonths(-4) },
+            new Enrollment { EnrollmentId = 7, StudentId = 6, CourseId = 7, EnrollmentDate = DateTime.Now.AddMonths(-1) },
+            new Enrollment { EnrollmentId = 8, StudentId = 7, CourseId = 5, EnrollmentDate = DateTime.Now.AddMonths(-3) },
+            new Enrollment { EnrollmentId = 9, StudentId = 8, CourseId = 3, EnrollmentDate = DateTime.Now.AddMonths(-2) },
+            new Enrollment { EnrollmentId = 10, StudentId = 9, CourseId = 6, EnrollmentDate = DateTime.Now.AddMonths(-1) }
+        };
+
     }
 }
 
-public class Product
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public decimal Price { get; set; }
-}
-
-public class Student
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Course { get; set; }
-}
-
-public class Order
-{
-    public int Id { get; set; }
-    public DateTime OrderDate { get; set; }
-}
-
-public class Employee
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Department { get; set; }
-}
-
----------------------------------------------------------------------------------------------------------------
-
-Practice 7
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 internal class Program
 {
+    public List<Customer> CustomerList = new List<Customer>();
+
+    public List<Product> ProductList = new List<Product>();
+
+    public List<Order> OrderList = new List<Order>();
+
     static void Main(string[] args)
     {
-        //Use Single to find the product with a unique ID from a product list.Throw an exception if not found.
-        List<Product> products = new List<Product>
-        {
-            new Product { Id = 1, Name = "Notebook", Price = 15.99m },
-            new Product { Id = 2, Name = "Pen", Price = 2.49m },
-            new Product { Id = 3, Name = "Backpack", Price = 45.99m },
-            new Product { Id = 4, Name = "Ruler", Price = 1.29m },
-            new Product { Id = 5, Name = "Marker", Price = 3.49m },
-            new Product { Id = 6, Name = "Stapler", Price = 5.99m },
-            new Product { Id = 7, Name = "Eraser", Price = 0.99m },
-            new Product { Id = 8, Name = "Glue", Price = 2.29m },
-            new Product { Id = 9, Name = "Scissors", Price = 6.99m },
-            new Product { Id = 10, Name = "Highlighter", Price = 4.49m }
-        };
-        int targetId = 5;
-        try
-        {
-            var uniqueProduct = products.Single(p => p.Id == targetId);
-            Console.WriteLine(JsonSerializer.Serialize(uniqueProduct));
-        }
-        catch (InvalidOperationException ex)
-        {
-            Console.WriteLine("Error: The product was not found or there are multiple products with the same ID.");
-        }
-        Console.WriteLine("-------------------");
+        Program program = new Program();
 
-        //Use SingleOrDefault to retrieve a user from a list by their unique username. Return null if no match is found.
-        List<User> users = new List<User>
+        program.FillListWithData();
+        program.Task1();
+        program.Task2();
+        program.Task3();
+        program.Task4();
+    }
+
+    public void Task4()
+    {
+        //Use the let keyword to calculate the total price(price × quantity) for each order and filter orders with a total price above $100.
+        var query1 = from product in ProductList
+                     join order in OrderList on product.ProductId equals order.ProductId
+                     let totalprice = order.Quantity * product.Price
+                     where totalprice > 100
+                     select new
+                     {
+                         Product = product.ProductName,
+                         Price = product.Price,
+                         Quantity = order.Quantity,
+                         TotalPrice = totalprice
+                     };
+
+        foreach (var item in query1)
         {
-            new User { Id = 1, Username = "alice123", Email = "alice@example.com" },
-            new User { Id = 2, Username = "bob456", Email = "bob@example.com" },
-            new User { Id = 3, Username = "charlie789", Email = "charlie@example.com" },
-            new User { Id = 4, Username = "diana012", Email = "diana@example.com" },
-            new User { Id = 5, Username = "edward345", Email = "edward@example.com" },
-            new User { Id = 6, Username = "fiona678", Email = "fiona@example.com" },
-            new User { Id = 7, Username = "george901", Email = "george@example.com" },
-            new User { Id = 8, Username = "helen234", Email = "helen@example.com" },
-            new User { Id = 9, Username = "irene567", Email = "irene@example.com" },
-            new User { Id = 10, Username = "jack890", Email = "jack@example.com" }
-        };
-        string targetUsername = "edward345";
-        var uniqueUser = users.SingleOrDefault(x => x.Username == targetUsername);
-        Console.WriteLine(JsonSerializer.Serialize(uniqueUser));
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
         Console.WriteLine("--------------------");
 
-        //Write a query to find the student with a unique roll number from a list of students.
-        List<Student> students = new List<Student>
+        //Use the into keyword to group customers by their city and filter cities with more than 5 customers.
+        var query2 = from customer in CustomerList
+                     group customer by customer.City into citygroup
+                     let customercount = citygroup.Select(x => x.Name).Count()
+                     where customercount > 5
+                     select new
+                     {
+                         City = citygroup.Key,
+                         Count = customercount,
+                         Customers = citygroup.Select(x => x.Name),
+                     }
+                    ;
+        foreach (var item in query2)
         {
-            new Student { RollNumber = "A123", Name = "Alice", Grade = 88 },
-            new Student { RollNumber = "B456", Name = "Bob", Grade = 92 },
-            new Student { RollNumber = "C789", Name = "Charlie", Grade = 85 },
-            new Student { RollNumber = "D012", Name = "Diana", Grade = 95 },
-            new Student { RollNumber = "E345", Name = "Edward", Grade = 78 },
-            new Student { RollNumber = "F678", Name = "Fiona", Grade = 89 },
-            new Student { RollNumber = "G901", Name = "George", Grade = 91 },
-            new Student { RollNumber = "H234", Name = "Helen", Grade = 84 },
-            new Student { RollNumber = "I567", Name = "Irene", Grade = 87 },
-            new Student { RollNumber = "J890", Name = "Jack", Grade = 90 }
-        };
-        string targetRollNo = "Bond007";
-        var uniqueStudent = students.SingleOrDefault(x => x.RollNumber == targetRollNo);
-        Console.WriteLine(JsonSerializer.Serialize(uniqueStudent));
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
         Console.WriteLine("--------------------");
 
-        //Use SingleOrDefault to retrieve a transaction from a list with a specific transaction ID.
-        //Ensure the code handles cases with no match.
-        List<Transaction> transactions = new List<Transaction>
+        //Write a LINQ query to group products by category,
+        //calculate the average price per category, and display the result.
+        var query3 = from product in ProductList
+                     group product by product.Category into categorygroup
+                     let average = Math.Round(categorygroup.Average(x => x.Price), 2)
+                     select new
+                     {
+                         ProductCategory = categorygroup.Key,
+                         AveragePrice = average,
+                     }
+                    ;
+        foreach (var item in query3)
         {
-            new Transaction { TransactionId = "T001", Amount = 100.50m },
-            new Transaction { TransactionId = "T002", Amount = 200.75m },
-            new Transaction { TransactionId = "T003", Amount = 50.25m },
-            new Transaction { TransactionId = "T004", Amount = 300.10m },
-            new Transaction { TransactionId = "T005", Amount = 150.00m },
-            new Transaction { TransactionId = "T006", Amount = 120.75m },
-            new Transaction { TransactionId = "T007", Amount = 60.30m },
-            new Transaction { TransactionId = "T008", Amount = 90.50m },
-            new Transaction { TransactionId = "T009", Amount = 180.60m },
-            new Transaction { TransactionId = "T010", Amount = 70.40m }
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+
+        //Use let to define an intermediate variable for stock status (e.g., "Low Stock" if stock < 10)
+        //and filter products based on this status.
+        var targetstatus = "Low Stock";
+
+        var query4 = from product in ProductList
+                     let status = product.Stock < 10 ? "Low Stock" : "Medium Stock"
+                     where status == targetstatus
+                     select product.ProductName
+                     ;
+        foreach (var item in query4)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+
+        //Use into to create a continuation query that first filters premium customers
+        //and then sorts them by their names.
+        var query5 = from customer in CustomerList
+                     where customer.IsPremium == true
+                     select customer into premiumcustomers
+                     orderby premiumcustomers.Name
+                     select new
+                     {
+                         Name = premiumcustomers.Name,
+                         City = premiumcustomers.City,
+                     }
+                    ;
+        foreach (var item in query5)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+    }
+
+    public void Task3()
+    {
+        //Use Intersect to find common products sold between two specific categories.
+        var category1 = "Home Appliances";
+        var category2 = "Electronics";
+        var category1list = ProductList.Where(x => x.Category == category1).Select(x => x.ProductName);
+        var category2list = ProductList.Where(x => x.Category == category2).Select(x => x.ProductName);
+
+        var query1 = category1list.Intersect(category2list);
+        foreach (var item in query1)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+
+        //Use Union to merge two lists of products from different warehouses, eliminating duplicates.
+        var Warehouse1Products = new List<Product>
+        {
+            new Product { ProductId = 1, ProductName = "Laptop", Category = "Electronics", Price = 1200.99m, Stock = 15 },
+            new Product { ProductId = 2, ProductName = "Smartphone", Category = "Electronics", Price = 899.49m, Stock = 25 },
+            new Product { ProductId = 3, ProductName = "Oven", Category = "Home Appliances", Price = 199.99m, Stock = 50 },
+            new Product { ProductId = 4, ProductName = "Sofa", Category = "Furniture", Price = 499.99m, Stock = 8 },
+            new Product { ProductId = 5, ProductName = "Dining Table", Category = "Furniture", Price = 799.99m, Stock = 5 },
+            new Product { ProductId = 6, ProductName = "T-Shirt", Category = "Clothing", Price = 25.99m, Stock = 100 }
         };
-        string targetTransactionID = "T0002";
-        var uniqueTransaction = transactions.SingleOrDefault(x => x.TransactionId == targetTransactionID);
-        if (uniqueTransaction != null)
+        var Warehouse2Products = new List<Product>
         {
-            Console.WriteLine(JsonSerializer.Serialize(uniqueTransaction));
+            new Product { ProductId = 3, ProductName = "Oven", Category = "Home Appliances", Price = 199.99m, Stock = 50 }, // Duplicate
+            new Product { ProductId = 7, ProductName = "Jeans", Category = "Clothing", Price = 49.99m, Stock = 75 },
+            new Product { ProductId = 8, ProductName = "Jacket", Category = "Clothing", Price = 99.99m, Stock = 30 },
+            new Product { ProductId = 9, ProductName = "Blender", Category = "Kitchen", Price = 89.99m, Stock = 40 },
+            new Product { ProductId = 10, ProductName = "Toaster", Category = "Kitchen", Price = 49.99m, Stock = 35 },
+            new Product { ProductId = 11, ProductName = "Microwave", Category = "Kitchen", Price = 150.00m, Stock = 20 } // Unique to Warehouse2
+        };
+
+        var query2 = Warehouse1Products.Union(Warehouse2Products).Select(x => new { Product = x.ProductName, Category = x.Category, Price = x.Price });
+        foreach (var item in query2)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+
+        //Use TakeWhile to retrieve orders from a list until an order with quantity less than 5 is encountered.
+        var query3 = OrderList.TakeWhile(x => x.Quantity > 5);
+        foreach (var item in query3)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+
+        //Demonstrate Deferred Execution by modifying the product list after defining a LINQ query and observe the impact on the query results.
+        var query4 = OrderList.Where(x => x.Quantity > 6);
+        OrderList.Add(new Order { OrderId = 11, CustomerId = 9, ProductId = 9, Quantity = 7, OrderDate = DateTime.Now.AddDays(-30) });
+        foreach (var item in query4)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+
+        //Demonstrate Immediate Execution by converting a query result to a list using ToList.
+        var query5 = OrderList.Where(x => x.Quantity > 7).ToList();
+        OrderList.Add(new Order { OrderId = 12, CustomerId = 1, ProductId = 9, Quantity = 15, OrderDate = DateTime.Now.AddDays(-30) });
+        foreach (var item in query5)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
+        Console.WriteLine("--------------------");
+    }
+    public void Task2()
+    {
+        //Use Average to calculate the average price of products in a specific category.
+        string targetCategory = "Electronics";
+        var query1 = ProductList.Where(x => x.Category == targetCategory).Average(x => x.Price);
+        Console.WriteLine(Math.Round(query1, 2));
+        Console.WriteLine("--------------------");
+
+        //Use Count to find how many orders were placed in the last 30 days.
+        var today = DateTime.Today;
+        var query2 = OrderList.Where(x => x.OrderDate >= today.AddDays(-30)).Count();
+        Console.WriteLine(query2);
+        Console.WriteLine("--------------------");
+
+        //Use SingleOrDefault to retrieve a product with a specific product ID, and handle cases where the product is not found.
+        var query3 = ProductList.SingleOrDefault(x => x.ProductId == 1);
+        if (query3 != null)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(query3));
         }
         else
         {
-            Console.WriteLine("No Transaction Found!!");
+            Console.WriteLine("Product Not Found!!");
         }
         Console.WriteLine("--------------------");
 
-        //Use Single to find the book with a unique ISBN from a catalog.
-        List<Book> books = new List<Book>
+        //Use DefaultIfEmpty to handle a scenario where there are no orders for a specific date.Return a default message if the list is empty.
+        var targetDate = DateTime.Now.AddDays(-3).Date;
+        var query4 = OrderList.Where(x => x.OrderDate == targetDate).DefaultIfEmpty(new Order { OrderId = 0, CustomerId = 0, ProductId = 0, Quantity = 0, OrderDate = DateTime.MinValue });
+        foreach (var item in query4)
         {
-            new Book { ISBN = "978-3-16-148410-0", Title = "The Great Book" },
-            new Book { ISBN = "978-0-06-112241-5", Title = "Learning C#" },
-            new Book { ISBN = "978-1-4028-9462-6", Title = "The Art of Programming" },
-            new Book { ISBN = "978-0-201-63361-0", Title = "Introduction to Algorithms" },
-            new Book { ISBN = "978-1-56619-909-4", Title = "Clean Code" },
-            new Book { ISBN = "978-0-262-13472-9", Title = "Design Patterns" },
-            new Book { ISBN = "978-0-13-235088-4", Title = "Code Complete" },
-            new Book { ISBN = "978-1-59327-592-9", Title = "The Pragmatic Programmer" },
-            new Book { ISBN = "978-0-321-63550-2", Title = "Effective Java" },
-            new Book { ISBN = "978-0-596-52068-7", Title = "Head First Design Patterns" }
-        };
-        string targetISBN = "978-0-262-13472-9";
-        var uniqueISBN = books.SingleOrDefault(x => x.ISBN == targetISBN);
-        Console.WriteLine(JsonSerializer.Serialize(uniqueISBN));
+            if (item.OrderId == 0)
+            {
+                Console.WriteLine($"No orders found for the date {targetDate}");
+            }
+            else
+            {
+                Console.WriteLine(JsonSerializer.Serialize(item));
+            }
+        }
+        Console.WriteLine("--------------------");
+
+        //Use Take to retrieve the first 5 customers from the customer list.
+        var query5 = CustomerList.Take(5);
+        foreach (var item in query5)
+        {
+            Console.WriteLine(JsonSerializer.Serialize(item));
+        }
         Console.WriteLine("--------------------");
     }
-}
-public class Product
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public decimal Price { get; set; }
-}
-
-public class User
-{
-    public int Id { get; set; }
-    public string Username { get; set; }
-    public string Email { get; set; }
-}
-
-public class Student
-{
-    public string RollNumber { get; set; }
-    public string Name { get; set; }
-    public int Grade { get; set; }
-}
-
-public class Transaction
-{
-    public string TransactionId { get; set; }
-    public decimal Amount { get; set; }
-}
-
-public class Book
-{
-    public string ISBN { get; set; }
-    public string Title { get; set; }
-}
-
--------------------------------------------------------------------------------------------------------------------
-
-Practice 8
-
-internal class Program
-{
-    static void Main(string[] args)
+    public void Task1()
     {
-        //Use DefaultIfEmpty to handle cases where a query to find high - priority tasks returns no results.
-        List<Task> tasks = new List<Task>
+        //Use Select to create a list of product names and their prices.
+        var query1 = ProductList.Select(x => new { Name = x.ProductName, Price = x.Price });
+        foreach (var item in query1)
         {
-            new Task { Id = 1, Name = "Design Website", Priority = "High" },
-            new Task { Id = 2, Name = "Write Documentation", Priority = "Low" },
-            new Task { Id = 3, Name = "Fix Bugs", Priority = "Medium" },
-            new Task { Id = 4, Name = "Test Features", Priority = "High" },
-            new Task { Id = 5, Name = "Develop Backend", Priority = "Medium" },
-            new Task { Id = 6, Name = "Refactor Code", Priority = "High" },
-            new Task { Id = 7, Name = "Implement Authentication", Priority = "High" },
-            new Task { Id = 8, Name = "Deploy to Server", Priority = "Low" },
-            new Task { Id = 9, Name = "Write Unit Tests", Priority = "Medium" },
-            new Task { Id = 10, Name = "Optimize Performance", Priority = "High" }
-        };
-        var highPriorityTasks = tasks.Where(t => t.Priority == "Very High")
-                                     .DefaultIfEmpty(new Task { Id = 0, Name = "No Tasks Found", Priority = "N/A" });
-        foreach (var task in highPriorityTasks)
-        {
-            Console.WriteLine(JsonSerializer.Serialize(task));
+            Console.WriteLine(JsonSerializer.Serialize(item));
         }
         Console.WriteLine("--------------------");
 
-        //Write a LINQ query to find products in a specific category.Return a default message if the category is empty.
-        List<Product> products = new List<Product>
-        {
-            new Product { Id = 1, Name = "Laptop", Category = "Electronics", Price = 1000m },
-            new Product { Id = 2, Name = "Smartphone", Category = "Electronics", Price = 800m },
-            new Product { Id = 3, Name = "Headphones", Category = "Electronics", Price = 150m },
-            new Product { Id = 4, Name = "Sofa", Category = "Furniture", Price = 500m },
-            new Product { Id = 5, Name = "Coffee Table", Category = "Furniture", Price = 100m },
-            new Product { Id = 6, Name = "Dining Set", Category = "Furniture", Price = 300m },
-            new Product { Id = 7, Name = "T-Shirt", Category = "Clothing", Price = 25m },
-            new Product { Id = 8, Name = "Jeans", Category = "Clothing", Price = 50m },
-            new Product { Id = 9, Name = "Sneakers", Category = "Clothing", Price = 80m },
-            new Product { Id = 10, Name = "Jacket", Category = "Clothing", Price = 120m }
-        };
-        var productInfo = products.Where(p => p.Category == "Sports")
-                                  .DefaultIfEmpty(new Product { Id = 0, Name = "No Products Found", Category = "N/A", Price = 0 });
-        foreach (var info in productInfo)
-        {
-            Console.WriteLine(JsonSerializer.Serialize(info));
-        }
+        //Use All to check if all customers are from the same city.
+        var query2 = CustomerList.All(x => x.City == CustomerList.FirstOrDefault().City);
+        Console.WriteLine(query2);
         Console.WriteLine("--------------------");
 
-        //Use DefaultIfEmpty to ensure a collection of employees in a department always returns at least one placeholder.
-        List<Employee> employees = new List<Employee>
-        {
-            new Employee { Id = 1, Name = "Alice", Department = "HR" },
-            new Employee { Id = 2, Name = "Bob", Department = "IT" },
-            new Employee { Id = 3, Name = "Charlie", Department = "HR" },
-            new Employee { Id = 4, Name = "Diana", Department = "IT" },
-            new Employee { Id = 5, Name = "Edward", Department = "Finance" },
-            new Employee { Id = 6, Name = "Fiona", Department = "Finance" },
-            new Employee { Id = 7, Name = "George", Department = "IT" },
-            new Employee { Id = 8, Name = "Helen", Department = "HR" },
-            new Employee { Id = 9, Name = "Irene", Department = "Finance" },
-            new Employee { Id = 10, Name = "Jack", Department = "HR" }
-        };
-        var EmployeeInfo = employees.Where(e => e.Department == "Sales")
-                                  .DefaultIfEmpty(new Employee { Id = 0, Name = "No Products Found", Department = "No Department Found" });
-        foreach (var info in EmployeeInfo)
-        {
-            Console.WriteLine(JsonSerializer.Serialize(info));
-        }
+        //Use Any to verify if there is at least one premium customer in the dataset.
+        var query3 = CustomerList.Any(x => x.IsPremium);
+        Console.WriteLine(JsonSerializer.Serialize(query3));
         Console.WriteLine("--------------------");
 
-        //Write a LINQ query to retrieve all orders for a specific date and return "No Orders Found" if none exist.
-        List<Order> orders = new List<Order>
-        {
-            new Order { Id = 1, OrderDate = DateTime.Now.AddDays(-1) },
-            new Order { Id = 2, OrderDate = DateTime.Now.AddDays(-2) },
-            new Order { Id = 3, OrderDate = DateTime.Now.AddDays(-3) },
-            new Order { Id = 4, OrderDate = DateTime.Now.AddDays(-4) },
-            new Order { Id = 5, OrderDate = DateTime.Now.AddDays(-5) },
-            new Order { Id = 6, OrderDate = DateTime.Now.AddDays(-6) },
-            new Order { Id = 7, OrderDate = DateTime.Now.AddDays(-7) },
-            new Order { Id = 8, OrderDate = DateTime.Now.AddDays(-8) },
-            new Order { Id = 9, OrderDate = DateTime.Now.AddDays(-9) },
-            new Order { Id = 10, OrderDate = DateTime.Now.AddDays(-10) }
-        };
-        var orderInfo = orders.Where(o => o.OrderDate >= DateTime.Now.AddDays(-3))
-                                  .DefaultIfEmpty(new Order { Id = 0, OrderDate = DateTime.MinValue });
-        foreach (var info in orderInfo)
-        {
-            Console.WriteLine(JsonSerializer.Serialize(info));
-        }
+        //Use Contains to check if a specific product exists in the product list by name.
+        var query4 = ProductList.Any(x => x.ProductName == "Laptop");
+        Console.WriteLine(JsonSerializer.Serialize(query4));
         Console.WriteLine("--------------------");
 
-        //Use DefaultIfEmpty to provide a default value when filtering a list of customers.
-        List<Customer> customers = new List<Customer>
-        {
-            new Customer { Id = 1, Name = "Alice", City = "New York" },
-            new Customer { Id = 2, Name = "Bob", City = "Los Angeles" },
-            new Customer { Id = 3, Name = "Charlie", City = "Chicago" },
-            new Customer { Id = 4, Name = "Diana", City = "Miami" },
-            new Customer { Id = 5, Name = "Edward", City = "Dallas" },
-            new Customer { Id = 6, Name = "Fiona", City = "Boston" },
-            new Customer { Id = 7, Name = "George", City = "San Francisco" },
-            new Customer { Id = 8, Name = "Helen", City = "Chicago" },
-            new Customer { Id = 9, Name = "Irene", City = "Los Angeles" },
-            new Customer { Id = 10, Name = "Jack", City = "New York" }
-        };
-        var customerInfo = customers.Where(c => c.City == "Ahmedabad")
-                                  .DefaultIfEmpty(new Customer { Id = 0, Name = "Name Not Found",City="City Not Found" });
-        foreach (var info in customerInfo)
-        {
-            Console.WriteLine(JsonSerializer.Serialize(info));
-        }
+        //Use Aggregate to concatenate all customer names into a single string, separated by commas.
+        var query5 = CustomerList.Select(x => x.Name).Aggregate((x, y) => $"{x},{y}");
+        Console.WriteLine(JsonSerializer.Serialize(query5));
         Console.WriteLine("--------------------");
     }
-}
-public class Task
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Priority { get; set; }
-}
 
-public class Product
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Category { get; set; }
-    public decimal Price { get; set; }
+    public void FillListWithData()
+    {
+        CustomerList = new List<Customer>
+        {
+            new Customer { CustomerId = 1, Name = "Alice", City = "New York", IsPremium = true },
+            new Customer { CustomerId = 2, Name = "Bob", City = "Houston", IsPremium = false },
+            new Customer { CustomerId = 3, Name = "Charlie", City = "Chicago", IsPremium = true },
+            new Customer { CustomerId = 4, Name = "Diana", City = "Houston", IsPremium = false },
+            new Customer { CustomerId = 5, Name = "Edward", City = "Phoenix", IsPremium = true },
+            new Customer { CustomerId = 6, Name = "Fiona", City = "Chicago", IsPremium = false },
+            new Customer { CustomerId = 7, Name = "George", City = "New York", IsPremium = true },
+            new Customer { CustomerId = 8, Name = "Helen", City = "Chicago", IsPremium = false },
+            new Customer { CustomerId = 9, Name = "Irene", City = "Chicago", IsPremium = true },
+            new Customer { CustomerId = 10, Name = "Jack", City = "Houston", IsPremium = false },
+            new Customer { CustomerId = 11, Name = "Kim", City = "Chicago", IsPremium = false },
+            new Customer { CustomerId = 12, Name = "Laura", City = "Los Angeles", IsPremium = true },
+            new Customer { CustomerId = 13, Name = "Mike", City = "Houston", IsPremium = false },
+            new Customer { CustomerId = 14, Name = "Nina", City = "Phoenix", IsPremium = false },
+            new Customer { CustomerId = 15, Name = "Oscar", City = "San Francisco", IsPremium = true },
+            new Customer { CustomerId = 16, Name = "Paul", City = "Houston", IsPremium = true },
+            new Customer { CustomerId = 17, Name = "Quincy", City = "Los Angeles", IsPremium = true },
+            new Customer { CustomerId = 18, Name = "Rita", City = "Chicago", IsPremium = false },
+            new Customer { CustomerId = 19, Name = "Steve", City = "Houston", IsPremium = true },
+            new Customer { CustomerId = 20, Name = "Tina", City = "Phoenix", IsPremium = true }
+        };
+
+        ProductList = new List<Product>()
+        {
+            new Product { ProductId = 1, ProductName = "Laptop", Category = "Electronics", Price = 1200.99m, Stock = 15 },
+            new Product { ProductId = 2, ProductName = "Smartphone", Category = "Electronics", Price = 899.49m, Stock = 25 },
+            new Product { ProductId = 3, ProductName = "Oven", Category = "Electronics", Price = 199.99m, Stock = 50 },
+            new Product { ProductId = 3, ProductName = "Oven", Category = "Home Appliances", Price = 199.99m, Stock = 50 },
+            new Product { ProductId = 4, ProductName = "Sofa", Category = "Furniture", Price = 499.99m, Stock = 8 },
+            new Product { ProductId = 5, ProductName = "Dining Table", Category = "Furniture", Price = 799.99m, Stock = 5 },
+            new Product { ProductId = 6, ProductName = "T-Shirt", Category = "Clothing", Price = 25.99m, Stock = 100 },
+            new Product { ProductId = 7, ProductName = "Jeans", Category = "Clothing", Price = 49.99m, Stock = 75 },
+            new Product { ProductId = 8, ProductName = "Jacket", Category = "Clothing", Price = 99.99m, Stock = 30 },
+            new Product { ProductId = 9, ProductName = "Blender", Category = "Kitchen", Price = 89.99m, Stock = 40 },
+            new Product { ProductId = 10, ProductName = "Toaster", Category = "Kitchen", Price = 49.99m, Stock = 35 }
+
+        };
+
+        OrderList = new List<Order>
+        {
+            new Order { OrderId = 1, CustomerId = 1, ProductId = 1, Quantity = 6, OrderDate = DateTime.Now.AddDays(-2) },
+            new Order { OrderId = 2, CustomerId = 2, ProductId = 2, Quantity = 7, OrderDate = DateTime.Now.AddDays(-5) },
+            new Order { OrderId = 3, CustomerId = 3, ProductId = 3, Quantity = 8, OrderDate = DateTime.Now.AddDays(-1) },
+            new Order { OrderId = 4, CustomerId = 4, ProductId = 4, Quantity = 9, OrderDate = DateTime.Now.AddDays(-10) },
+            new Order { OrderId = 5, CustomerId = 5, ProductId = 5, Quantity = 10, OrderDate = DateTime.Now.AddDays(-7) },
+            new Order { OrderId = 6, CustomerId = 6, ProductId = 6, Quantity = 4, OrderDate = DateTime.Now.AddDays(-3) },
+            new Order { OrderId = 7, CustomerId = 7, ProductId = 7, Quantity = 3, OrderDate = DateTime.Now.AddDays(-15) },
+            new Order { OrderId = 8, CustomerId = 8, ProductId = 8, Quantity = 2, OrderDate = DateTime.Now.AddDays(-20) },
+            new Order { OrderId = 9, CustomerId = 9, ProductId = 9, Quantity = 1, OrderDate = DateTime.Now.AddDays(-30) },
+            new Order { OrderId = 10, CustomerId = 10, ProductId = 10, Quantity = 1, OrderDate = DateTime.Now.AddDays(-25) }
+        };
+
+    }
 }
-
-public class Employee
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Department { get; set; }
-}
-
-public class Order
-{
-    public int Id { get; set; }
-    public DateTime OrderDate { get; set; }
-}
-
-public class Customer
-{
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string City { get; set; }
-}
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 public class Customer
 {
@@ -580,140 +632,819 @@ public class Order
     public DateTime OrderDate { get; set; }
 }
 
-public class Program
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+P-1
+
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
+class Program
 {
-    public static void Main()
+    static async Task Main(string[] args)
     {
-        // Data for Customers
-        List<Customer> customers = new List<Customer>
-        {
-            new Customer { CustomerId = 1, Name = "Alice", City = "New York", IsPremium = true },
-            new Customer { CustomerId = 2, Name = "Bob", City = "Los Angeles", IsPremium = false },
-            new Customer { CustomerId = 3, Name = "Charlie", City = "Chicago", IsPremium = true },
-            new Customer { CustomerId = 4, Name = "Diana", City = "Houston", IsPremium = false },
-            new Customer { CustomerId = 5, Name = "Edward", City = "Phoenix", IsPremium = true },
-            new Customer { CustomerId = 6, Name = "Fiona", City = "San Francisco", IsPremium = false },
-            new Customer { CustomerId = 7, Name = "George", City = "New York", IsPremium = true },
-            new Customer { CustomerId = 8, Name = "Helen", City = "Los Angeles", IsPremium = false },
-            new Customer { CustomerId = 9, Name = "Irene", City = "Chicago", IsPremium = true },
-            new Customer { CustomerId = 10, Name = "Jack", City = "Houston", IsPremium = false }
-        };
+        string filePath = "example.txt";
 
-        // Data for Products
-        List<Product> products = new List<Product>
-        {
-            new Product { ProductId = 1, ProductName = "Laptop", Category = "Electronics", Price = 1200.99m, Stock = 15 },
-            new Product { ProductId = 2, ProductName = "Smartphone", Category = "Electronics", Price = 899.49m, Stock = 25 },
-            new Product { ProductId = 3, ProductName = "Headphones", Category = "Electronics", Price = 199.99m, Stock = 50 },
-            new Product { ProductId = 4, ProductName = "Sofa", Category = "Furniture", Price = 499.99m, Stock = 8 },
-            new Product { ProductId = 5, ProductName = "Dining Table", Category = "Furniture", Price = 799.99m, Stock = 5 },
-            new Product { ProductId = 6, ProductName = "T-Shirt", Category = "Clothing", Price = 25.99m, Stock = 100 },
-            new Product { ProductId = 7, ProductName = "Jeans", Category = "Clothing", Price = 49.99m, Stock = 75 },
-            new Product { ProductId = 8, ProductName = "Jacket", Category = "Clothing", Price = 99.99m, Stock = 30 },
-            new Product { ProductId = 9, ProductName = "Blender", Category = "Kitchen", Price = 89.99m, Stock = 40 },
-            new Product { ProductId = 10, ProductName = "Toaster", Category = "Kitchen", Price = 49.99m, Stock = 35 }
-        };
+        // Write some content to the file
+        File.WriteAllText(filePath, "This is an example of Async and Await!");
 
-        // Data for Orders
-        List<Order> orders = new List<Order>
-        {
-            new Order { OrderId = 1, CustomerId = 1, ProductId = 1, Quantity = 1, OrderDate = DateTime.Now.AddDays(-2) },
-            new Order { OrderId = 2, CustomerId = 2, ProductId = 2, Quantity = 2, OrderDate = DateTime.Now.AddDays(-5) },
-            new Order { OrderId = 3, CustomerId = 3, ProductId = 3, Quantity = 1, OrderDate = DateTime.Now.AddDays(-1) },
-            new Order { OrderId = 4, CustomerId = 4, ProductId = 4, Quantity = 1, OrderDate = DateTime.Now.AddDays(-10) },
-            new Order { OrderId = 5, CustomerId = 5, ProductId = 5, Quantity = 2, OrderDate = DateTime.Now.AddDays(-7) },
-            new Order { OrderId = 6, CustomerId = 6, ProductId = 6, Quantity = 5, OrderDate = DateTime.Now.AddDays(-3) },
-            new Order { OrderId = 7, CustomerId = 7, ProductId = 7, Quantity = 3, OrderDate = DateTime.Now.AddDays(-15) },
-            new Order { OrderId = 8, CustomerId = 8, ProductId = 8, Quantity = 4, OrderDate = DateTime.Now.AddDays(-20) },
-            new Order { OrderId = 9, CustomerId = 9, ProductId = 9, Quantity = 1, OrderDate = DateTime.Now.AddDays(-30) },
-            new Order { OrderId = 10, CustomerId = 10, ProductId = 10, Quantity = 1, OrderDate = DateTime.Now.AddDays(-25) }
-        };
+        // Read file asynchronously
+        string content = await ReadFileAsync(filePath);
 
-        // LINQ Queries can be performed here as required.
-        Console.WriteLine("Data generated successfully!");
+        Console.WriteLine("File Content:");
+        Console.WriteLine(content);
+    }
+
+    static async Task<string> ReadFileAsync(string filePath)
+    {
+        using (StreamReader reader = new StreamReader(filePath))
+        {
+            // Simulate a delay to show async behavior
+            await Task.Delay(1000);
+            return await reader.ReadToEndAsync();
+        }
     }
 }
 
-----------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+P-2
+
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        Console.WriteLine("Fetching data...");
+        string data = await FetchDataFromApiAsync();
+        Console.WriteLine("Data fetched:");
+        Console.WriteLine(data);
+    }
+
+    static async Task<string> FetchDataFromApiAsync()
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            string url = "https://jsonplaceholder.typicode.com/posts/1"; // Sample API
+            string response = await client.GetStringAsync(url);
+            return response;
+        }
+    }
+}
+
+---------------------------------------------------------------------------------------
+
+P-3
+
+using System;
+using System.Linq;
+
+public static class StringExtensions
+{
+    // Extension method to count vowels in a string
+    public static int CountVowels(this string str)
+    {
+        char[] vowels = { 'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U' };
+        return str.Count(c => vowels.Contains(c));
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        string input = "Hello, World!";
+        int vowelCount = input.CountVowels(); // Using the extension method
+        Console.WriteLine($"The number of vowels in '{input}' is: {vowelCount}");
+    }
+}
+
+---------------------------------------------------------------------------------------
+
+P-4
+
+using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        string fileUrl = "https://example.com/sample.txt";
+        string localPath = "downloadedFile.txt";
+
+        Console.WriteLine("Starting file download...");
+        await DownloadFileAsync(fileUrl, localPath);
+        Console.WriteLine($"File downloaded and saved at: {localPath}");
+    }
+
+    static async Task DownloadFileAsync(string url, string destinationPath)
+    {
+        using HttpClient client = new HttpClient();
+        using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+
+        response.EnsureSuccessStatusCode();
+
+        using Stream contentStream = await response.Content.ReadAsStreamAsync();
+        using FileStream fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        {
+            await fileStream.WriteAsync(buffer, 0, bytesRead);
+            Console.WriteLine($"Downloaded {fileStream.Length} bytes...");
+        }
+    }
+}
+
+----------
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        Console.WriteLine("Fetching customer details...");
+        var customer = await GetCustomerDetailsAsync(1); // Simulated customer ID
+        Console.WriteLine($"Customer Name: {customer.Name}, Email: {customer.Email}");
+    }
+
+    static async Task<Customer> GetCustomerDetailsAsync(int customerId)
+    {
+        await Task.Delay(2000); // Simulating database query delay
+        return new Customer { Id = customerId, Name = "John Doe", Email = "john.doe@example.com" };
+    }
+}
+
+public class Customer
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+}
+
+----------
+
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        Console.WriteLine("Fetching product details from multiple stores...");
+        var productDetails = await FetchProductDetailsFromStoresAsync();
+        Console.WriteLine(string.Join("\n", productDetails));
+    }
+
+    static async Task<string[]> FetchProductDetailsFromStoresAsync()
+    {
+        using HttpClient client = new HttpClient();
+
+        var task1 = client.GetStringAsync("https://api.store1.com/product");
+        var task2 = client.GetStringAsync("https://api.store2.com/product");
+        var task3 = client.GetStringAsync("https://api.store3.com/product");
+
+        await Task.WhenAll(task1, task2, task3);
+
+        return new[] { await task1, await task2, await task3 };
+    }
+}
+
+----------
+
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        Console.WriteLine("Processing order...");
+        string confirmation = await ProcessOrderAsync(101);
+        Console.WriteLine(confirmation);
+    }
+
+    static async Task<string> ProcessOrderAsync(int orderId)
+    {
+        var stockTask = CheckStockAsync(orderId);
+        var taxTask = CalculateTaxesAsync(orderId);
+        var discountTask = ApplyDiscountAsync(orderId);
+
+        await Task.WhenAll(stockTask, taxTask, discountTask);
+
+        return $"Order {orderId} processed with stock check: {await stockTask}, taxes: {await taxTask}, discount: {await discountTask}.";
+    }
+
+    static async Task<string> CheckStockAsync(int orderId)
+    {
+        await Task.Delay(1000); // Simulate stock check
+        return "Stock available";
+    }
+
+    static async Task<string> CalculateTaxesAsync(int orderId)
+    {
+        await Task.Delay(1000); // Simulate tax calculation
+        return "$15 taxes calculated";
+    }
+
+    static async Task<string> ApplyDiscountAsync(int orderId)
+    {
+        await Task.Delay(1000); // Simulate discount application
+        return "10% discount applied";
+    }
+}
+
+----------
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        string[] files = Directory.GetFiles("InputFiles");
+        Console.WriteLine("Processing files...");
+
+        var tasks = files.Select(ProcessFileAsync).ToArray();
+        await Task.WhenAll(tasks);
+
+        Console.WriteLine("All files processed.");
+    }
+
+    static async Task ProcessFileAsync(string filePath)
+    {
+        string content = await File.ReadAllTextAsync(filePath);
+        string processedContent = content.ToUpper(); // Simulate processing
+
+        string outputPath = Path.Combine("OutputFiles", Path.GetFileName(filePath));
+        await File.WriteAllTextAsync(outputPath, processedContent);
+
+        Console.WriteLine($"Processed file: {filePath}");
+    }
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+P-5
+
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+public static class StringExtensions
+{
+    public static bool IsValidEmail(this string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return false;
+
+        var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        return emailRegex.IsMatch(email);
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<string> emails = new List<string> 
+        { 
+            "test@example.com", 
+            "invalid-email", 
+            "user@domain.org", 
+            "wrong@format" 
+        };
+
+        foreach (var email in emails)
+        {
+            Console.WriteLine($"{email}: {email.IsValidEmail()}");
+        }
+    }
+}
+
+----------
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class Student
+public static class ProductExtensions
 {
-    public int StudentId { get; set; }
-    public string Name { get; set; }
-    public int Age { get; set; }
-    public string Gender { get; set; }
-    public string Department { get; set; }
-}
-
-public class Course
-{
-    public int CourseId { get; set; }
-    public string CourseName { get; set; }
-    public string Department { get; set; }
-}
-
-public class Enrollment
-{
-    public int EnrollmentId { get; set; }
-    public int StudentId { get; set; }
-    public int CourseId { get; set; }
-    public DateTime EnrollmentDate { get; set; }
-}
-
-public class Program
-{
-    public static void Main()
+    public static decimal AveragePrice(this List<Product> products)
     {
-        // Data for Students
-        List<Student> students = new List<Student>
-        {
-            new Student { StudentId = 1, Name = "Alice", Age = 22, Gender = "Female", Department = "Computer Science" },
-            new Student { StudentId = 2, Name = "Bob", Age = 19, Gender = "Male", Department = "Mathematics" },
-            new Student { StudentId = 3, Name = "Charlie", Age = 21, Gender = "Male", Department = "Physics" },
-            new Student { StudentId = 4, Name = "Diana", Age = 23, Gender = "Female", Department = "Computer Science" },
-            new Student { StudentId = 5, Name = "Edward", Age = 20, Gender = "Male", Department = "Mathematics" },
-            new Student { StudentId = 6, Name = "Fiona", Age = 22, Gender = "Female", Department = "Biology" },
-            new Student { StudentId = 7, Name = "George", Age = 24, Gender = "Male", Department = "Physics" },
-            new Student { StudentId = 8, Name = "Helen", Age = 25, Gender = "Female", Department = "Mathematics" },
-            new Student { StudentId = 9, Name = "Irene", Age = 20, Gender = "Female", Department = "Biology" },
-            new Student { StudentId = 10, Name = "Jack", Age = 18, Gender = "Male", Department = "Computer Science" }
-        };
+        if (products == null || !products.Any())
+            return 0;
 
-        // Data for Courses
-        List<Course> courses = new List<Course>
-        {
-            new Course { CourseId = 1, CourseName = "Data Structures", Department = "Computer Science" },
-            new Course { CourseId = 2, CourseName = "Calculus", Department = "Mathematics" },
-            new Course { CourseId = 3, CourseName = "Linear Algebra", Department = "Mathematics" },
-            new Course { CourseId = 4, CourseName = "Quantum Mechanics", Department = "Physics" },
-            new Course { CourseId = 5, CourseName = "Thermodynamics", Department = "Physics" },
-            new Course { CourseId = 6, CourseName = "Genetics", Department = "Biology" },
-            new Course { CourseId = 7, CourseName = "Biochemistry", Department = "Biology" },
-            new Course { CourseId = 8, CourseName = "Artificial Intelligence", Department = "Computer Science" },
-            new Course { CourseId = 9, CourseName = "Machine Learning", Department = "Computer Science" },
-            new Course { CourseId = 10, CourseName = "Statistics", Department = "Mathematics" }
-        };
-
-        // Data for Enrollments
-        List<Enrollment> enrollments = new List<Enrollment>
-        {
-            new Enrollment { EnrollmentId = 1, StudentId = 1, CourseId = 1, EnrollmentDate = DateTime.Now.AddMonths(-2) },
-            new Enrollment { EnrollmentId = 2, StudentId = 1, CourseId = 8, EnrollmentDate = DateTime.Now.AddMonths(-1) },
-            new Enrollment { EnrollmentId = 3, StudentId = 2, CourseId = 2, EnrollmentDate = DateTime.Now.AddMonths(-3) },
-            new Enrollment { EnrollmentId = 4, StudentId = 3, CourseId = 4, EnrollmentDate = DateTime.Now.AddMonths(-1) },
-            new Enrollment { EnrollmentId = 5, StudentId = 4, CourseId = 9, EnrollmentDate = DateTime.Now.AddMonths(-2) },
-            new Enrollment { EnrollmentId = 6, StudentId = 5, CourseId = 3, EnrollmentDate = DateTime.Now.AddMonths(-4) },
-            new Enrollment { EnrollmentId = 7, StudentId = 6, CourseId = 7, EnrollmentDate = DateTime.Now.AddMonths(-1) },
-            new Enrollment { EnrollmentId = 8, StudentId = 7, CourseId = 5, EnrollmentDate = DateTime.Now.AddMonths(-3) },
-            new Enrollment { EnrollmentId = 9, StudentId = 8, CourseId = 3, EnrollmentDate = DateTime.Now.AddMonths(-2) },
-            new Enrollment { EnrollmentId = 10, StudentId = 9, CourseId = 6, EnrollmentDate = DateTime.Now.AddMonths(-1) }
-        };
-
-        // LINQ Queries can be performed here as required.
-        Console.WriteLine("Data generated successfully!");
+        return products.Average(p => p.Price);
     }
 }
+
+public class Product
+{
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var products = new List<Product>
+        {
+            new Product { Name = "Laptop", Price = 1200m },
+            new Product { Name = "Phone", Price = 800m },
+            new Product { Name = "Headphones", Price = 150m }
+        };
+
+        Console.WriteLine($"Average Price: {products.AveragePrice():C}");
+    }
+}
+
+----------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public static class StringExtensions
+{
+    public static string ReverseString(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return new string(input.Reverse().ToArray());
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<string> words = new List<string> { "hello", "world", "extension", "method" };
+
+        foreach (var word in words)
+        {
+            Console.WriteLine($"{word} -> {word.ReverseString()}");
+        }
+    }
+}
+
+----------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public static class EmployeeExtensions
+{
+    public static List<Employee> SortByName(this List<Employee> employees)
+    {
+        return employees.OrderBy(e => e.Name).ToList();
+    }
+}
+
+public class Employee
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        var employees = new List<Employee>
+        {
+            new Employee { Name = "Alice", Age = 30 },
+            new Employee { Name = "Charlie", Age = 28 },
+            new Employee { Name = "Bob", Age = 25 }
+        };
+
+        var sortedEmployees = employees.SortByName();
+        foreach (var employee in sortedEmployees)
+        {
+            Console.WriteLine($"Name: {employee.Name}, Age: {employee.Age}");
+        }
+    }
+}
+
+----------
+
+using System;
+using System.Collections.Generic;
+
+public static class DateTimeExtensions
+{
+    public static string ToFormattedDate(this DateTime date)
+    {
+        return date.ToString("yyyy-MM-dd");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<DateTime> dates = new List<DateTime>
+        {
+            DateTime.Now,
+            DateTime.Now.AddDays(-1),
+            DateTime.Now.AddDays(-30)
+        };
+
+        foreach (var date in dates)
+        {
+            Console.WriteLine($"Original: {date}, Formatted: {date.ToFormattedDate()}");
+        }
+    }
+}
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+A-1
+
+public class Customer
+{
+    public int CustomerId { get; set; }
+    public string Name { get; set; }
+    public bool IsPremium { get; set; }
+}
+
+public class Product
+{
+    public int ProductId { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public int Stock { get; set; }
+}
+
+public class Order
+{
+    public int OrderId { get; set; }
+    public int CustomerId { get; set; }
+    public int ProductId { get; set; }
+    public int Quantity { get; set; }
+    public DateTime OrderDate { get; set; }
+}
+
+public class ShippingInfo
+{
+    public int ShippingId { get; set; }
+    public string ShippingMethod { get; set; }
+    public decimal ShippingCost { get; set; }
+}
+
+List<Customer> customers = new List<Customer>
+{
+    new Customer { CustomerId = 1, Name = "Alice", IsPremium = true },
+    new Customer { CustomerId = 2, Name = "Bob", IsPremium = false },
+    new Customer { CustomerId = 3, Name = "Charlie", IsPremium = true },
+    new Customer { CustomerId = 4, Name = "Diana", IsPremium = false }
+};
+
+List<Product> products = new List<Product>
+{
+    new Product { ProductId = 1, Name = "Laptop", Price = 1200m, Stock = 10 },
+    new Product { ProductId = 2, Name = "Smartphone", Price = 800m, Stock = 15 },
+    new Product { ProductId = 3, Name = "Headphones", Price = 150m, Stock = 50 },
+    new Product { ProductId = 4, Name = "Monitor", Price = 300m, Stock = 20 }
+};
+
+List<Order> orders = new List<Order>
+{
+    new Order { OrderId = 1, CustomerId = 1, ProductId = 1, Quantity = 1, OrderDate = DateTime.Now.AddDays(-1) },
+    new Order { OrderId = 2, CustomerId = 2, ProductId = 2, Quantity = 2, OrderDate = DateTime.Now.AddDays(-3) },
+    new Order { OrderId = 3, CustomerId = 3, ProductId = 3, Quantity = 3, OrderDate = DateTime.Now.AddDays(-5) },
+    new Order { OrderId = 4, CustomerId = 4, ProductId = 4, Quantity = 1, OrderDate = DateTime.Now.AddDays(-7) }
+};
+
+List<ShippingInfo> shippingMethods = new List<ShippingInfo>
+{
+    new ShippingInfo { ShippingId = 1, ShippingMethod = "Standard", ShippingCost = 10m },
+    new ShippingInfo { ShippingId = 2, ShippingMethod = "Express", ShippingCost = 25m },
+    new ShippingInfo { ShippingId = 3, ShippingMethod = "Overnight", ShippingCost = 50m }
+};
+
+--------------------
+
+public class OrderProcessor
+{
+    private List<Customer> _customers;
+    private List<Product> _products;
+    private List<ShippingInfo> _shippingMethods;
+
+    public OrderProcessor(List<Customer> customers, List<Product> products, List<ShippingInfo> shippingMethods)
+    {
+        _customers = customers;
+        _products = products;
+        _shippingMethods = shippingMethods;
+    }
+
+    public async Task ProcessOrderAsync(Order order)
+    {
+        // Step 1: Validate if the product is in stock
+        Product product = _products.FirstOrDefault(p => p.ProductId == order.ProductId);
+        if (product == null)
+        {
+            Console.WriteLine($"Product with ID {order.ProductId} not found.");
+            return;
+        }
+
+        if (!product.IsInStock(order.Quantity))
+        {
+            Console.WriteLine($"Product '{product.Name}' is out of stock for the requested quantity.");
+            return;
+        }
+
+        // Step 2: Simulate tax calculation with a delay
+        decimal tax = await CalculateTaxAsync(product.Price * order.Quantity);
+        Console.WriteLine($"Tax for the order: {tax:C}");
+
+        // Step 3: Apply discount for premium customers (if applicable)
+        Customer customer = _customers.FirstOrDefault(c => c.CustomerId == order.CustomerId);
+        if (customer == null)
+        {
+            Console.WriteLine($"Customer with ID {order.CustomerId} not found.");
+            return;
+        }
+
+        decimal discount = customer.IsPremium ? 0.1m * (product.Price * order.Quantity) : 0m; // 10% discount for premium customers
+        Console.WriteLine($"Discount for the order: {discount:C}");
+
+        // Step 4: Determine the shipping cost based on the shipping method chosen
+        ShippingInfo shipping = _shippingMethods.FirstOrDefault();
+        if (shipping == null)
+        {
+            Console.WriteLine("No shipping method available.");
+            return;
+        }
+
+        decimal shippingCost = shipping.ApplyShippingCost();
+        Console.WriteLine($"Shipping cost: {shippingCost:C}");
+
+        // Final Order Summary
+        decimal totalCost = (product.Price * order.Quantity) + tax - discount + shippingCost;
+        Console.WriteLine($"Order Summary:");
+        Console.WriteLine($"Customer: {customer.Name}");
+        Console.WriteLine($"Product: {product.Name}");
+        Console.WriteLine($"Quantity: {order.Quantity}");
+        Console.WriteLine($"Total Cost: {totalCost:C}");
+        Console.WriteLine($"Order Date: {order.OrderDate.ToFormattedDate()}");
+    }
+
+    private async Task<decimal> CalculateTaxAsync(decimal amount)
+    {
+        // Simulate a delay to calculate tax
+        await Task.Delay(1000); // Simulate 1-second delay
+        return 0.15m * amount; // Assuming 15% tax
+    }
+}
+
+----------
+
+public static class ProductExtensions
+{
+    public static bool IsInStock(this Product product, int quantity)
+    {
+        return product.Stock >= quantity;
+    }
+}
+
+public static class ShippingExtensions
+{
+    public static decimal ApplyShippingCost(this ShippingInfo shippingInfo)
+    {
+        return shippingInfo.ShippingCost; // Directly returning the cost for simplicity
+    }
+}
+
+public static class DateTimeExtensions
+{
+    public static string ToFormattedDate(this DateTime date)
+    {
+        return date.ToString("yyyy-MM-dd");
+    }
+}
+
+static async Task Main(string[] args)
+{
+    // Sample data
+    var customers = new List<Customer>
+    {
+        new Customer { CustomerId = 1, Name = "Alice", IsPremium = true },
+        new Customer { CustomerId = 2, Name = "Bob", IsPremium = false }
+    };
+
+    var products = new List<Product>
+    {
+        new Product { ProductId = 1, Name = "Laptop", Price = 1200m, Stock = 10 },
+        new Product { ProductId = 2, Name = "Smartphone", Price = 800m, Stock = 15 }
+    };
+
+    var shippingMethods = new List<ShippingInfo>
+    {
+        new ShippingInfo { ShippingId = 1, ShippingMethod = "Standard", ShippingCost = 10m }
+    };
+
+    var orders = new List<Order>
+    {
+        new Order { OrderId = 1, CustomerId = 1, ProductId = 1, Quantity = 1, OrderDate = DateTime.Now },
+        new Order { OrderId = 2, CustomerId = 2, ProductId = 2, Quantity = 2, OrderDate = DateTime.Now }
+    };
+
+    // Initialize the processor
+    var processor = new OrderProcessor(customers, products, shippingMethods);
+
+    // Process each order asynchronously
+    foreach (var order in orders)
+    {
+        await processor.ProcessOrderAsync(order);
+        Console.WriteLine("--------------------");
+    }
+}
+
+----------
+
+public static class ECommerceExtensions
+{
+    // 1. Product Extension: Check if the product is in stock
+    public static bool IsInStock(this Product product, int quantity)
+    {
+        return product.Stock >= quantity;
+    }
+
+    // 2. Order Extension: Calculate total cost with premium customer discount
+    public static decimal CalculateTotal(this Order order, Product product, bool isPremiumCustomer)
+    {
+        decimal total = product.Price * order.Quantity;
+
+        // Apply a 10% discount for premium customers
+        if (isPremiumCustomer)
+        {
+            total -= total * 0.10m;
+        }
+
+        return total;
+    }
+
+    // 3. Shipping Extension: Apply shipping cost based on the shipping method
+    public static decimal ApplyShippingCost(this ShippingInfo shippingInfo)
+    {
+        // You can modify this to apply dynamic costs based on the shipping method
+        return shippingInfo.ShippingCost;
+    }
+
+    // 4. DateTime Extension: Format a DateTime to "yyyy-MM-dd"
+    public static string ToFormattedDate(this DateTime date)
+    {
+        return date.ToString("yyyy-MM-dd");
+    }
+}
+
+-----
+
+static void Main(string[] args)
+{
+    // Sample Data
+    var product = new Product { ProductId = 1, Name = "Laptop", Price = 1200m, Stock = 10 };
+    var customer = new Customer { CustomerId = 1, Name = "Alice", IsPremium = true };
+    var order = new Order { OrderId = 1, CustomerId = 1, ProductId = 1, Quantity = 2, OrderDate = DateTime.Now };
+    var shipping = new ShippingInfo { ShippingId = 1, ShippingMethod = "Standard", ShippingCost = 15m };
+
+    // 1. Check if the product is in stock
+    if (product.IsInStock(order.Quantity))
+    {
+        Console.WriteLine($"{product.Name} is in stock for the requested quantity.");
+    }
+    else
+    {
+        Console.WriteLine($"{product.Name} is out of stock.");
+    }
+
+    // 2. Calculate the total order cost
+    decimal totalCost = order.CalculateTotal(product, customer.IsPremium);
+    Console.WriteLine($"Total Order Cost: {totalCost:C}");
+
+    // 3. Apply shipping cost
+    decimal shippingCost = shipping.ApplyShippingCost();
+    Console.WriteLine($"Shipping Cost: {shippingCost:C}");
+
+    // 4. Display formatted order date
+    string formattedDate = order.OrderDate.ToFormattedDate();
+    Console.WriteLine($"Order Date: {formattedDate}");
+}
+
+-------------------------------------------------------------------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main(string[] args)
+    {
+        // 1. Create Sample Data
+        List<Customer> customers = new List<Customer>
+        {
+            new Customer { CustomerId = 1, Name = "Alice", IsPremium = true },
+            new Customer { CustomerId = 2, Name = "Bob", IsPremium = false },
+            new Customer { CustomerId = 3, Name = "Charlie", IsPremium = true },
+        };
+
+        List<Product> products = new List<Product>
+        {
+            new Product { ProductId = 1, Name = "Laptop", Price = 1200m, Stock = 10 },
+            new Product { ProductId = 2, Name = "Phone", Price = 800m, Stock = 20 },
+            new Product { ProductId = 3, Name = "Tablet", Price = 500m, Stock = 15 },
+        };
+
+        List<Order> orders = new List<Order>
+        {
+            new Order { OrderId = 1, CustomerId = 1, ProductId = 1, Quantity = 2, OrderDate = DateTime.Now },
+            new Order { OrderId = 2, CustomerId = 2, ProductId = 2, Quantity = 1, OrderDate = DateTime.Now },
+            new Order { OrderId = 3, CustomerId = 3, ProductId = 3, Quantity = 5, OrderDate = DateTime.Now },
+        };
+
+        List<ShippingInfo> shippingOptions = new List<ShippingInfo>
+        {
+            new ShippingInfo { ShippingId = 1, ShippingMethod = "Standard", ShippingCost = 15m },
+            new ShippingInfo { ShippingId = 2, ShippingMethod = "Express", ShippingCost = 30m },
+        };
+
+        // 2. Process Each Order
+        foreach (var order in orders)
+        {
+            // Find customer and product for the current order
+            var customer = customers.FirstOrDefault(c => c.CustomerId == order.CustomerId);
+            var product = products.FirstOrDefault(p => p.ProductId == order.ProductId);
+
+            if (customer == null || product == null)
+            {
+                Console.WriteLine($"Order {order.OrderId} has invalid data.");
+                continue;
+            }
+
+            // Process the order asynchronously
+            Console.WriteLine($"Processing Order {order.OrderId}...");
+            var result = await ProcessOrderAsync(order, product, customer, shippingOptions.First());
+            
+            // Display the order summary
+            Console.WriteLine(result);
+            Console.WriteLine(new string('-', 50));
+        }
+    }
+
+    // Async Method to Process Order
+    static async Task<string> ProcessOrderAsync(Order order, Product product, Customer customer, ShippingInfo shippingInfo)
+    {
+        // Validate Stock
+        if (!product.IsInStock(order.Quantity))
+        {
+            return $"Order {order.OrderId}: Product '{product.Name}' is out of stock.";
+        }
+
+        // Simulate Tax Calculation
+        await Task.Delay(500); // Simulate delay
+        decimal tax = product.Price * order.Quantity * 0.1m; // Assume 10% tax
+
+        // Calculate Total (with discount if premium customer)
+        decimal total = order.CalculateTotal(product, customer.IsPremium);
+
+        // Apply Shipping Cost
+        decimal shippingCost = shippingInfo.ApplyShippingCost();
+        total += shippingCost;
+
+        // Format Order Date
+        string formattedDate = order.OrderDate.ToFormattedDate();
+
+        // Return Order Summary
+        return $"Order Summary:\n" +
+               $"- Customer: {customer.Name}\n" +
+               $"- Product: {product.Name}\n" +
+               $"- Quantity: {order.Quantity}\n" +
+               $"- Tax: {tax:C}\n" +
+               $"- Shipping Cost: {shippingCost:C}\n" +
+               $"- Total: {total:C}\n" +
+               $"- Order Date: {formattedDate}";
+    }
+}
+
+
