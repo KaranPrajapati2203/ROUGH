@@ -1,233 +1,136 @@
-public void GenerateReport1()
+public class Student
 {
-    string targetDoctor = "Dr. A. Kumar"; // Specify the doctor's name
-    using (HospitalContext db = new HospitalContext())
-    {
-        // Get the doctor's ID
-        var doctorId = db.AssistantLists
-            .Where(d => d.AssistantName == targetDoctor)
-            .Select(d => d.AssistantId)
-            .FirstOrDefault();
+    public int StudentId { get; set; }
 
-        if (doctorId == 0)
-        {
-            Console.WriteLine($"Doctor {targetDoctor} not found.");
-            return;
-        }
+    [Required(ErrorMessage = "Name is required")]
+    public string Name { get; set; }
 
-        // Find all patients assigned to the doctor
-        var patientAssignments = db.PatientAssignments
-            .Where(pa => pa.AssistantId == doctorId)
-            .Select(pa => pa.PatientId)
-            .ToList();
+    [Range(5, 100, ErrorMessage = "Age must be between 5 and 100")]
+    public int Age { get; set; }
 
-        if (patientAssignments.Count == 0)
-        {
-            Console.WriteLine($"No patients assigned to Dr. {targetDoctor}.");
-            return;
-        }
-
-        Console.WriteLine($"Patients assigned to Dr. {targetDoctor}:");
-        foreach (var patientId in patientAssignments)
-        {
-            var patientName = db.Patients
-                .Where(p => p.PatientId == patientId)
-                .Select(p => p.PatientName)
-                .FirstOrDefault();
-
-            Console.WriteLine($"- Patient ID: {patientId}, Name: {patientName}");
-        }
-    }
+    [RegularExpression("[A-F]", ErrorMessage = "Enter grade between A-F only")]
+    public char Grade { get; set; }
 }
 
+---------------------------------------------------------------------------------------------------------
 
-----------
+ public List<Student> GetStudents();
+ public Student GetStudentById(int id);
+ public void AddStudent(Student student);
+ public void UpdateStudent(Student student);
 
-public void GenerateReport1()
+---------------------------------------------------------------------------------------------------------
+
+ public List<Student> GetStudents()
+ {
+     return students;
+ }
+
+ public Student GetStudentById(int id)
+ {
+     var student = students.Where(x => x.StudentId == id).FirstOrDefault();
+     return student;
+ }
+
+ public void AddStudent(Student student)
+ {
+     students.Add(student);
+ }
+
+ public void UpdateStudent(Student student)
+ {
+     var index = students.FindIndex(x => x.StudentId == student.StudentId);
+     if (index != -1)
+     {
+         students[index] = student;
+     }
+ }
+
+------------------------------------------------------------------------------------------------------------
+
+using Day13_Assignment1.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Day13_Assignment1.Controllers
 {
-    string targetDoctor = "Dr. A. Kumar"; // Specify the doctor's name
-    using (HospitalContext db = new HospitalContext())
+    [Route("api/[controller]")]
+    [ApiController]
+    public class studentsController : ControllerBase
     {
-        // Fetch the doctor's ID
-        var doctorId = db.AssistantLists
-            .Where(d => d.AssistantName == targetDoctor)
-            .Select(d => d.AssistantId)
-            .FirstOrDefault();
-
-        if (doctorId == 0)
+        private readonly IStudent studentrepo;
+        public studentsController(IStudent repo)
         {
-            Console.WriteLine($"Doctor {targetDoctor} not found.");
-            return;
+            studentrepo = repo;
         }
 
-        // Fetch patient IDs assigned to the doctor (in-memory)
-        var patientIds = db.PatientAssignments
-            .Where(pa => pa.AssistantId == doctorId)
-            .Select(pa => pa.PatientId)
-            .ToList();
-
-        if (patientIds.Count == 0)
+        [HttpGet]
+        public IActionResult GetStudents()
         {
-            Console.WriteLine($"No patients assigned to Dr. {targetDoctor}.");
-            return;
-        }
-
-        // Fetch patient details for assigned IDs (in-memory)
-        var patients = db.Patients
-            .Where(p => patientIds.Contains(p.PatientId))
-            .Select(p => new { p.PatientId, p.PatientName })
-            .ToList();
-
-        // Display results
-        Console.WriteLine($"Patients assigned to Dr. {targetDoctor}:");
-        foreach (var patient in patients)
-        {
-            Console.WriteLine($"- Patient ID: {patient.PatientId}, Name: {patient.PatientName}");
-        }
-    }
-}
-
-----------
-
-public void GenerateReport1()
-{
-    string targetDoctor = "Dr. A. Kumar"; // Specify the doctor's name
-    using (HospitalContext db = new HospitalContext())
-    {
-        // Fetch the doctor's ID
-        var doctorId = db.AssistantLists
-            .Where(d => d.AssistantName == targetDoctor)
-            .Select(d => d.AssistantId)
-            .FirstOrDefault();
-
-        if (doctorId == 0)
-        {
-            Console.WriteLine($"Doctor {targetDoctor} not found.");
-            return;
-        }
-
-        // Fetch patient IDs assigned to the doctor (in-memory)
-        var patientIds = db.PatientAssignments
-            .Where(pa => pa.AssistantId == doctorId)
-            .Select(pa => pa.PatientId)
-            .ToList();
-
-        if (patientIds.Count == 0)
-        {
-            Console.WriteLine($"No patients assigned to Dr. {targetDoctor}.");
-            return;
-        }
-
-        // Fetch patient details, including department, for assigned IDs
-        var patients = db.Patients
-            .Where(p => patientIds.Contains(p.PatientId))
-            .Select(p => new
+            var students = studentrepo.GetStudents();
+            if (students.Count > 0)
             {
-                p.PatientId,
-                p.PatientName,
-                DepartmentName = p.PatientDepartment.DepartmentName // Navigating to Department
-            })
-            .ToList();
-
-        // Display results
-        Console.WriteLine($"Patients assigned to Dr. {targetDoctor}:");
-        foreach (var patient in patients)
-        {
-            Console.WriteLine($"- Patient ID: {patient.PatientId}, Name: {patient.PatientName}, Department: {patient.DepartmentName}");
-        }
-    }
-}
-
-
--------------------------------------------------------------------------------------------------------------------------------------
-
-
-public void GenerateMedicineReportForPatient()
-{
-    string targetPatient = "Rohan Singh"; // Specify the patient's name
-    using (HospitalContext db = new HospitalContext())
-    {
-        // Fetch the patient ID based on the patient's name
-        var patientId = db.Patients
-            .Where(p => p.PatientName == targetPatient)
-            .Select(p => p.PatientId)
-            .FirstOrDefault();
-
-        if (patientId == 0)
-        {
-            Console.WriteLine($"Patient {targetPatient} not found.");
-            return;
-        }
-
-        // Fetch medicines prescribed to the patient
-        var medicines = db.DrugPrescriptions
-            .Where(dp => dp.PatientId == patientId)
-            .Select(dp => new
-            {
-                dp.Drug.DrugName,        // Drug name
-                dp.Drug.DrugPrice,       // Drug price
-                dp.IntakeDuration,       // When to take the drug
-                PrescribedBy = dp.PrescribedByNavigation.AssistantName // Name of the doctor/nurse who prescribed
-            })
-            .ToList();
-
-        if (medicines.Count == 0)
-        {
-            Console.WriteLine($"No medicines found for patient {targetPatient}.");
-            return;
-        }
-
-        // Display report
-        Console.WriteLine($"Medicine list for patient {targetPatient}:");
-        foreach (var medicine in medicines)
-        {
-            Console.WriteLine($"- Drug Name: {medicine.DrugName}, Price: {medicine.DrugPrice:C}, " +
-                              $"Intake: {medicine.IntakeDuration}, Prescribed By: {medicine.PrescribedBy}");
-        }
-    }
-}
-
-
-----------------------------------------------------------------------------------------------------------------------------------------
-
-public void DisplayDoctorPatientSummaryReport()
-{
-    using (HospitalContext db = new HospitalContext())
-    {
-        // Query to fetch doctors and their assigned patients
-        var doctorPatientSummary = db.PatientAssignments
-            .GroupBy(pa => pa.Assistant.AssistantName) // Group by doctor's name
-            .Select(group => new
-            {
-                DoctorName = group.Key, // Doctor's name
-                Patients = group.Select(pa => pa.Patient.PatientName).Distinct().ToList() // List of unique patient names
-            })
-            .ToList();
-
-        if (doctorPatientSummary.Count == 0)
-        {
-            Console.WriteLine("No doctor-patient assignments found.");
-            return;
-        }
-
-        // Display the summary report
-        Console.WriteLine("Doctor-Patient Summary Report:");
-        foreach (var entry in doctorPatientSummary)
-        {
-            Console.WriteLine($"Doctor: {entry.DoctorName}");
-            if (entry.Patients.Count > 0)
-            {
-                Console.WriteLine("Assigned Patients:");
-                foreach (var patient in entry.Patients)
-                {
-                    Console.WriteLine($"- {patient}");
-                }
+                return Ok(studentrepo.GetStudents());
             }
             else
             {
-                Console.WriteLine("No patients assigned.");
+                return Ok("No students found.");
             }
-            Console.WriteLine(); // Add spacing between entries
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetStudent(int id)
+        {
+            var student = studentrepo.GetStudentById(id);
+            if (student != null)
+            {
+                return Ok(student);
+            }
+            else
+            {
+                return StatusCode(404, $"Student with id '{id}' does not exist");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AddStudent(Student student)
+        {
+            if (ModelState.IsValid)
+            {
+                studentrepo.AddStudent(student);
+                return Created($"/students/{student.StudentId}", student);
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateStudent(int id, [FromBody] Student studentToUpdate)
+        {
+            var student = studentrepo.GetStudentById(id);
+            if (student != null)
+            {
+                if (!string.IsNullOrEmpty(studentToUpdate.Name))
+                {
+                    student.Name = studentToUpdate.Name;
+                }
+                if (studentToUpdate.Age !> 0)
+                {
+                    student.Age = studentToUpdate.Age;
+                }
+                if (student.Grade != '\0')
+                {
+                    student.Grade = studentToUpdate.Grade;
+                }
+
+                studentrepo.UpdateStudent(student);
+                return Ok($"Student with id '{id}' has been updated successfully.");
+            }
+            else
+            {
+                return StatusCode(404, $"Student with id '{id}' does not exist");
+            }
         }
     }
 }
