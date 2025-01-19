@@ -1,136 +1,1549 @@
-public class Student
+Practice 1
+Create a Book Controller with Attribute-Based Routing
+Objective: Create a controller for managing books using attribute-based routing.
+Task:
+Implement GET, POST, PUT, and DELETE methods with appropriate attribute-based routes ([Route] and [Http*] attributes).
+Use routes like /api/books and /api/books/{id}.
+
+--------------------
+
+[Route("api/[controller]")]
+[ApiController]
+public class booksController : ControllerBase
 {
-    public int StudentId { get; set; }
+    private static List<Book> books = new List<Book>()
+    {
+        new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling"},
+        new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore"},
+        new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"}
+    };
 
-    [Required(ErrorMessage = "Name is required")]
-    public string Name { get; set; }
+    [HttpGet]
+    public IActionResult GetBooks()
+    {
+        return Ok(books);
+    }
 
-    [Range(5, 100, ErrorMessage = "Age must be between 5 and 100")]
-    public int Age { get; set; }
-
-    [RegularExpression("[A-F]", ErrorMessage = "Enter grade between A-F only")]
-    public char Grade { get; set; }
+    [HttpGet("{id}")]
+    public IActionResult GetBookById(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
 }
 
----------------------------------------------------------------------------------------------------------
+public class Book
+{
+    public int BookId { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+}
 
- public List<Student> GetStudents();
- public Student GetStudentById(int id);
- public void AddStudent(Student student);
- public void UpdateStudent(Student student);
+----------------------------------------------------------------------------------------------------------
 
----------------------------------------------------------------------------------------------------------
+Practice 2
+Implement CRUD Operations Using Conventional Routing
+Objective: Set up conventional routing for a BookController.
+Task:
+Configure the route in Program.cs as api/{controller}/{action}/{id?}.
+Implement methods such as GetBooks, GetBookById, AddBook, UpdateBook, and DeleteBook.
 
- public List<Student> GetStudents()
- {
-     return students;
- }
+--------------------
 
- public Student GetStudentById(int id)
- {
-     var student = students.Where(x => x.StudentId == id).FirstOrDefault();
-     return student;
- }
+public class booksController : ControllerBase
+{
+    private static List<Book> books = new List<Book>()
+    {
+        new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling"},
+        new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore"},
+        new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"}
+    };
 
- public void AddStudent(Student student)
- {
-     students.Add(student);
- }
+    public IActionResult GetBooks()
+    {
+        return Ok(books);
+    }
 
- public void UpdateStudent(Student student)
- {
-     var index = students.FindIndex(x => x.StudentId == student.StudentId);
-     if (index != -1)
-     {
-         students[index] = student;
-     }
- }
+    public IActionResult GetBookById(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
 
-------------------------------------------------------------------------------------------------------------
+    public IActionResult AddBook([FromBody] Book book)
+    {
+        books.Add(book);
+        return Ok(book);
+    }
 
-using Day13_Assignment1.Services;
+    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+    {
+        var index = books.FindIndex(x => x.BookId == id);
+        if (index != -1)
+        {
+            updatedBook.BookId = id;
+            books[index] = updatedBook;
+            return Ok(updatedBook);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    public IActionResult DeleteBook(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            books.Remove(book);
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+}
+
+public class Book
+{
+    public int BookId { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+}
+
+--------------------
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "api/{controller}/{action}/{id?}");
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 3
+Fetch Books by Author Using Parameter Binding
+Objective: Fetch books by a specific author using parameter binding in the route.
+Task:
+Create an endpoint like /api/books/author/{authorName}.
+Return a list of books written by the specified author. If no books are found, return an appropriate message.
+
+--------------------
+
+[Route("api/[controller]")]
+[ApiController]
+public class booksController : ControllerBase
+{
+    private static List<Book> books = new List<Book>()
+    {
+        new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling"},
+        new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore"},
+        new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"}
+    };
+
+    [HttpGet]
+    public IActionResult GetBooks()
+    {
+        return Ok(books);
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetBookById(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    public IActionResult AddBook([FromBody] Book book)
+    {
+        books.Add(book);
+        return Ok(book);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+    {
+        var index = books.FindIndex(x => x.BookId == id);
+        if (index != -1)
+        {
+            updatedBook.BookId = id;
+            books[index] = updatedBook;
+            return Ok(updatedBook);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteBook(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            books.Remove(book);
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("author/{authorName}")]
+    public IActionResult GetBookByAuthor(string authorName)
+    {
+        var book = books.FirstOrDefault(x => x.Author.ToLower() == authorName.Trim().ToLower());
+        if (book != null)
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+}
+
+public class Book
+{
+    public int BookId { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+}
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+Practice 4
+Implement Pagination for Books
+Objective: Implement a GET endpoint for paginated results.
+Task:
+Add an endpoint like /api/books?pageNumber={pageNumber}&pageSize={pageSize}.
+Business Logic: Return the specified page of books, or an error message if the requested page exceeds the available data.
+
+--------------------
+
 using Microsoft.AspNetCore.Mvc;
 
-namespace Day13_Assignment1.Controllers
+namespace WebAPIDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class studentsController : ControllerBase
+    public class booksController : ControllerBase
     {
-        private readonly IStudent studentrepo;
-        public studentsController(IStudent repo)
+        private static List<Book> books = new List<Book>()
         {
-            studentrepo = repo;
-        }
+            new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling"},
+            new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore"},
+            new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=4,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=5,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=6,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=7,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=8,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=9,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=10,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=11,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=12,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=13,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=14,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=15,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+            new Book{ BookId=16,Title="Financial Shenanigans",Author="Balidaan Bharadwaj"},
+        };
 
         [HttpGet]
-        public IActionResult GetStudents()
+        public IActionResult GetBooks()
         {
-            var students = studentrepo.GetStudents();
-            if (students.Count > 0)
-            {
-                return Ok(studentrepo.GetStudents());
-            }
-            else
-            {
-                return Ok("No students found.");
-            }
+            return Ok(books);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetStudent(int id)
+        public IActionResult GetBookById(int id)
         {
-            var student = studentrepo.GetStudentById(id);
-            if (student != null)
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
             {
-                return Ok(student);
+                return Ok(book);
             }
             else
             {
-                return StatusCode(404, $"Student with id '{id}' does not exist");
+                return NotFound();
             }
         }
 
         [HttpPost]
-        public IActionResult AddStudent(Student student)
+        public IActionResult AddBook([FromBody] Book book)
         {
-            if (ModelState.IsValid)
-            {
-                studentrepo.AddStudent(student);
-                return Created($"/students/{student.StudentId}", student);
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            books.Add(book);
+            return Ok(book);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateStudent(int id, [FromBody] Student studentToUpdate)
+        public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
         {
-            var student = studentrepo.GetStudentById(id);
-            if (student != null)
+            var index = books.FindIndex(x => x.BookId == id);
+            if (index != -1)
             {
-                if (!string.IsNullOrEmpty(studentToUpdate.Name))
-                {
-                    student.Name = studentToUpdate.Name;
-                }
-                if (studentToUpdate.Age !> 0)
-                {
-                    student.Age = studentToUpdate.Age;
-                }
-                if (student.Grade != '\0')
-                {
-                    student.Grade = studentToUpdate.Grade;
-                }
-
-                studentrepo.UpdateStudent(student);
-                return Ok($"Student with id '{id}' has been updated successfully.");
+                updatedBook.BookId = id;
+                books[index] = updatedBook;
+                return Ok(updatedBook);
             }
             else
             {
-                return StatusCode(404, $"Student with id '{id}' does not exist");
+                return NotFound();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBook(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                books.Remove(book);
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("author/{authorName}")]
+        public IActionResult GetBookByAuthor(string authorName)
+        {
+            var book = books.FirstOrDefault(x => x.Author.ToLower() == authorName.Trim().ToLower());
+            if (book != null)
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("pagination")]
+        public IActionResult BooksPagination(int pageNumber, int pageSize)
+        {
+            var initial = pageSize * (pageNumber - 1);
+            var data = books.Skip(initial).Take(pageSize);
+            return Ok(data);
+        }
+    }
+
+    public class Book
+    {
+        public int BookId { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+    }
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 5
+Update a Book's Price with Validation
+Objective: Implement a PUT endpoint to update a book's price.
+Task:
+Endpoint: /api/books/{id}/update-price
+Business Logic: Ensure the new price is greater than zero. Return 400 Bad Request if invalid.
+
+--------------------
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class booksController : ControllerBase
+    {
+        private static List<Book> books = new List<Book>()
+        {
+            new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling",Price=250m},
+            new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore",Price=300m},
+            new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj",Price=750.25m}
+        };
+
+        [HttpGet]
+        public IActionResult GetBooks()
+        {
+            return Ok(books);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetBookById(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AddBook([FromBody] Book book)
+        {
+            books.Add(book);
+            return Ok(book);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+        {
+            var index = books.FindIndex(x => x.BookId == id);
+            if (index != -1)
+            {
+                updatedBook.BookId = id;
+                books[index] = updatedBook;
+                return Ok(updatedBook);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBook(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                books.Remove(book);
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("author/{authorName}")]
+        public IActionResult GetBookByAuthor(string authorName)
+        {
+            var book = books.FirstOrDefault(x => x.Author.ToLower() == authorName.Trim().ToLower());
+            if (book != null)
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("pagination")]
+        public IActionResult BooksPagination(int pageNumber, int pageSize)
+        {
+            var initial = pageSize * (pageNumber - 1);
+            var data = books.Skip(initial).Take(pageSize);
+            return Ok(data);
+        }
+
+        [HttpPut("{id}/update-price")]
+        public IActionResult UpdateBookPrice(int id, decimal newprice)
+        {
+            var index = books.FindIndex(x => x.BookId == id);
+            if (index != -1)
+            {
+                if (newprice > 0)
+                {
+                    books[index].Price = newprice;
+                    return Ok(books[index]);
+                }
+                else
+                {
+                    return StatusCode(400, $"Book price must be greater than 0");
+                }
+            }
+            else
+            {
+                return StatusCode(400, $"Book having id '{id}' does not exist");
             }
         }
     }
+
+    public class Book
+    {
+        public int BookId { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public decimal Price { get; set; }
+    }
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 6
+Delete a Book with Conditional Logic
+Objective: Delete a book by ID with additional validation.
+Task:
+Prevent deletion if the book has more than 100 copies in stock.
+Return an appropriate message if deletion is not allowed.
+
+--------------------
+
+ [Route("api/[controller]")]
+ [ApiController]
+ public class booksController : ControllerBase
+ {
+     private static List<Book> books = new List<Book>()
+     {
+         new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling",Price=250m,Copies=1700},
+         new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore",Price=300m,Copies=60},
+         new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj",Price=750.25m,Copies=50000}
+     };
+
+     [HttpGet]
+     public IActionResult GetBooks()
+     {
+         return Ok(books);
+     }
+
+     [HttpGet("{id}")]
+     public IActionResult GetBookById(int id)
+     {
+         var book = books.FirstOrDefault(x => x.BookId == id);
+         if (book != null)
+         {
+             return Ok(book);
+         }
+         else
+         {
+             return NotFound();
+         }
+     }
+
+     [HttpPost]
+     public IActionResult AddBook([FromBody] Book book)
+     {
+         books.Add(book);
+         return Ok(book);
+     }
+
+     [HttpPut("{id}")]
+     public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+     {
+         var index = books.FindIndex(x => x.BookId == id);
+         if (index != -1)
+         {
+             updatedBook.BookId = id;
+             books[index] = updatedBook;
+             return Ok(updatedBook);
+         }
+         else
+         {
+             return NotFound();
+         }
+     }
+
+     [HttpDelete("{id}")]
+     public IActionResult DeleteBook(int id)
+     {
+         var book = books.FirstOrDefault(x => x.BookId == id);
+         if (book != null)
+         {
+             books.Remove(book);
+             return Ok(book);
+         }
+         else
+         {
+             return NotFound();
+         }
+     }
+
+     [HttpGet("author/{authorName}")]
+     public IActionResult GetBookByAuthor(string authorName)
+     {
+         var book = books.FirstOrDefault(x => x.Author.ToLower() == authorName.Trim().ToLower());
+         if (book != null)
+         {
+             return Ok(book);
+         }
+         else
+         {
+             return NotFound();
+         }
+     }
+
+     [HttpGet("pagination")]
+     public IActionResult BooksPagination(int pageNumber, int pageSize)
+     {
+         var initial = pageSize * (pageNumber - 1);
+         var data = books.Skip(initial).Take(pageSize);
+         return Ok(data);
+     }
+
+     [HttpPut("{id}/update-price")]
+     public IActionResult UpdateBookPrice(int id, decimal newprice)
+     {
+         var index = books.FindIndex(x => x.BookId == id);
+         if (index != -1)
+         {
+             if (newprice > 0)
+             {
+                 books[index].Price = newprice;
+                 return Ok(books[index]);
+             }
+             else
+             {
+                 return StatusCode(400, $"Book price must be greater than 0");
+             }
+         }
+         else
+         {
+             return StatusCode(400, $"Book having id '{id}' does not exist");
+         }
+     }
+
+     [HttpDelete("conditionalDelete/{id}")]
+     public IActionResult ConditionalBookDelete(int id)
+     {
+         var book = books.FirstOrDefault(x => x.BookId == id);
+         if (book != null)
+         {
+             if (book.Copies < 100)
+             {
+                 books.Remove(book);
+                 return Ok($"Book having id '{id}' deleted successfully");
+             }
+             else
+             {
+                 return StatusCode(400, $"Cannot delete as it has more than 100 copies");
+             }
+         }
+         else
+         {
+             return StatusCode(400, $"Book having id '{id}' does not exist");
+         }
+     }
+ }
+
+ public class Book
+ {
+     public int BookId { get; set; }
+     public string Title { get; set; }
+     public string Author { get; set; }
+     public decimal Price { get; set; }
+     public int Copies { get; set; }
+ }
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 7
+Retrieve Books Published in a Specific Year
+Objective: Create a GET endpoint to fetch books published in a specific year.
+Task:
+Route: /api/books/year/{year}.
+Business Logic: If no books are found for the specified year, return a 404 Not Found.
+
+---------------------
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class booksController : ControllerBase
+    {
+        private static List<Book> books = new List<Book>()
+        {
+            new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling",Price=250m,Copies=1700,PublishedYear=2000},
+            new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore",Price=300m,Copies=60,PublishedYear=1965},
+            new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj",Price=750.25m,Copies=50000,PublishedYear=2012}
+        };
+
+        [HttpGet]
+        public IActionResult GetBooks()
+        {
+            return Ok(books);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetBookById(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AddBook([FromBody] Book book)
+        {
+            books.Add(book);
+            return Ok(book);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+        {
+            var index = books.FindIndex(x => x.BookId == id);
+            if (index != -1)
+            {
+                updatedBook.BookId = id;
+                books[index] = updatedBook;
+                return Ok(updatedBook);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBook(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                books.Remove(book);
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("author/{authorName}")]
+        public IActionResult GetBooksByAuthor(string authorName)
+        {
+            var book = books.Where(x => x.Author.ToLower() == authorName.Trim().ToLower()).ToList();
+            if (book.Any())
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("pagination")]
+        public IActionResult BooksPagination(int pageNumber, int pageSize)
+        {
+            var initial = pageSize * (pageNumber - 1);
+            var data = books.Skip(initial).Take(pageSize);
+            return Ok(data);
+        }
+
+        [HttpPut("{id}/update-price")]
+        public IActionResult UpdateBookPrice(int id, decimal newprice)
+        {
+            var index = books.FindIndex(x => x.BookId == id);
+            if (index != -1)
+            {
+                if (newprice > 0)
+                {
+                    books[index].Price = newprice;
+                    return Ok(books[index]);
+                }
+                else
+                {
+                    return StatusCode(400, $"Book price must be greater than 0");
+                }
+            }
+            else
+            {
+                return StatusCode(400, $"Book having id '{id}' does not exist");
+            }
+        }
+
+        [HttpDelete("conditionalDelete/{id}")]
+        public IActionResult ConditionalBookDelete(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                if (book.Copies < 100)
+                {
+                    books.Remove(book);
+                    return Ok($"Book having id '{id}' deleted successfully");
+                }
+                else
+                {
+                    return StatusCode(400, $"Cannot delete as it has more than 100 copies");
+                }
+            }
+            else
+            {
+                return StatusCode(400, $"Book having id '{id}' does not exist");
+            }
+        }
+
+        [HttpGet("year/{year}")]
+        public IActionResult GetBooksByYear(int year)
+        {
+            var data = books.Where(x => x.PublishedYear == year).ToList();
+            if (data.Any())
+            {
+                return Ok(data);
+            }
+            else
+            {
+                return StatusCode(404, $"No books having published year '{year}' found");
+            }
+        }
+    }
+
+    public class Book
+    {
+        public int BookId { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public decimal Price { get; set; }
+        public int Copies { get; set; }
+        public int PublishedYear { get; set; }
+    }
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 8
+Search Books by Title Using Query Parameters
+Objective: Implement a GET endpoint to search for books by title.
+Task:
+Route: /api/books/search?title={title}.
+Business Logic: Perform a case-insensitive search. If no matches are found, return a helpful error message.
+
+--------------------
+
+[Route("api/[controller]")]
+[ApiController]
+public class booksController : ControllerBase
+{
+    private static List<Book> books = new List<Book>()
+    {
+        new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling",Price=250m,Copies=1700,PublishedYear=2000},
+        new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore",Price=300m,Copies=60,PublishedYear=1965},
+        new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj",Price=750.25m,Copies=50000,PublishedYear=2012}
+    };
+
+    [HttpGet]
+    public IActionResult GetBooks()
+    {
+        return Ok(books);
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetBookById(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    public IActionResult AddBook([FromBody] Book book)
+    {
+        books.Add(book);
+        return Ok(book);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+    {
+        var index = books.FindIndex(x => x.BookId == id);
+        if (index != -1)
+        {
+            updatedBook.BookId = id;
+            books[index] = updatedBook;
+            return Ok(updatedBook);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteBook(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            books.Remove(book);
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("author/{authorName}")]
+    public IActionResult GetBooksByAuthor(string authorName)
+    {
+        var book = books.Where(x => x.Author.ToLower() == authorName.Trim().ToLower()).ToList();
+        if (book.Any())
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("pagination")]
+    public IActionResult BooksPagination(int pageNumber, int pageSize)
+    {
+        var initial = pageSize * (pageNumber - 1);
+        var data = books.Skip(initial).Take(pageSize);
+        return Ok(data);
+    }
+
+    [HttpPut("{id}/update-price")]
+    public IActionResult UpdateBookPrice(int id, decimal newprice)
+    {
+        var index = books.FindIndex(x => x.BookId == id);
+        if (index != -1)
+        {
+            if (newprice > 0)
+            {
+                books[index].Price = newprice;
+                return Ok(books[index]);
+            }
+            else
+            {
+                return StatusCode(400, $"Book price must be greater than 0");
+            }
+        }
+        else
+        {
+            return StatusCode(400, $"Book having id '{id}' does not exist");
+        }
+    }
+
+    [HttpDelete("conditionalDelete/{id}")]
+    public IActionResult ConditionalBookDelete(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            if (book.Copies < 100)
+            {
+                books.Remove(book);
+                return Ok($"Book having id '{id}' deleted successfully");
+            }
+            else
+            {
+                return StatusCode(400, $"Cannot delete as it has more than 100 copies");
+            }
+        }
+        else
+        {
+            return StatusCode(400, $"Book having id '{id}' does not exist");
+        }
+    }
+
+    [HttpGet("year/{year}")]
+    public IActionResult GetBooksByYear(int year)
+    {
+        var data = books.Where(x => x.PublishedYear == year).ToList();
+        if (data.Any())
+        {
+            return Ok(data);
+        }
+        else
+        {
+            return StatusCode(404, $"No books having published year '{year}' found");
+        }
+    }
+
+    [HttpGet("search")]
+    public IActionResult SearchBooksByTitle([FromQuery] string title)
+    {
+        var data = books.Where(x => x.Title.ToLower() == title.Trim().ToLower());
+        if (data.Any())
+        {
+            return Ok(data);
+        }
+        else
+        {
+            return StatusCode(404, $"No books having title '{title.Trim()}' exists");
+        }
+    }
 }
+
+public class Book
+{
+    public int BookId { get; set; }
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public decimal Price { get; set; }
+    public int Copies { get; set; }
+    public int PublishedYear { get; set; }
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 9
+Add a New Book with Custom Validation
+Objective: Implement a POST endpoint to add a new book.
+Task:
+Business Logic: Validate that the title is not empty, the author name has at least 3 characters, and the price is greater than 0.
+Return a 400 Bad Request if any validation fails.
+
+--------------------
+
+[Route("api/[controller]")]
+[ApiController]
+public class booksController : ControllerBase
+{
+    private static List<Book> books = new List<Book>()
+    {
+        new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling",Price=250m,Copies=1700,PublishedYear=2000},
+        new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore",Price=300m,Copies=60,PublishedYear=1965},
+        new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj",Price=750.25m,Copies=50000,PublishedYear=2012}
+    };
+
+    [HttpGet]
+    public IActionResult GetBooks()
+    {
+        return Ok(books);
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetBookById(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    public IActionResult AddBook([FromBody] Book book)
+    {
+        books.Add(book);
+        return Ok(book);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+    {
+        var index = books.FindIndex(x => x.BookId == id);
+        if (index != -1)
+        {
+            updatedBook.BookId = id;
+            books[index] = updatedBook;
+            return Ok(updatedBook);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult DeleteBook(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            books.Remove(book);
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("author/{authorName}")]
+    public IActionResult GetBooksByAuthor(string authorName)
+    {
+        var book = books.Where(x => x.Author.ToLower() == authorName.Trim().ToLower()).ToList();
+        if (book.Any())
+        {
+            return Ok(book);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("pagination")]
+    public IActionResult BooksPagination(int pageNumber, int pageSize)
+    {
+        var initial = pageSize * (pageNumber - 1);
+        var data = books.Skip(initial).Take(pageSize);
+        return Ok(data);
+    }
+
+    [HttpPut("{id}/update-price")]
+    public IActionResult UpdateBookPrice(int id, decimal newprice)
+    {
+        var index = books.FindIndex(x => x.BookId == id);
+        if (index != -1)
+        {
+            if (newprice > 0)
+            {
+                books[index].Price = newprice;
+                return Ok(books[index]);
+            }
+            else
+            {
+                return StatusCode(400, $"Book price must be greater than 0");
+            }
+        }
+        else
+        {
+            return StatusCode(400, $"Book having id '{id}' does not exist");
+        }
+    }
+
+    [HttpDelete("conditionalDelete/{id}")]
+    public IActionResult ConditionalBookDelete(int id)
+    {
+        var book = books.FirstOrDefault(x => x.BookId == id);
+        if (book != null)
+        {
+            if (book.Copies < 100)
+            {
+                books.Remove(book);
+                return Ok($"Book having id '{id}' deleted successfully");
+            }
+            else
+            {
+                return StatusCode(400, $"Cannot delete as it has more than 100 copies");
+            }
+        }
+        else
+        {
+            return StatusCode(400, $"Book having id '{id}' does not exist");
+        }
+    }
+
+    [HttpGet("year/{year}")]
+    public IActionResult GetBooksByYear(int year)
+    {
+        var data = books.Where(x => x.PublishedYear == year).ToList();
+        if (data.Any())
+        {
+            return Ok(data);
+        }
+        else
+        {
+            return StatusCode(404, $"No books having published year '{year}' found");
+        }
+    }
+
+    [HttpGet("search")]
+    public IActionResult SearchBooksByTitle([FromQuery] string title)
+    {
+        var data = books.Where(x => x.Title.ToLower() == title.Trim().ToLower());
+        if (data.Any())
+        {
+            return Ok(data);
+        }
+        else
+        {
+            return StatusCode(404, $"No books having title '{title.Trim()}' exists");
+        }
+    }
+
+    [HttpPost("AddBookConditional")]
+    public IActionResult AddBookConditional([FromBody] Book book)
+    {
+        if (ModelState.IsValid)
+        {
+            books.Add(book);
+            return Ok(book);
+        }
+        else
+        {
+            return BadRequest();
+        }
+    }
+}
+
+public class Book
+{
+    public int BookId { get; set; }
+
+    [Required(ErrorMessage = "Book title is required")]
+    public string Title { get; set; }
+
+    [MinLength(3, ErrorMessage = "Author must have at least 3 characters")]
+    public string Author { get; set; }
+
+    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+    public decimal Price { get; set; }
+    public int Copies { get; set; }
+    public int PublishedYear { get; set; }
+}
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+Practice 10
+Implement Sorting for Books
+Objective: Create an endpoint to fetch all books sorted by title or price.
+Task:
+Route: /api/books?sortBy={title|price}.
+Business Logic: Sort the books in ascending or descending order based on a query parameter like order=asc|desc.
+
+--------------------
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class booksController : ControllerBase
+    {
+        private static List<Book> books = new List<Book>()
+        {
+            new Book{ BookId=1,Title="Harry Potter",Author="J.K Rowling",Price=250m,Copies=1700,PublishedYear=2000},
+            new Book{ BookId=2,Title="Gitanjali",Author="Rabindranath Tagore",Price=300m,Copies=60,PublishedYear=1965},
+            new Book{ BookId=3,Title="Financial Shenanigans",Author="Balidaan Bharadwaj",Price=750.25m,Copies=50000,PublishedYear=2012}
+        };
+
+        [HttpGet]
+        public IActionResult GetBooks()
+        {
+            return Ok(books);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetBookById(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AddBook([FromBody] Book book)
+        {
+            books.Add(book);
+            return Ok(book);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateBook(int id, [FromBody] Book updatedBook)
+        {
+            var index = books.FindIndex(x => x.BookId == id);
+            if (index != -1)
+            {
+                updatedBook.BookId = id;
+                books[index] = updatedBook;
+                return Ok(updatedBook);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBook(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                books.Remove(book);
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("author/{authorName}")]
+        public IActionResult GetBooksByAuthor(string authorName)
+        {
+            var book = books.Where(x => x.Author.ToLower() == authorName.Trim().ToLower()).ToList();
+            if (book.Any())
+            {
+                return Ok(book);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("pagination")]
+        public IActionResult BooksPagination(int pageNumber, int pageSize)
+        {
+            var initial = pageSize * (pageNumber - 1);
+            var data = books.Skip(initial).Take(pageSize);
+            return Ok(data);
+        }
+
+        [HttpPut("{id}/update-price")]
+        public IActionResult UpdateBookPrice(int id, decimal newprice)
+        {
+            var index = books.FindIndex(x => x.BookId == id);
+            if (index != -1)
+            {
+                if (newprice > 0)
+                {
+                    books[index].Price = newprice;
+                    return Ok(books[index]);
+                }
+                else
+                {
+                    return StatusCode(400, $"Book price must be greater than 0");
+                }
+            }
+            else
+            {
+                return StatusCode(400, $"Book having id '{id}' does not exist");
+            }
+        }
+
+        [HttpDelete("conditionalDelete/{id}")]
+        public IActionResult ConditionalBookDelete(int id)
+        {
+            var book = books.FirstOrDefault(x => x.BookId == id);
+            if (book != null)
+            {
+                if (book.Copies < 100)
+                {
+                    books.Remove(book);
+                    return Ok($"Book having id '{id}' deleted successfully");
+                }
+                else
+                {
+                    return StatusCode(400, $"Cannot delete as it has more than 100 copies");
+                }
+            }
+            else
+            {
+                return StatusCode(400, $"Book having id '{id}' does not exist");
+            }
+        }
+
+        [HttpGet("year/{year}")]
+        public IActionResult GetBooksByYear(int year)
+        {
+            var data = books.Where(x => x.PublishedYear == year).ToList();
+            if (data.Any())
+            {
+                return Ok(data);
+            }
+            else
+            {
+                return StatusCode(404, $"No books having published year '{year}' found");
+            }
+        }
+
+        [HttpGet("search")]
+        public IActionResult SearchBooksByTitle([FromQuery] string title)
+        {
+            var data = books.Where(x => x.Title.ToLower() == title.Trim().ToLower());
+            if (data.Any())
+            {
+                return Ok(data);
+            }
+            else
+            {
+                return StatusCode(404, $"No books having title '{title.Trim()}' exists");
+            }
+        }
+
+        [HttpGet("sort")]
+        public IActionResult GetSortedBooksData([FromQuery] string sortBy)
+        {
+            var sortedData = new List<Book>();
+
+            if (sortBy.Trim().ToLower() == "title")
+            {
+                sortedData = books.OrderBy(x => x.Title).ToList();
+                if (sortedData.Any())
+                {
+                    return Ok(sortedData);
+                }
+                else
+                {
+                    return StatusCode(204, "No data exists");
+                }
+            }
+            else if (sortBy.Trim().ToLower() == "price")
+            {
+                sortedData = books.OrderBy(x => x.Price).ToList();
+                if (sortedData.Any())
+                {
+                    return Ok(sortedData);
+                }
+                else
+                {
+                    return StatusCode(204, "No data exists");
+                }
+            }
+            else
+            {
+                return StatusCode(400, "No valid sorting parameter was provided.");
+            }
+        }
+    }
+
+    public class Book
+    {
+        public int BookId { get; set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public decimal Price { get; set; }
+        public int Copies { get; set; }
+        public int PublishedYear { get; set; }
+    }
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### **Assignment 1: Create a RESTful API for Employee and Assignments Management**
+
+---
+
+#### **Objective**  
+Develop a RESTful API to manage employee data and their assignments. The API should support operations to create, retrieve, update, and delete both employees and their related assignments.
+
+---
+
+### **API Endpoints**  
+
+#### **Employee Endpoints**
+1. **Create an Employee**  
+   - **Method**: `POST`  
+   - **Route**: `/emps`  
+   - **Description**: Adds a new employee.  
+
+2. **Get All Employees**  
+   - **Method**: `GET`  
+   - **Route**: `/emps`  
+   - **Description**: Retrieves all employees.  
+
+3. **Get an Employee**  
+   - **Method**: `GET`  
+   - **Route**: `/emps/{empID}`  
+   - **Description**: Retrieves details of an employee by their `empID`.  
+
+4. **Update an Employee**  
+   - **Method**: `PUT`  
+   - **Route**: `/emps/{empID}`  
+   - **Description**: Updates the details of an employee by their `empID`.  
+
+---
+
+#### **Assignment Endpoints**
+1. **Create an Assignment for an Employee**  
+   - **Method**: `POST`  
+   - **Route**: `/emps/{empID}/child/assignments`  
+   - **Description**: Adds a new assignment for a specific employee.  
+
+2. **Get All Assignments for an Employee**  
+   - **Method**: `GET`  
+   - **Route**: `/emps/{empID}/child/assignments`  
+   - **Description**: Retrieves all assignments for a specific employee.  
+
+3. **Get a Specific Assignment**  
+   - **Method**: `GET`  
+   - **Route**: `/emps/{empID}/child/assignments/{AssignmentID}`  
+   - **Description**: Retrieves details of a specific assignment for an employee.  
+
+4. **Update an Assignment**  
+   - **Method**: `PUT`  
+   - **Route**: `/emps/{empID}/child/assignments/{AssignmentID}`  
+   - **Description**: Updates details of a specific assignment for an employee.  
+
+---
+
+### **Data Models**
+
+#### **Employee Model**
+| **Field**                        | **Type**       | **Required** | **Description**                           |
+|----------------------------------|----------------|--------------|-------------------------------------------|
+| `FirstName`                      | `string`       | No           | Employee's first name.                    |
+| `MiddleName`                     | `string`       | No           | Employee's middle name.                   |
+| `LastName`                       | `string`       | No           | Employee's last name.                     |
+| `DateOfBirth`                    | `string (date)`| No           | Employee's date of birth.                 |
+| `Gender`                         | `string`       | No           | Employee's gender.                        |
+| `MaritalStatus`                  | `string`       | No           | Employee's marital status.                |
+| `AddressLine1`                   | `string`       | No           | Address line 1.                           |
+| `AddressLine2`                   | `string`       | No           | Address line 2.                           |
+| `AddressLine3`                   | `string`       | No           | Address line 3.                           |
+| `City`                           | `string`       | No           | City of residence.                        |
+| `Country`                        | `string`       | No           | Country of residence.                     |
+| `HomePhoneNumber`                | `string`       | No           | Employee's home phone number.             |
+| `HireDate`                       | `string (date)`| No           | Date the employee was hired.              |
+| `EffectiveStartDate`             | `string (date)`| No           | Start date for the employee's record.     |
+| `Assignments`                    | `array`        | No           | List of employee's assignments.           |
+
+---
+
+#### **Assignment Model**
+| **Field**                        | **Type**         | **Required** | **Description**                           |
+|----------------------------------|------------------|--------------|-------------------------------------------|
+| `AssignmentId`                   | `integer`        | No           | Unique identifier for the assignment.     |
+| `AssignmentName`                 | `string`         | No           | Name of the assignment.                   |
+| `AssignmentNumber`               | `string`         | No           | Number of the assignment.                 |
+| `AssignmentStatus`               | `string`         | No           | Status of the assignment.                 |
+| `EffectiveStartDate`             | `string (date)`  | No           | Start date of the assignment.             |
+| `EffectiveEndDate`               | `string (date)`  | No           | End date of the assignment.               |
+| `JobId`                          | `integer`        | No           | Job ID associated with the assignment.    |
+| `DepartmentId`                   | `integer`        | No           | Department ID associated with the assignment. |
+
+---
+
+### **Tasks**
+
+1. **API Implementation**:
+   - Implement endpoints for managing employees and assignments.
+   - Each endpoint must adhere to the RESTful standards.
+
+2. **Validation**:
+   - Ensure the required fields for employees and assignments are validated.
+   - Validate date formats for fields like `HireDate`, `EffectiveStartDate`, and `EffectiveEndDate`.
+
+3. **Error Handling**:
+   - Return appropriate status codes and error messages for:
+     - Invalid `empID` or `AssignmentID`.
+     - Missing or invalid data in the request body.
+
+4. **Testing**:
+   - Test all endpoints using tools like Postman or Swagger.
+   - Ensure proper CRUD operations for employees and assignments.
